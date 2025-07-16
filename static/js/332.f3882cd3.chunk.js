@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_study_sphere_mockup=self.webpackChunkreact_study_sphere_mockup||[]).push([[332],{8332:(e,s,c)=>{c.d(s,{createInfoServices:()=>r.v});var r=c(1612);c(6525)}}]);

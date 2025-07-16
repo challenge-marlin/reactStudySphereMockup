@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_study_sphere_mockup=self.webpackChunkreact_study_sphere_mockup||[]).push([[885],{2266:(e,s,c)=>{c.d(s,{createPieServices:()=>r.f});var r=c(9286);c(6525)}}]);

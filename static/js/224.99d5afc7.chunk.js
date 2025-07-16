@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_study_sphere_mockup=self.webpackChunkreact_study_sphere_mockup||[]).push([[224],{7224:(e,c,r)=>{r.d(c,{createArchitectureServices:()=>s.S});var s=r(2552);r(6525)}}]);

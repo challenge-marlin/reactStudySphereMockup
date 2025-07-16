@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_study_sphere_mockup=self.webpackChunkreact_study_sphere_mockup||[]).push([[697],{5697:(e,c,s)=>{s.d(c,{createPacketServices:()=>r.$});var r=s(8432);s(6525)}}]);
