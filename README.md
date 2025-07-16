@@ -2,7 +2,7 @@
 
 階層管理対応学習システムのモックアップアプリケーションです。
 
-https://challenge-marlin.github.io/reactStudySphereMockup/
+[モックアップはこちら](https://challenge-marlin.github.io/reactStudySphereMockup/)
 
 ## 概要
 
