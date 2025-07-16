@@ -126,10 +126,10 @@ src/
   - instructor003: スタディスフィア大阪校 - 大阪支校
 
 ### 生徒ログイン（トークンベース）
-- http://localhost:3000/student/login/token123
-- http://localhost:3000/student/login/token456
-- http://localhost:3000/student/login/token789
-- http://localhost:3000/student/login/token101
+- https://challenge-marlin.github.io/reactStudySphereMockup/student/login/token123
+- https://challenge-marlin.github.io/reactStudySphereMockup/student/login/token456
+- https://challenge-marlin.github.io/reactStudySphereMockup/student/login/token789
+- https://challenge-marlin.github.io/reactStudySphereMockup/student/login/token101
 
 ## 特徴
 

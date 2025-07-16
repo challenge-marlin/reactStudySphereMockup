@@ -59,6 +59,29 @@ const StudentLogin = () => {
     }, 1500); // ローディング体験のため
   }, [token, navigate]);
 
+  const sampleStudentLinks = [
+    { url: `${process.env.PUBLIC_URL}/student/login/token123`, label: '生徒1: token123' },
+    { url: `${process.env.PUBLIC_URL}/student/login/token456`, label: '生徒2: token456' },
+    { url: `${process.env.PUBLIC_URL}/student/login/token789`, label: '生徒3: token789' },
+    { url: `${process.env.PUBLIC_URL}/student/login/token101`, label: '生徒4: token101' },
+  ];
+
+  const SampleStudentLinks = () => (
+    <div className="sample-student-links" style={{ marginTop: 32, padding: 16, background: '#f8f8f8', borderRadius: 8 }}>
+      <h3 style={{ marginBottom: 8 }}>サンプル生徒ログインURL</h3>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        {sampleStudentLinks.map(link => (
+          <li key={link.url} style={{ marginBottom: 4 }}>
+            <a href={link.url}>{link.label} ({link.url})</a>
+          </li>
+        ))}
+      </ul>
+      <div style={{ fontSize: '0.9em', color: '#888', marginTop: 8 }}>
+        ※上記URLをクリックすると該当生徒としてログインできます（モック動作）
+      </div>
+    </div>
+  );
+
   if (isValidating) {
     return (
       <div className="student-login">
@@ -83,12 +106,20 @@ const StudentLogin = () => {
               ログイン画面に戻る
             </button>
           </div>
+          <SampleStudentLinks />
         </div>
       </div>
     );
   }
 
-  return null;
+  // ログイン成功時は即リダイレクトされるため何も表示しない
+  return (
+    <div className="student-login">
+      <div className="login-container">
+        <SampleStudentLinks />
+      </div>
+    </div>
+  );
 };
 
 export default StudentLogin; 
