@@ -1,0 +1,374 @@
+.daily-records-page {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 120px);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.back-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.back-button:hover {
+  background: #5a6268;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-content h1 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.student-info h2 {
+  margin: 0 0 5px 0;
+  color: #495057;
+  font-size: 18px;
+}
+
+.student-info p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.add-record-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.add-record-button:hover {
+  background: #218838;
+}
+
+.records-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.no-records {
+  padding: 60px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.no-records p {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+}
+
+.records-list {
+  padding: 20px;
+}
+
+.record-card {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.record-date {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.record-date .date {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.record-date .time {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.method-badge {
+  background: #007bff;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.record-content {
+  padding: 20px;
+}
+
+.record-section {
+  margin-bottom: 20px;
+}
+
+.record-section h4 {
+  margin: 0 0 8px 0;
+  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.record-section p {
+  margin: 0;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.record-footer {
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.recorder {
+  font-style: italic;
+}
+
+/* モーダル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 0;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.close-button:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* フォームスタイル */
+.modal form {
+  padding: 30px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group input[type="date"],
+.form-group input[type="time"] {
+  min-height: 40px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  color: #6c757d;
+}
+
+.form-actions button:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.form-actions button.primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.form-actions button.primary:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+/* 必須項目の表示 */
+.form-group label::after {
+  content: " *";
+  color: #dc3545;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .daily-records-page {
+    padding: 10px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .header-content h1 {
+    font-size: 20px;
+  }
+  
+  .student-info h2 {
+    font-size: 16px;
+  }
+  
+  .record-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 15px 20px;
+  }
+  
+  .modal form {
+    padding: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+} 

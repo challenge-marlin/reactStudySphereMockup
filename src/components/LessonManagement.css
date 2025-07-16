@@ -1,0 +1,505 @@
+.lesson-management {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lesson-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.lesson-header h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.lesson-header p {
+  color: #7f8c8d;
+  font-size: 16px;
+}
+
+/* コース選択フィルター */
+.course-filter {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-filter label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-right: 10px;
+}
+
+.course-filter select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 300px;
+}
+
+/* レッスン一覧テーブル */
+.lessons-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 0 -20px; /* コンテナの幅を拡張 */
+}
+
+.lessons-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 1200px; /* 最小幅を設定 */
+}
+
+.lessons-table th {
+  background: #f8f9fa;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #e1e8ed;
+}
+
+.lessons-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e1e8ed;
+  vertical-align: top;
+}
+
+.lesson-row:hover {
+  background: #f8f9fa;
+}
+
+.course-name .course-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.lesson-order .order-badge {
+  background: #3498db;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.lesson-title strong {
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.lesson-description .description-text {
+  color: #7f8c8d;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 400px; /* 説明欄の幅を拡大 */
+}
+
+.lesson-duration .duration-badge {
+  background: #27ae60;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.file-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.file-status.uploaded {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.file-status.not-uploaded {
+  background: #fdf2e9;
+  color: #e67e22;
+}
+
+.segments-count {
+  background: #e8f4fd;
+  color: #3498db;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.no-segments {
+  color: #95a5a6;
+  font-size: 12px;
+}
+
+.lesson-actions .action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn, .segment-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.edit-btn {
+  background: #3498db;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #2980b9;
+}
+
+.segment-btn {
+  background: #9b59b6;
+  color: white;
+}
+
+.segment-btn:hover {
+  background: #8e44ad;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* モーダルスタイル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #7f8c8d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #e74c3c;
+}
+
+.lesson-form {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.file-info {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #e1e8ed;
+}
+
+.cancel-btn, .save-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #7f8c8d;
+}
+
+.save-btn {
+  background: #27ae60;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #229954;
+}
+
+/* 動画セグメントモーダル */
+.video-segment-modal {
+  max-width: 800px;
+}
+
+.segment-content {
+  padding: 20px;
+}
+
+.segment-info {
+  background: #e8f4fd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.segment-info p {
+  margin: 5px 0;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.add-segment-form {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.add-segment-form h4 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+}
+
+.segment-inputs {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+.segment-inputs input,
+.segment-inputs textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.segment-inputs textarea {
+  grid-column: 1 / -1;
+  resize: vertical;
+}
+
+.add-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.add-btn:hover {
+  background: #229954;
+}
+
+.segments-list {
+  margin-bottom: 20px;
+}
+
+.segments-list h4 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+}
+
+.no-segments {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  padding: 20px;
+}
+
+.segment-item {
+  background: white;
+  border: 1px solid #e1e8ed;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.segment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.segment-header h5 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #e74c3c;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.remove-btn:hover {
+  background: #fdf2e9;
+}
+
+.segment-time {
+  color: #3498db;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.segment-description {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .lesson-management {
+    padding: 15px;
+  }
+  
+  .lessons-table-container {
+    margin: 0 -15px; /* モバイルでのマージン調整 */
+  }
+  
+  .course-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .lesson-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .lesson-actions {
+    flex-direction: column;
+  }
+  
+  .segment-inputs {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-status {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+} 

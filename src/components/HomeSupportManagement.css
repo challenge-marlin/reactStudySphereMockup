@@ -1,0 +1,851 @@
+.home-support-management {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 120px);
+}
+
+.home-support-header {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.home-support-header h2 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.home-support-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+/* テーブルコンテナ */
+.students-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.table-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.student-count {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+/* テーブルスタイル */
+.students-table {
+  overflow-x: auto;
+}
+
+.students-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.students-table th,
+.students-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.students-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.students-table tr:hover {
+  background: #f8f9fa;
+}
+
+/* 生徒情報 */
+.student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.student-email {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.course-name,
+.instructor-name,
+.location-name {
+  color: #495057;
+  font-weight: 500;
+}
+
+/* 進捗バー */
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #495057;
+  min-width: 35px;
+}
+
+/* 最終ログイン */
+.last-login {
+  color: #6c757d;
+  font-size: 13px;
+}
+
+/* ログインURL */
+.login-url-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-token {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #495057;
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.copy-button:hover {
+  background: #e9ecef;
+}
+
+/* ステータス */
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* アクションボタン */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.action-btn.primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.action-btn.primary:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+/* モーダル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 0;
+  border-radius: 8px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.close-button:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* フォームスタイル */
+.modal form {
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-group input[type="date"] {
+  min-height: 40px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  color: #6c757d;
+}
+
+.form-actions button:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.form-actions button.primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+  .form-actions button.primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+  }
+
+/* 達成度評価カレンダー */
+.evaluation-calendar-modal {
+  max-width: 900px;
+}
+
+.evaluation-calendar-content {
+  padding: 30px;
+}
+
+.calendar-header {
+  margin-bottom: 30px;
+}
+
+.calendar-header h4 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.calendar-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.evaluation-schedule {
+  margin-bottom: 30px;
+}
+
+.schedule-section {
+  margin-bottom: 25px;
+}
+
+.schedule-section h5 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.schedule-item.completed {
+  background: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.schedule-item .date {
+  flex: 1;
+  font-weight: 500;
+  color: #495057;
+}
+
+.schedule-item .status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+}
+
+.schedule-item .status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.schedule-item .status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.schedule-btn {
+  padding: 6px 12px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.schedule-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.evaluation-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.evaluation-actions .action-btn {
+  padding: 10px 20px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.evaluation-actions .action-btn:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.evaluation-actions .action-btn.primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.evaluation-actions .action-btn.primary:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+/* 必須項目の表示 */
+.form-group label::after {
+  content: " *";
+  color: #dc3545;
+}
+
+/* 管理アクションボタン */
+.management-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.management-actions .action-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.management-actions .action-btn.primary {
+  background: #007bff;
+  color: white;
+}
+
+.management-actions .action-btn.primary:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.management-actions .action-btn.secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.management-actions .action-btn.secondary:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+
+
+/* 個別支援計画タブ */
+.support-plans {
+  padding: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.add-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.add-button:hover {
+  background: #218838;
+}
+
+.plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.plan-card {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.plan-header h4 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.plan-header .status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.plan-header .status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.plan-header .status.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.plan-content {
+  padding: 20px;
+}
+
+.plan-section {
+  margin-bottom: 20px;
+}
+
+.plan-section:last-child {
+  margin-bottom: 0;
+}
+
+.plan-section h5 {
+  margin: 0 0 10px 0;
+  color: #495057;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.plan-section p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.plan-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+  margin-top: 20px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+
+
+/* 個別支援計画作成フォーム */
+.plan-form-modal {
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.plan-form-modal .modal-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.plan-form-modal .form-group {
+  margin-bottom: 20px;
+}
+
+.plan-form-modal .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.plan-form-modal .form-group input,
+.plan-form-modal .form-group select,
+.plan-form-modal .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.plan-form-modal .form-group input:focus,
+.plan-form-modal .form-group select:focus,
+.plan-form-modal .form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.plan-form-modal .form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.plan-form-modal .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.plan-form-modal .form-actions button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.plan-form-modal .form-actions button:first-child {
+  background: white;
+  color: #6c757d;
+  border: 1px solid #ced4da;
+}
+
+.plan-form-modal .form-actions button:first-child:hover {
+  background: #f8f9fa;
+}
+
+.plan-form-modal .form-actions button.primary {
+  background: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.plan-form-modal .form-actions button.primary:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+  .students-table {
+    font-size: 13px;
+  }
+  
+  .students-table th,
+  .students-table td {
+    padding: 10px 12px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-support-management {
+    padding: 10px;
+  }
+
+  .management-actions {
+    flex-direction: column;
+  }
+  
+  .management-actions .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .students-table {
+    font-size: 12px;
+  }
+  
+  .students-table th,
+  .students-table td {
+    padding: 8px 10px;
+  }
+  
+  .progress-container {
+    min-width: 100px;
+  }
+  
+  .login-url-container {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 15px 20px;
+  }
+  
+  .modal form {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+} 
