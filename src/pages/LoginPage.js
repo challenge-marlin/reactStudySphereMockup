@@ -176,14 +176,14 @@ const LoginPage = () => {
 
         <div className="student-info">
           <h3>生徒用ログイン</h3>
-                      <p>生徒は指導員から送られたログインURLでアクセスします</p>
+          <p>生徒は指導員から送られたログインURLでアクセスします</p>
           <div className="student-urls">
             <p><strong>サンプルURL:</strong></p>
-            <a href="/student/login/token123" className="student-url">
-              http://localhost:3000/student/login/token123
+            <a href={`${process.env.PUBLIC_URL}/student/login/token123`} className="student-url">
+              {`${window.location.origin}${process.env.PUBLIC_URL}/student/login/token123`}
             </a>
-            <a href="/student/login/token456" className="student-url">
-              http://localhost:3000/student/login/token456
+            <a href={`${process.env.PUBLIC_URL}/student/login/token456`} className="student-url">
+              {`${window.location.origin}${process.env.PUBLIC_URL}/student/login/token456`}
             </a>
           </div>
         </div>
