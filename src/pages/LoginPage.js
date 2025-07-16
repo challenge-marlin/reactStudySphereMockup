@@ -179,12 +179,14 @@ const LoginPage = () => {
           <p>生徒は指導員から送られたログインURLでアクセスします</p>
           <div className="student-urls">
             <p><strong>サンプルURL:</strong></p>
-            <a href={`${process.env.PUBLIC_URL}/student/login/token123`} className="student-url">
-              {`${window.location.origin}${process.env.PUBLIC_URL}/student/login/token123`}
-            </a>
-            <a href={`${process.env.PUBLIC_URL}/student/login/token456`} className="student-url">
-              {`${window.location.origin}${process.env.PUBLIC_URL}/student/login/token456`}
-            </a>
+            {['token123', 'token456'].map(token => {
+              const url = `${window.location.origin}${process.env.PUBLIC_URL}/student/login/${token}`;
+              return (
+                <a key={token} href={`${process.env.PUBLIC_URL}/student/login/${token}`} className="student-url">
+                  {url}
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>
