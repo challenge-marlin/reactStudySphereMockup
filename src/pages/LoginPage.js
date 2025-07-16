@@ -182,7 +182,7 @@ const LoginPage = () => {
             {['token123', 'token456'].map(token => {
               const url = `${window.location.origin}${process.env.PUBLIC_URL}/#/student/login/${token}`;
               return (
-                <a key={token} href={`#/student/login/${token}`} className="student-url">
+                <a key={token} href={url} className="student-url">
                   {url}
                 </a>
               );
