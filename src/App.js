@@ -22,9 +22,12 @@ function RedirectHandler() {
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get('redirect');
-    if (redirect) {
-      window.history.replaceState(null, '', window.location.pathname.replace(/\?.*$/, ''));
+    // すでにリダイレクト済みかどうかをsessionStorageで判定
+    if (redirect && !sessionStorage.getItem('redirected')) {
+      sessionStorage.setItem('redirected', 'true');
       window.location.replace(process.env.PUBLIC_URL + redirect);
+    } else {
+      sessionStorage.removeItem('redirected');
     }
   }, []);
   return null;
