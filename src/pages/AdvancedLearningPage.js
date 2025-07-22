@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import mermaid from 'mermaid';
+import LessonVideoPlayer from '../components/LessonVideoPlayer';
 
 const AdvancedLearningPage = () => {
   const navigate = useNavigate();
@@ -10,8 +11,6 @@ const AdvancedLearningPage = () => {
   const [currentLesson, setCurrentLesson] = useState(1);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
-  const [videoLoading, setVideoLoading] = useState(true);
-  const [videoError, setVideoError] = useState(false);
   const [textContent, setTextContent] = useState('');
   const [textLoading, setTextLoading] = useState(true);
   const [noteMode, setNoteMode] = useState('txt'); // 'txt', 'md'
@@ -21,15 +20,7 @@ const AdvancedLearningPage = () => {
   const textContainerRef = useRef(null);
   const noteContainerRef = useRef(null);
 
-  // YouTube動画IDを抽出する関数
-  const getYouTubeVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      return match[2];
-    }
-    return null;
-  };
+
 
   // URLパラメータからレッスン番号を取得
   useEffect(() => {
@@ -38,8 +29,6 @@ const AdvancedLearningPage = () => {
       const lessonNumber = parseInt(lessonParam);
       if (lessonNumber >= 1 && lessonNumber <= 6) {
         setCurrentLesson(lessonNumber);
-        setVideoLoading(true);
-        setVideoError(false);
         setTextLoading(true);
       }
     }
@@ -222,8 +211,6 @@ graph TD
   const changeLesson = (lessonNumber) => {
     setCurrentLesson(lessonNumber);
     setChatMessages([]);
-    setVideoLoading(true);
-    setVideoError(false);
     setTextLoading(true);
   };
 
@@ -283,7 +270,7 @@ graph TD
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
       {/* ヘッダー */}
       <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center gap-4">
               <button 
@@ -329,12 +316,51 @@ graph TD
         </div>
       </div>
 
-      {/* メインコンテンツ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* 左カラム: 動画 + テキスト */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* 動画セクション */}
+      {/* メインコンテンツ - 4カラムレイアウト */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+        {/* 上部: 提出ファイル */}
+        <div className="mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📁</span>
+                <h3 className="text-xl font-bold text-gray-800">提出ファイル</h3>
+              </div>
+              <button 
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => setShowUploadModal(true)}
+              >
+                📁 成果物アップロード
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {uploadedFiles.map(file => (
+                <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+                    <p className="text-xs text-gray-500">{file.uploadDate}</p>
+                  </div>
+                  <button 
+                    onClick={() => handleFileDelete(file.id)}
+                    className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {uploadedFiles.length === 0 && (
+                <div className="col-span-full">
+                  <p className="text-gray-500 text-center py-8">アップロードされたファイルはありません</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 4カラムレイアウト */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* 第1カラム: 動画 */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">🎥</span>
@@ -346,26 +372,7 @@ graph TD
                     <p className="font-semibold text-blue-800 mb-1">{currentLessonData.title}</p>
                     <p className="text-sm text-blue-600">URL: {currentLessonData.videoUrl}</p>
                   </div>
-                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                    {videoLoading && (
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">動画を読み込み中...</p>
-                      </div>
-                    )}
-                    {videoError && (
-                      <div className="text-center text-red-600">
-                        <p>動画の読み込みに失敗しました。</p>
-                        <p className="text-sm mt-2">URL: {currentLessonData.videoUrl}</p>
-                      </div>
-                    )}
-                    {!videoLoading && !videoError && (
-                      <div className="text-center text-gray-600">
-                        <p>動画プレイヤーがここに表示されます</p>
-                        <p className="text-sm mt-2">YouTube動画: {currentLessonData.videoUrl}</p>
-                      </div>
-                    )}
-                  </div>
+                  <LessonVideoPlayer videoUrl={currentLessonData.videoUrl} title={currentLessonData.title} />
                 </>
               ) : (
                 <div className="text-center py-8 text-gray-600">
@@ -373,14 +380,16 @@ graph TD
                 </div>
               )}
             </div>
+          </div>
 
-            {/* テキストセクション */}
+          {/* 第2カラム: テキスト */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">📄</span>
                 <h3 className="text-xl font-bold text-gray-800">教材テキスト</h3>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 min-h-[400px] overflow-y-auto">
+              <div className="bg-gray-50 rounded-lg p-4 h-[70vh] overflow-y-auto custom-scrollbar">
                 {textLoading ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -423,15 +432,14 @@ graph TD
             </div>
           </div>
 
-          {/* 右カラム: チャット + ノート + アップロード */}
-          <div className="space-y-6">
-            {/* チャット */}
+          {/* 第3カラム: AIアシスタント */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">💬</span>
                 <h3 className="text-xl font-bold text-gray-800">AIアシスタント</h3>
               </div>
-              <div className="h-64 overflow-y-auto mb-4 space-y-3">
+              <div className="h-64 overflow-y-auto mb-4 space-y-3 custom-scrollbar">
                 {chatMessages.map(message => (
                   <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs px-4 py-2 rounded-lg ${
@@ -462,13 +470,15 @@ graph TD
                 </button>
               </div>
             </div>
+          </div>
 
-            {/* ノート */}
+          {/* 第4カラム: 学習メモ作成 */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">📝</span>
-                  <h3 className="text-xl font-bold text-gray-800">学習ノート</h3>
+                  <h3 className="text-xl font-bold text-gray-800">学習メモ作成</h3>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -560,33 +570,6 @@ graph TD
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* アップロード済みファイル */}
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-2xl">📁</span>
-                <h3 className="text-xl font-bold text-gray-800">アップロード済みファイル</h3>
-              </div>
-              <div className="space-y-3">
-                {uploadedFiles.map(file => (
-                  <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
-                      <p className="text-xs text-gray-500">{file.uploadDate}</p>
-                    </div>
-                    <button 
-                      onClick={() => handleFileDelete(file.id)}
-                      className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                {uploadedFiles.length === 0 && (
-                  <p className="text-gray-500 text-center py-4">アップロードされたファイルはありません</p>
-                )}
-              </div>
             </div>
           </div>
         </div>

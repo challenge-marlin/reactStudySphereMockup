@@ -338,7 +338,7 @@ const EnhancedLearningPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
       {/* ヘッダー */}
       <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center gap-4">
               <button 
@@ -385,7 +385,7 @@ const EnhancedLearningPage = () => {
       </div>
 
       {/* メインコンテンツ - 3カラムレイアウト */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* 左カラム: 動画 */}
           <div className="lg:col-span-1">
@@ -441,7 +441,7 @@ const EnhancedLearningPage = () => {
                   </button>
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 min-h-[600px] overflow-y-auto">
+              <div className="bg-gray-50 rounded-lg p-4 h-[70vh] overflow-y-auto custom-scrollbar">
                 {textLoading ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -472,7 +472,7 @@ const EnhancedLearningPage = () => {
                 <span className="text-2xl">💬</span>
                 <h3 className="text-xl font-bold text-gray-800">AIアシスタント</h3>
               </div>
-              <div className="h-64 overflow-y-auto mb-4 space-y-3">
+              <div className="h-64 overflow-y-auto mb-4 space-y-3 custom-scrollbar">
                 {chatMessages.map(message => (
                   <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs px-4 py-2 rounded-lg ${
