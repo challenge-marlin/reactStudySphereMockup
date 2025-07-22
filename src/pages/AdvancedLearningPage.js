@@ -316,51 +316,12 @@ graph TD
         </div>
       </div>
 
-      {/* メインコンテンツ - 4カラムレイアウト */}
+      {/* メインコンテンツ - 2ペインレイアウト */}
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* 上部: 提出ファイル */}
-        <div className="mb-8">
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📁</span>
-                <h3 className="text-xl font-bold text-gray-800">提出ファイル</h3>
-              </div>
-              <button 
-                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
-                onClick={() => setShowUploadModal(true)}
-              >
-                📁 成果物アップロード
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {uploadedFiles.map(file => (
-                <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
-                    <p className="text-xs text-gray-500">{file.uploadDate}</p>
-                  </div>
-                  <button 
-                    onClick={() => handleFileDelete(file.id)}
-                    className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-              {uploadedFiles.length === 0 && (
-                <div className="col-span-full">
-                  <p className="text-gray-500 text-center py-8">アップロードされたファイルはありません</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* 4カラムレイアウト */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* 第1カラム: 動画 */}
-          <div className="lg:col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-200px)]">
+          {/* 左ペイン: 動画 + テキスト */}
+          <div className="space-y-6">
+            {/* 動画セクション */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">🎥</span>
@@ -380,16 +341,14 @@ graph TD
                 </div>
               )}
             </div>
-          </div>
 
-          {/* 第2カラム: テキスト */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            {/* テキストセクション */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 flex-1">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">📄</span>
                 <h3 className="text-xl font-bold text-gray-800">教材テキスト</h3>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="bg-gray-50 rounded-lg p-4 h-[calc(100vh-600px)] overflow-y-auto custom-scrollbar">
                 {textLoading ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -432,14 +391,50 @@ graph TD
             </div>
           </div>
 
-          {/* 第3カラム: AIアシスタント */}
-          <div className="lg:col-span-1">
+          {/* 右ペイン: ファイル + AI + 学習メモ作成 */}
+          <div className="space-y-6">
+            {/* 提出ファイル */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📁</span>
+                  <h3 className="text-xl font-bold text-gray-800">提出ファイル</h3>
+                </div>
+                <button 
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                  onClick={() => setShowUploadModal(true)}
+                >
+                  📁 成果物アップロード
+                </button>
+              </div>
+              <div className="space-y-3 max-h-32 overflow-y-auto custom-scrollbar">
+                {uploadedFiles.map(file => (
+                  <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">{file.uploadDate}</p>
+                    </div>
+                    <button 
+                      onClick={() => handleFileDelete(file.id)}
+                      className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {uploadedFiles.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">アップロードされたファイルはありません</p>
+                )}
+              </div>
+            </div>
+
+            {/* AIアシスタント */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">💬</span>
                 <h3 className="text-xl font-bold text-gray-800">AIアシスタント</h3>
               </div>
-              <div className="h-64 overflow-y-auto mb-4 space-y-3 custom-scrollbar">
+              <div className="h-48 overflow-y-auto mb-4 space-y-3 custom-scrollbar">
                 {chatMessages.map(message => (
                   <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs px-4 py-2 rounded-lg ${
@@ -470,10 +465,8 @@ graph TD
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* 第4カラム: 学習メモ作成 */}
-          <div className="lg:col-span-1">
+            {/* 学習メモ作成 */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -509,7 +502,7 @@ graph TD
                   value={noteContent}
                   onChange={(e) => setNoteContent(e.target.value)}
                   placeholder={getPlaceholder(noteMode)}
-                  className="w-full h-48 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
               </div>
 
@@ -535,7 +528,7 @@ graph TD
               </div>
 
               {noteMode === 'md' && noteContent && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg max-h-32 overflow-y-auto custom-scrollbar">
                   <h4 className="font-semibold text-gray-800 mb-2">プレビュー:</h4>
                   <div 
                     ref={noteContainerRef}
