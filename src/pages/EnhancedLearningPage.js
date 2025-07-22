@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import LessonVideoPlayer from '../components/LessonVideoPlayer';
 
 const EnhancedLearningPage = () => {
   const navigate = useNavigate();
@@ -9,27 +10,15 @@ const EnhancedLearningPage = () => {
   const [currentLesson, setCurrentLesson] = useState(1);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
-  const [videoLoading, setVideoLoading] = useState(true);
-  const [videoError, setVideoError] = useState(false);
   const [textContent, setTextContent] = useState('');
   const [textLoading, setTextLoading] = useState(true);
   const [displayMode, setDisplayMode] = useState('text'); // 'text' or 'markdown'
-  // 動画時間機能を削除
   const [textScrollPosition, setTextScrollPosition] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const textContainerRef = useRef(null);
-  const videoRef = useRef(null);
 
-  // YouTube動画IDを抽出する関数
-  const getYouTubeVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      return match[2];
-    }
-    return null;
-  };
+
 
   // URLパラメータからレッスン番号を取得
   useEffect(() => {
@@ -38,8 +27,6 @@ const EnhancedLearningPage = () => {
       const lessonNumber = parseInt(lessonParam);
       if (lessonNumber >= 1 && lessonNumber <= 6) {
         setCurrentLesson(lessonNumber);
-        setVideoLoading(true);
-        setVideoError(false);
         setTextLoading(true);
       }
     }
@@ -50,37 +37,37 @@ const EnhancedLearningPage = () => {
     1: {
       title: "第1回　Windows11の基本操作とソフトウェアの活用",
       videoUrl: "https://www.youtube.com/watch?v=j4yNkF1w6L8",
-      textFile: "/doc/text-samples/ITリテラシー・AIの基本1Windows 11の基本操作とソフトウェアの活用.md",
+      textFile: "/reactStudySphereMockup/doc/text-samples/lesson1.md",
       description: "コンピュータの基本構造とWindows 11の操作方法を学びます"
     },
     2: {
       title: "第2回　インターネットの基礎と安全な利用",
       videoUrl: "https://www.youtube.com/watch?v=AtDQST1SQ5A",
-      textFile: "/doc/text-samples/ITリテラシー・AIの基本1Windows 11の基本操作とソフトウェアの活用.md",
+      textFile: "/reactStudySphereMockup/doc/text-samples/lesson1.md",
       description: "インターネットの仕組みと安全な利用方法を学びます"
     },
     3: {
       title: "第3回　AIの仕組みや基本用語を学ぶ",
       videoUrl: "https://www.youtube.com/watch?v=QkJCPOWwdwI",
-      textFile: "/doc/text-samples/ITリテラシー・AIの基本1Windows 11の基本操作とソフトウェアの活用.md",
+      textFile: "/reactStudySphereMockup/doc/text-samples/lesson1.md",
       description: "AIの基本概念と用語について理解を深めます"
     },
     4: {
       title: "第4回　AIの活用例と実践体験",
       videoUrl: "https://www.youtube.com/watch?v=75UHkx4WZh0",
-      textFile: "/doc/text-samples/ITリテラシー・AIの基本1Windows 11の基本操作とソフトウェアの活用.md",
+      textFile: "/reactStudySphereMockup/doc/text-samples/lesson1.md",
       description: "実際のAI活用事例を体験します"
     },
     5: {
       title: "第5回　簡単なプログラミングとAIアシスタント活用",
       videoUrl: "https://www.youtube.com/watch?v=vQqMk3gFZJ0",
-      textFile: "/doc/text-samples/ITリテラシー・AIの基本1Windows 11の基本操作とソフトウェアの活用.md",
+      textFile: "/reactStudySphereMockup/doc/text-samples/lesson1.md",
       description: "プログラミングの基礎とAIアシスタントの活用方法を学びます"
     },
     6: {
       title: "第6回　AIの活用例と実践体験",
       videoUrl: "",
-      textFile: "/doc/text-samples/ITリテラシー・AIの基本1Windows 11の基本操作とソフトウェアの活用.md",
+      textFile: "/reactStudySphereMockup/doc/text-samples/lesson1.md",
       description: "総合的なAI活用の実践演習を行います"
     }
   };
@@ -109,8 +96,6 @@ const EnhancedLearningPage = () => {
 
     loadTextContent();
   }, [currentLessonData.textFile]);
-
-  // 動画時間機能を削除 - シンプルなiframe実装に変更
 
   // チャットメッセージ送信
   const handleSendMessage = () => {
@@ -141,14 +126,9 @@ const EnhancedLearningPage = () => {
   const changeLesson = (lessonNumber) => {
     setCurrentLesson(lessonNumber);
     setChatMessages([]);
-    setVideoLoading(true);
-    setVideoError(false);
     setTextLoading(true);
     setTextScrollPosition(0);
   };
-
-  // テキスト表示モード切り替え・ボタン削除
-  // PDFダウンロードボタンを追加
 
   // MarkdownをHTMLに変換して表示する関数 - react-markdownを使用
   const renderMarkdown = (markdown) => {
@@ -404,12 +384,11 @@ const EnhancedLearningPage = () => {
         </div>
       </div>
 
-      {/* メインコンテンツ */}
+      {/* メインコンテンツ - 3カラムレイアウト */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* 左カラム: 動画 + テキスト */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* 動画セクション */}
+          {/* 左カラム: 動画 */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">🎥</span>
@@ -421,26 +400,7 @@ const EnhancedLearningPage = () => {
                     <p className="font-semibold text-blue-800 mb-1">{currentLessonData.title}</p>
                     <p className="text-sm text-blue-600">URL: {currentLessonData.videoUrl}</p>
                   </div>
-                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                    {videoLoading && (
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">動画を読み込み中...</p>
-                      </div>
-                    )}
-                    {videoError && (
-                      <div className="text-center text-red-600">
-                        <p>動画の読み込みに失敗しました。</p>
-                        <p className="text-sm mt-2">URL: {currentLessonData.videoUrl}</p>
-                      </div>
-                    )}
-                    {!videoLoading && !videoError && (
-                      <div className="text-center text-gray-600">
-                        <p>動画プレイヤーがここに表示されます</p>
-                        <p className="text-sm mt-2">YouTube動画: {currentLessonData.videoUrl}</p>
-                      </div>
-                    )}
-                  </div>
+                  <LessonVideoPlayer videoUrl={currentLessonData.videoUrl} title={currentLessonData.title} />
                 </>
               ) : (
                 <div className="text-center py-8 text-gray-600">
@@ -448,8 +408,10 @@ const EnhancedLearningPage = () => {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* テキストセクション */}
+          {/* 中央カラム: テキスト */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -503,9 +465,8 @@ const EnhancedLearningPage = () => {
             </div>
           </div>
 
-          {/* 右カラム: チャット + アップロード */}
-          <div className="space-y-6">
-            {/* チャット */}
+          {/* 右カラム: AIチャット */}
+          <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">💬</span>
@@ -544,7 +505,7 @@ const EnhancedLearningPage = () => {
             </div>
 
             {/* アップロード済みファイル */}
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-white rounded-2xl shadow-xl p-6 mt-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">📁</span>
                 <h3 className="text-xl font-bold text-gray-800">アップロード済みファイル</h3>
