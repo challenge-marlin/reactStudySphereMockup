@@ -12,7 +12,6 @@ const EnhancedLearningPage = () => {
   const [chatInput, setChatInput] = useState('');
   const [textContent, setTextContent] = useState('');
   const [textLoading, setTextLoading] = useState(true);
-  const [displayMode, setDisplayMode] = useState('text'); // 'text' or 'markdown'
   const [textScrollPosition, setTextScrollPosition] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -413,33 +412,9 @@ const EnhancedLearningPage = () => {
           {/* 中央カラム: テキスト */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📄</span>
-                  <h3 className="text-xl font-bold text-gray-800">教材テキスト</h3>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      displayMode === 'text'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                    onClick={() => setDisplayMode('text')}
-                  >
-                    テキスト
-                  </button>
-                  <button
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      displayMode === 'markdown'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                    onClick={() => setDisplayMode('markdown')}
-                  >
-                    Markdown
-                  </button>
-                </div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">📄</span>
+                <h3 className="text-xl font-bold text-gray-800">教材テキスト</h3>
               </div>
               <div className="bg-gray-50 rounded-lg p-4 h-[70vh] overflow-y-auto custom-scrollbar">
                 {textLoading ? (
@@ -452,13 +427,7 @@ const EnhancedLearningPage = () => {
                     ref={textContainerRef}
                     className="prose prose-blue max-w-none"
                   >
-                    {displayMode === 'markdown' ? (
-                      renderMarkdown(textContent)
-                    ) : (
-                      <pre className="whitespace-pre-wrap text-gray-700 font-sans text-sm leading-relaxed">
-                        {textContent}
-                      </pre>
-                    )}
+                    {renderMarkdown(textContent)}
                   </div>
                 )}
               </div>
