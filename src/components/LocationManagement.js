@@ -196,6 +196,8 @@ const LocationManagement = () => {
   const [newFacilityType, setNewFacilityType] = useState('');
   const [editingLocation, setEditingLocation] = useState(null);
   const [editValues, setEditValues] = useState({});
+  const [editingFacilityData, setEditingFacilityData] = useState(null);
+  const [selectedFacility, setSelectedFacility] = useState(null);
 
   // ソート機能
   const handleSort = (key) => {
@@ -392,45 +394,71 @@ const LocationManagement = () => {
 
   // 事業所詳細表示
   const handleViewFacilityDetail = (facility) => {
-    // TODO: 事業所詳細モーダルを実装
-    console.log('事業所詳細:', facility);
+    setSelectedFacility(facility);
   };
 
   // 事業所編集
   const handleEditFacility = (facilityId) => {
-    // TODO: 事業所編集機能を実装
-    console.log('事業所を編集:', facilityId);
+    const facility = facilities.find(f => f.id === facilityId);
+    if (facility) {
+      setEditingFacilityData({ ...facility });
+      setSelectedFacility(facility);
+    }
   };
 
   const handleSaveFacility = () => {
-    // TODO: 事業所保存機能を実装
-    console.log('事業所を保存');
+    if (editingFacilityData) {
+      setFacilities(prev => prev.map(f => 
+        f.id === editingFacilityData.id ? editingFacilityData : f
+      ));
+      setEditingFacilityData(null);
+      setSelectedFacility(null);
+    }
   };
 
   const handleCancelFacilityEdit = () => {
-    // TODO: 事業所編集キャンセル機能を実装
-    console.log('事業所編集をキャンセル');
+    setEditingFacilityData(null);
+    setSelectedFacility(null);
   };
 
   const addContactFieldToEdit = () => {
-    // TODO: 編集時の連絡先フィールド追加機能を実装
-    console.log('連絡先フィールドを追加');
+    if (editingFacilityData) {
+      setEditingFacilityData({
+        ...editingFacilityData,
+        contacts: [...editingFacilityData.contacts, { name: '', email: '' }]
+      });
+    }
   };
 
   const removeContactFieldFromEdit = (index) => {
-    // TODO: 編集時の連絡先フィールド削除機能を実装
-    console.log('連絡先フィールドを削除:', index);
+    if (editingFacilityData && editingFacilityData.contacts.length > 1) {
+      const newContacts = editingFacilityData.contacts.filter((_, i) => i !== index);
+      setEditingFacilityData({
+        ...editingFacilityData,
+        contacts: newContacts
+      });
+    }
   };
 
   const updateContactInEdit = (index, field, value) => {
-    // TODO: 編集時の連絡先更新機能を実装
-    console.log('連絡先を更新:', index, field, value);
+    if (editingFacilityData) {
+      const newContacts = [...editingFacilityData.contacts];
+      newContacts[index] = { ...newContacts[index], [field]: value };
+      setEditingFacilityData({
+        ...editingFacilityData,
+        contacts: newContacts
+      });
+    }
   };
 
   // 拠点削除
   const handleDeleteLocation = (locationId) => {
-    // TODO: 拠点削除機能を実装
-    console.log('拠点を削除:', locationId);
+    if (window.confirm('この拠点を削除しますか？')) {
+      setFacilities(prev => prev.map(facility => ({
+        ...facility,
+        locations: facility.locations.filter(location => location.id !== locationId)
+      })));
+    }
   };
 
   const totalLocations = facilities.reduce((sum, facility) => sum + facility.locations.length, 0);
