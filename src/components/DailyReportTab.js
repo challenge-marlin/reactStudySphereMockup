@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './DailyReportTab.css';
 
 const DailyReportTab = ({ student, reports = [], onSave, onEdit, onDelete, onDownloadPDF }) => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -204,450 +203,513 @@ const DailyReportTab = ({ student, reports = [], onSave, onEdit, onDelete, onDow
   const currentReport = (reports || []).find(r => r.date === selectedDate);
 
   return (
-    <div className="daily-report-tab">
-      <div className="hs-tab-header">
-        <h3>📝 日次報告書管理</h3>
-        <div className="header-actions">
-          <input
-            type="text"
-            placeholder="日付または内容で検索..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <button 
-            className="hs-create-btn"
-            onClick={handleCreateNew}
-          >
-            ➕ 新規作成
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* ヘッダー */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">📝 日次報告書管理</h3>
+              <p className="text-gray-600">在宅学習者の日次記録と支援内容の管理</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="日付または内容で検索..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <button 
+                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={handleCreateNew}
+              >
+                ➕ 新規作成
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="daily-report-content">
-        {/* 生徒基本情報 */}
-        {student && (
-          <div className="student-info-card">
-            <div className="student-header">
-              <div className="student-info">
-                <h4>{student.name}</h4>
-                <span className="course">{student.class}</span>
-                <div className="student-tags">
-                  {student.tags?.map((tag, index) => (
-                    <span key={index} className="tag">{tag}</span>
+        <div className="space-y-6">
+          {/* 生徒基本情報 */}
+          {student && (
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                    {student.name.charAt(0)}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-bold text-gray-800 mb-1">{student.name}</h4>
+                    <span className="text-gray-600 font-medium">{student.class}</span>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {student.tags?.map((tag, index) => (
+                        <span key={index} className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    currentReport?.healthCondition === 'good' ? 'bg-green-100 text-green-800' :
+                    currentReport?.healthCondition === 'normal' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {currentReport?.healthCondition === 'good' ? '良好' : 
+                     currentReport?.healthCondition === 'normal' ? '普通' : '悪い'}
+                  </span>
+                  <div className="text-sm text-gray-500 mt-1">
+                    {currentReport?.temperature || '36.2'}℃
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 日付選択とクイックアクセス */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium text-gray-700">日付選択:</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => handleDateChange(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => handleDateChange(new Date().toISOString().split('T')[0])}
+                  className="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm font-medium transition-all duration-200"
+                >
+                  今日
+                </button>
+                <button 
+                  onClick={() => {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    handleDateChange(yesterday.toISOString().split('T')[0]);
+                  }}
+                  className="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm font-medium transition-all duration-200"
+                >
+                  昨日
+                </button>
+                <button 
+                  onClick={() => {
+                    const lastWeek = new Date();
+                    lastWeek.setDate(lastWeek.getDate() - 7);
+                    handleDateChange(lastWeek.toISOString().split('T')[0]);
+                  }}
+                  className="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm font-medium transition-all duration-200"
+                >
+                  1週間前
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 写真セクション */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <h5 className="text-lg font-bold text-gray-800 mb-4">📸 作業内容写真（30分ごと）</h5>
+            <div className="min-h-[200px]">
+              {photoLoading ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mb-4"></div>
+                  <span className="text-gray-600">写真を読み込み中...</span>
+                </div>
+              ) : studentPhotos.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {studentPhotos.map((photo) => (
+                    <div key={photo.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                      <img 
+                        src={photo.url} 
+                        alt={photo.description}
+                        className="w-full h-32 object-cover"
+                      />
+                      <div className="p-3">
+                        <div className="text-sm font-medium text-gray-800 mb-1">
+                          {new Date(photo.timestamp).toLocaleTimeString('ja-JP', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                        <div className="text-xs text-gray-600">{photo.description}</div>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-              <div className="student-status">
-                <span className={`health-badge ${currentReport?.healthCondition || 'good'}`}>
-                  {currentReport?.healthCondition === 'good' ? '良好' : 
-                   currentReport?.healthCondition === 'normal' ? '普通' : '悪い'}
-                </span>
-                <span className="temperature">{currentReport?.temperature || '36.2'}℃</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 日付選択とクイックアクセス */}
-        <div className="date-selection">
-          <div className="date-input-group">
-            <label>日付選択:</label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => handleDateChange(e.target.value)}
-              className="date-input"
-            />
-          </div>
-          <div className="quick-dates">
-            <button onClick={() => handleDateChange(new Date().toISOString().split('T')[0])}>
-              今日
-            </button>
-            <button onClick={() => {
-              const yesterday = new Date();
-              yesterday.setDate(yesterday.getDate() - 1);
-              handleDateChange(yesterday.toISOString().split('T')[0]);
-            }}>
-              昨日
-            </button>
-            <button onClick={() => {
-              const lastWeek = new Date();
-              lastWeek.setDate(lastWeek.getDate() - 7);
-              handleDateChange(lastWeek.toISOString().split('T')[0]);
-            }}>
-              1週間前
-            </button>
-          </div>
-        </div>
-
-        {/* 写真セクション */}
-        <div className="photo-section">
-          <h5>📸 作業内容写真（30分ごと）</h5>
-          <div className="photo-container">
-            {photoLoading ? (
-              <div className="photo-loading">
-                <div className="loading-spinner"></div>
-                <span>写真を読み込み中...</span>
-              </div>
-            ) : studentPhotos.length > 0 ? (
-              <div className="photo-gallery">
-                {studentPhotos.map((photo) => (
-                  <div key={photo.id} className="photo-item">
-                    <img 
-                      src={photo.url} 
-                      alt={photo.description}
-                      className="student-photo"
-                    />
-                    <div className="photo-info">
-                      <span className="photo-time">
-                        {new Date(photo.timestamp).toLocaleTimeString('ja-JP', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </span>
-                      <span className="photo-description">{photo.description}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-photos">
-                <span className="no-photos-icon">📷</span>
-                <span className="no-photos-text">この日の写真はありません</span>
-                <span className="no-photos-subtext">専用アプリから30分ごとに自動取得されます</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 編集フォームまたは表示 */}
-        <div className="report-form-section">
-          {isEditing ? (
-            <div className="edit-form">
-              <h4>{selectedDate} の日次報告書</h4>
-              
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>体温</label>
-                  <input
-                    type="text"
-                    value={editingReport.temperature}
-                    onChange={(e) => setEditingReport(prev => ({ ...prev, temperature: e.target.value }))}
-                    placeholder="例: 36.2"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>体調</label>
-                  <select
-                    value={editingReport.healthCondition}
-                    onChange={(e) => setEditingReport(prev => ({ ...prev, healthCondition: e.target.value }))}
-                  >
-                    <option value="good">良好</option>
-                    <option value="normal">普通</option>
-                    <option value="bad">悪い</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>体調備考</label>
-                <textarea
-                  value={editingReport.healthNotes}
-                  onChange={(e) => setEditingReport(prev => ({ ...prev, healthNotes: e.target.value }))}
-                  placeholder="体調についての詳細を記載してください"
-                  rows="2"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>本日の作業内容（予定）</label>
-                <textarea
-                  value={editingReport.plannedWork}
-                  onChange={(e) => setEditingReport(prev => ({ ...prev, plannedWork: e.target.value }))}
-                  placeholder="今日予定している作業内容を記載してください"
-                  rows="2"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>作業実績 *</label>
-                <textarea
-                  value={editingReport.actualWork}
-                  onChange={(e) => setEditingReport(prev => ({ ...prev, actualWork: e.target.value }))}
-                  placeholder="実際に行った作業内容を記載してください"
-                  rows="3"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>感想・次回目標 *</label>
-                <textarea
-                  value={editingReport.thoughts}
-                  onChange={(e) => setEditingReport(prev => ({ ...prev, thoughts: e.target.value }))}
-                  placeholder="今日の感想と次回の目標を記載してください"
-                  rows="3"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>次回の目標</label>
-                <textarea
-                  value={editingReport.nextGoal}
-                  onChange={(e) => setEditingReport(prev => ({ ...prev, nextGoal: e.target.value }))}
-                  placeholder="次回の具体的な目標を記載してください"
-                  rows="2"
-                />
-              </div>
-
-              <div className="form-actions">
-                <button className="save-btn" onClick={handleSave}>
-                  💾 保存
-                </button>
-                <button className="cancel-btn" onClick={handleCancel}>
-                  キャンセル
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="report-display">
-              {currentReport ? (
-                <div className="report-card">
-                  <div className="report-header">
-                    <h4>{currentReport.date} の日次報告書</h4>
-                    <div className="report-actions">
-                      <button 
-                        className="edit-btn"
-                        onClick={() => handleStartEdit(currentReport)}
-                      >
-                        ✏️ 編集
-                      </button>
-                      <button 
-                        className="delete-btn"
-                        onClick={() => handleDelete(currentReport.id || currentReport.date)}
-                      >
-                        🗑️ 削除
-                      </button>
-                      <button 
-                        className="pdf-btn"
-                        onClick={() => onDownloadPDF && onDownloadPDF(currentReport)}
-                        title="PDFでダウンロード"
-                      >
-                        📄 PDF
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="report-content">
-                    <div className="report-section">
-                      <label>体温:</label>
-                      <span>{currentReport.temperature}℃</span>
-                    </div>
-                    <div className="report-section">
-                      <label>体調:</label>
-                      <span className={`health-badge ${currentReport.healthCondition}`}>
-                        {currentReport.healthCondition === 'good' ? '良好' : 
-                         currentReport.healthCondition === 'normal' ? '普通' : '悪い'}
-                      </span>
-                    </div>
-                    {currentReport.healthNotes && (
-                      <div className="report-section">
-                        <label>体調備考:</label>
-                        <span>{currentReport.healthNotes}</span>
-                      </div>
-                    )}
-                    <div className="report-section">
-                      <label>本日の作業内容（予定）:</label>
-                      <span>{currentReport.plannedWork}</span>
-                    </div>
-                    <div className="report-section">
-                      <label>作業実績:</label>
-                      <span>{currentReport.actualWork}</span>
-                    </div>
-                    <div className="report-section">
-                      <label>感想・次回目標:</label>
-                      <span>{currentReport.thoughts}</span>
-                    </div>
-                    {currentReport.nextGoal && (
-                      <div className="report-section">
-                        <label>次回の目標:</label>
-                        <span>{currentReport.nextGoal}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
               ) : (
-                <div className="no-report">
-                  <p>{selectedDate} の日次報告書はまだ作成されていません。</p>
-                  <button 
-                    className="create-btn"
-                    onClick={handleCreateNew}
-                  >
-                    📝 新規作成
-                  </button>
+                <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                  <span className="text-4xl mb-2">📷</span>
+                  <span className="font-medium mb-1">この日の写真はありません</span>
+                  <span className="text-sm">専用アプリから30分ごとに自動取得されます</span>
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* 指導員記録セクション */}
-        <div className="instructor-record-form">
-          <h5>指導員記録</h5>
-          <div className="form-row">
-            <div className="form-group">
-              <label>開始時間</label>
-              <input
-                type="time"
-                value={instructorRecord.startTime}
-                onChange={(e) => updateInstructorRecord('startTime', e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>終了時間</label>
-              <input
-                type="time"
-                value={instructorRecord.endTime}
-                onChange={(e) => updateInstructorRecord('endTime', e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>支援方法</label>
-              <select
-                value={instructorRecord.supportMethod}
-                onChange={(e) => updateInstructorRecord('supportMethod', e.target.value)}
-              >
-                <option value="電話">電話</option>
-                <option value="訪問">訪問</option>
-                <option value="その他">その他</option>
-              </select>
-            </div>
-          </div>
-          
-          <div className="form-group">
-            <label>
-              作業・訓練内容
-              <button 
-                className="ai-assist-btn"
-                onClick={() => updateInstructorRecord('workContent', generateAIAssist('workContent'))}
-                title="AIアシスト"
-              >
-                🤖 AI
-              </button>
-            </label>
-            <textarea
-              value={instructorRecord.workContent}
-              onChange={(e) => updateInstructorRecord('workContent', e.target.value)}
-              placeholder="実施した作業や訓練の内容を記載してください"
-              rows="3"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>
-              支援内容（1日2回以上）
-              <button 
-                className="ai-assist-btn"
-                onClick={() => updateInstructorRecord('supportContent', generateAIAssist('supportContent'))}
-                title="AIアシスト"
-              >
-                🤖 AI
-              </button>
-            </label>
-            <textarea
-              value={instructorRecord.supportContent}
-              onChange={(e) => updateInstructorRecord('supportContent', e.target.value)}
-              placeholder="具体的な支援内容を時間順に記載してください"
-              rows="4"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>
-              対象者の心身の状況及びそれに対する助言の内容
-              <button 
-                className="ai-assist-btn"
-                onClick={() => updateInstructorRecord('healthStatus', generateAIAssist('healthStatus'))}
-                title="AIアシスト"
-              >
-                🤖 AI
-              </button>
-            </label>
-            <textarea
-              value={instructorRecord.healthStatus}
-              onChange={(e) => updateInstructorRecord('healthStatus', e.target.value)}
-              placeholder="体調や精神状態、それに対する助言を記載してください"
-              rows="3"
-            />
-          </div>
-          
-          <div className="record-actions">
-            <button 
-              className="pdf-btn"
-              onClick={() => alert('PDF出力機能（モックアップ）')}
-              title="PDF出力"
-            >
-              📄 PDF出力
-            </button>
-            <button 
-              className="save-btn"
-              onClick={saveInstructorRecord}
-            >
-              💾 指導員記録を保存
-            </button>
-          </div>
-        </div>
-
-        {/* 過去の報告書一覧 */}
-        <div className="past-reports">
-          <h4>📚 過去の報告書一覧</h4>
-          <div className="reports-list">
-            {filteredReports.length === 0 ? (
-              <div className="no-reports">
-                <p>過去の報告書が見つかりません。</p>
-              </div>
-            ) : (
-              filteredReports.map((report, index) => (
-                <div key={report.id || `report-${index}`} className="past-report-item">
-                  <div className="report-date">{report.date}</div>
-                  <div className="report-summary">
-                    <span className="health-indicator">
-                      {report.healthCondition === 'good' ? '🟢' : 
-                       report.healthCondition === 'normal' ? '🟡' : '🔴'}
-                    </span>
-                    <span className="work-summary">
-                      {report.actualWork && report.actualWork.length > 50 
-                        ? report.actualWork.substring(0, 50) + '...' 
-                        : report.actualWork || '作業内容なし'}
-                    </span>
+          {/* 編集フォームまたは表示 */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            {isEditing ? (
+              <div className="space-y-6">
+                <h4 className="text-xl font-bold text-gray-800">{selectedDate} の日次報告書</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">体温</label>
+                    <input
+                      type="text"
+                      value={editingReport.temperature}
+                      onChange={(e) => setEditingReport(prev => ({ ...prev, temperature: e.target.value }))}
+                      placeholder="例: 36.2"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
                   </div>
-                  <div className="report-actions">
-                    <button 
-                      className="view-btn"
-                      onClick={() => handleDateChange(report.date)}
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">体調</label>
+                    <select
+                      value={editingReport.healthCondition}
+                      onChange={(e) => setEditingReport(prev => ({ ...prev, healthCondition: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     >
-                      表示
-                    </button>
-                    <button 
-                      className="edit-btn"
-                      onClick={() => handleStartEdit(report)}
-                    >
-                      編集
-                    </button>
-                    <button 
-                      className="pdf-btn"
-                      onClick={() => onDownloadPDF && onDownloadPDF(report)}
-                      title="PDFでダウンロード"
-                    >
-                      📄
-                    </button>
+                      <option value="good">良好</option>
+                      <option value="normal">普通</option>
+                      <option value="bad">悪い</option>
+                    </select>
                   </div>
                 </div>
-              ))
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">体調備考</label>
+                  <textarea
+                    value={editingReport.healthNotes}
+                    onChange={(e) => setEditingReport(prev => ({ ...prev, healthNotes: e.target.value }))}
+                    placeholder="体調についての詳細を記載してください"
+                    rows="2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">本日の作業内容（予定）</label>
+                  <textarea
+                    value={editingReport.plannedWork}
+                    onChange={(e) => setEditingReport(prev => ({ ...prev, plannedWork: e.target.value }))}
+                    placeholder="今日予定している作業内容を記載してください"
+                    rows="2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">作業実績 *</label>
+                  <textarea
+                    value={editingReport.actualWork}
+                    onChange={(e) => setEditingReport(prev => ({ ...prev, actualWork: e.target.value }))}
+                    placeholder="実際に行った作業内容を記載してください"
+                    rows="3"
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">感想・次回目標 *</label>
+                  <textarea
+                    value={editingReport.thoughts}
+                    onChange={(e) => setEditingReport(prev => ({ ...prev, thoughts: e.target.value }))}
+                    placeholder="今日の感想と次回の目標を記載してください"
+                    rows="3"
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">次回の目標</label>
+                  <textarea
+                    value={editingReport.nextGoal}
+                    onChange={(e) => setEditingReport(prev => ({ ...prev, nextGoal: e.target.value }))}
+                    placeholder="次回の具体的な目標を記載してください"
+                    rows="2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-6 border-t border-gray-200">
+                  <button 
+                    className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200"
+                    onClick={handleSave}
+                  >
+                    💾 保存
+                  </button>
+                  <button 
+                    className="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all duration-200"
+                    onClick={handleCancel}
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                {currentReport ? (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xl font-bold text-gray-800">{currentReport.date} の日次報告書</h4>
+                      <div className="flex gap-2">
+                        <button 
+                          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200"
+                          onClick={() => handleStartEdit(currentReport)}
+                        >
+                          ✏️ 編集
+                        </button>
+                        <button 
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all duration-200"
+                          onClick={() => handleDelete(currentReport.id || currentReport.date)}
+                        >
+                          🗑️ 削除
+                        </button>
+                        <button 
+                          className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200"
+                          onClick={() => onDownloadPDF && onDownloadPDF(currentReport)}
+                          title="PDFでダウンロード"
+                        >
+                          📄 PDF
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex justify-between">
+                          <span className="font-medium text-gray-700">体温:</span>
+                          <span className="text-gray-800">{currentReport.temperature}℃</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium text-gray-700">体調:</span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            currentReport.healthCondition === 'good' ? 'bg-green-100 text-green-800' :
+                            currentReport.healthCondition === 'normal' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {currentReport.healthCondition === 'good' ? '良好' : 
+                             currentReport.healthCondition === 'normal' ? '普通' : '悪い'}
+                          </span>
+                        </div>
+                        {currentReport.healthNotes && (
+                          <div>
+                            <span className="font-medium text-gray-700">体調備考:</span>
+                            <p className="mt-1 text-gray-800">{currentReport.healthNotes}</p>
+                          </div>
+                        )}
+                        <div>
+                          <span className="font-medium text-gray-700">本日の作業内容（予定）:</span>
+                          <p className="mt-1 text-gray-800">{currentReport.plannedWork}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <span className="font-medium text-gray-700">作業実績:</span>
+                          <p className="mt-1 text-gray-800">{currentReport.actualWork}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700">感想・次回目標:</span>
+                          <p className="mt-1 text-gray-800">{currentReport.thoughts}</p>
+                        </div>
+                        {currentReport.nextGoal && (
+                          <div>
+                            <span className="font-medium text-gray-700">次回の目標:</span>
+                            <p className="mt-1 text-gray-800">{currentReport.nextGoal}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600 mb-4">{selectedDate} の日次報告書はまだ作成されていません。</p>
+                    <button 
+                      className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200"
+                      onClick={handleCreateNew}
+                    >
+                      📝 新規作成
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
+          </div>
+
+          {/* 指導員記録セクション */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <h5 className="text-lg font-bold text-gray-800 mb-6">指導員記録</h5>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">開始時間</label>
+                <input
+                  type="time"
+                  value={instructorRecord.startTime}
+                  onChange={(e) => updateInstructorRecord('startTime', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">終了時間</label>
+                <input
+                  type="time"
+                  value={instructorRecord.endTime}
+                  onChange={(e) => updateInstructorRecord('endTime', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">支援方法</label>
+                <select
+                  value={instructorRecord.supportMethod}
+                  onChange={(e) => updateInstructorRecord('supportMethod', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="電話">電話</option>
+                  <option value="訪問">訪問</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  作業・訓練内容
+                  <button 
+                    className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-all duration-200"
+                    onClick={() => updateInstructorRecord('workContent', generateAIAssist('workContent'))}
+                    title="AIアシスト"
+                  >
+                    🤖 AI
+                  </button>
+                </label>
+                <textarea
+                  value={instructorRecord.workContent}
+                  onChange={(e) => updateInstructorRecord('workContent', e.target.value)}
+                  placeholder="実施した作業や訓練の内容を記載してください"
+                  rows="3"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  支援内容（1日2回以上）
+                  <button 
+                    className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-all duration-200"
+                    onClick={() => updateInstructorRecord('supportContent', generateAIAssist('supportContent'))}
+                    title="AIアシスト"
+                  >
+                    🤖 AI
+                  </button>
+                </label>
+                <textarea
+                  value={instructorRecord.supportContent}
+                  onChange={(e) => updateInstructorRecord('supportContent', e.target.value)}
+                  placeholder="具体的な支援内容を時間順に記載してください"
+                  rows="4"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  対象者の心身の状況及びそれに対する助言の内容
+                  <button 
+                    className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-all duration-200"
+                    onClick={() => updateInstructorRecord('healthStatus', generateAIAssist('healthStatus'))}
+                    title="AIアシスト"
+                  >
+                    🤖 AI
+                  </button>
+                </label>
+                <textarea
+                  value={instructorRecord.healthStatus}
+                  onChange={(e) => updateInstructorRecord('healthStatus', e.target.value)}
+                  placeholder="体調や精神状態、それに対する助言を記載してください"
+                  rows="3"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-4 pt-6 border-t border-gray-200">
+              <button 
+                className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200"
+                onClick={() => alert('PDF出力機能（モックアップ）')}
+                title="PDF出力"
+              >
+                📄 PDF出力
+              </button>
+              <button 
+                className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200"
+                onClick={saveInstructorRecord}
+              >
+                💾 指導員記録を保存
+              </button>
+            </div>
+          </div>
+
+          {/* 過去の報告書一覧 */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <h4 className="text-xl font-bold text-gray-800 mb-6">📚 過去の報告書一覧</h4>
+            <div className="space-y-4">
+              {filteredReports.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>過去の報告書が見つかりません。</p>
+                </div>
+              ) : (
+                filteredReports.map((report, index) => (
+                  <div key={report.id || `report-${index}`} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-200">
+                    <div className="flex items-center gap-4">
+                      <div className="text-sm font-medium text-gray-700">{report.date}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">
+                          {report.healthCondition === 'good' ? '🟢' : 
+                           report.healthCondition === 'normal' ? '🟡' : '🔴'}
+                        </span>
+                        <span className="text-sm text-gray-600 max-w-md truncate">
+                          {report.actualWork && report.actualWork.length > 50 
+                            ? report.actualWork.substring(0, 50) + '...' 
+                            : report.actualWork || '作業内容なし'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button 
+                        className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded text-sm font-medium transition-all duration-200"
+                        onClick={() => handleDateChange(report.date)}
+                      >
+                        表示
+                      </button>
+                      <button 
+                        className="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded text-sm font-medium transition-all duration-200"
+                        onClick={() => handleStartEdit(report)}
+                      >
+                        編集
+                      </button>
+                      <button 
+                        className="px-3 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded text-sm font-medium transition-all duration-200"
+                        onClick={() => onDownloadPDF && onDownloadPDF(report)}
+                        title="PDFでダウンロード"
+                      >
+                        📄
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

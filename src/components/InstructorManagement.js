@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './InstructorManagement.css';
 
 const InstructorManagement = () => {
   const [instructors, setInstructors] = useState([
@@ -203,27 +202,30 @@ const InstructorManagement = () => {
 
   const handleAddInstructor = (e) => {
     e.preventDefault();
-    const instructorId = `teacher${String(instructors.length + 1).padStart(3, '0')}`;
     
-    const selectedFacility = facilities.find(f => f.id === newInstructor.facilityId);
-    const selectedLocation = selectedFacility?.locations.find(l => l.id === newInstructor.locationId);
-    
-    const instructor = {
-      id: instructorId,
+    const newInstructorData = {
+      id: `instructor${Date.now()}`,
       ...newInstructor,
-      facilityName: selectedFacility?.name || '',
-      locationName: selectedLocation?.name || '',
+      facilityName: facilities.find(f => f.id === newInstructor.facilityId)?.name || '',
+      locationName: getAvailableLocations().find(l => l.id === newInstructor.locationId)?.name || '',
       studentsCount: 0,
       coursesCount: 0,
       status: 'active',
-      lastLogin: new Date().toISOString().split('T')[0]
+      lastLogin: '-',
+      joinDate: new Date().toISOString().split('T')[0],
+      passwordResetRequired: false
     };
     
-    setInstructors([...instructors, instructor]);
-    setNewInstructor({ name: '', email: '', department: '', facilityId: '', locationId: '', password: '' });
+    setInstructors([...instructors, newInstructorData]);
+    setNewInstructor({
+      name: '',
+      email: '',
+      department: '',
+      facilityId: '',
+      locationId: '',
+      password: ''
+    });
     setShowAddForm(false);
-    
-          alert(`指導員が追加されました！\nログイン情報:\nID: ${instructorId}\nパスワード: ${newInstructor.password}\n所属: ${selectedFacility?.name} - ${selectedLocation?.name}`);
   };
 
   const handleInputChange = (e) => {
@@ -235,19 +237,80 @@ const InstructorManagement = () => {
   };
 
   const toggleInstructorStatus = (instructorId) => {
-    setInstructors(instructors.map(instructor => 
-      instructor.id === instructorId 
+    setInstructors(instructors.map(instructor =>
+      instructor.id === instructorId
         ? { ...instructor, status: instructor.status === 'active' ? 'inactive' : 'active' }
         : instructor
     ));
   };
 
+  // ソート機能を追加
+  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortedInstructors = () => {
+    const filtered = getFilteredInstructors();
+    return [...filtered].sort((a, b) => {
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
+      
+      if (sortConfig.key === 'status') {
+        aValue = getStatusLabel(aValue);
+        bValue = getStatusLabel(bValue);
+      }
+      
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'active':
+        return 'アクティブ';
+      case 'inactive':
+        return '非アクティブ';
+      case 'password_reset_required':
+        return 'パスワード変更要求';
+      default:
+        return status;
+    }
+  };
+
+  const handleEditInstructor = (instructor) => {
+    setSelectedInstructor(instructor);
+    setNewInstructor({
+      name: instructor.name,
+      email: instructor.email,
+      department: instructor.department,
+      facilityId: instructor.facilityId,
+      locationId: instructor.locationId,
+      password: '' // 編集時はパスワードを空にする
+    });
+    setShowAddForm(true); // 編集モードでも追加フォームを表示
+  };
+
+  const handleResetPassword = (instructorId) => {
+    const instructor = instructors.find(inst => inst.id === instructorId);
+    if (instructor) {
+      executePasswordReset('force_change');
+    }
+  };
+
   return (
-    <div className="instructor-management">
-      <div className="management-header">
-        <h2>指導員管理</h2>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-8 pb-4 border-b-2 border-gray-200">
+        <h2 className="text-3xl font-bold text-gray-800">指導員管理</h2>
         <button 
-          className="add-instructor-button"
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
           onClick={() => setShowAddForm(true)}
         >
           + 新しい指導員を追加
@@ -255,26 +318,27 @@ const InstructorManagement = () => {
       </div>
 
       {/* フィルターセクション */}
-      <div className="filters-section">
-        <div className="search-bar">
+      <div className="bg-gray-50 rounded-xl p-6 mb-6 shadow-sm">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="指導員名、メール、学科で検索..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
           />
         </div>
 
-        <div className="filters-row">
-          <div className="filter-group">
-            <label>事業所:</label>
+        <div className="flex flex-wrap gap-6 items-end mb-4">
+          <div className="flex flex-col min-w-[150px]">
+            <label className="font-semibold text-gray-700 mb-2 text-sm">事業所:</label>
             <select 
               value={facilityFilter} 
               onChange={(e) => {
                 setFacilityFilter(e.target.value);
                 setLocationFilter('all'); // 事業所変更時は拠点フィルターをリセット
               }}
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
             >
               <option value="all">全ての事業所</option>
               {facilities.map(facility => (
@@ -285,12 +349,13 @@ const InstructorManagement = () => {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label>拠点:</label>
+          <div className="flex flex-col min-w-[150px]">
+            <label className="font-semibold text-gray-700 mb-2 text-sm">拠点:</label>
             <select 
               value={locationFilter} 
               onChange={(e) => setLocationFilter(e.target.value)}
               disabled={facilityFilter === 'all'}
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300 disabled:bg-gray-100 disabled:text-gray-500"
             >
               <option value="all">全ての拠点</option>
               {getAvailableLocations().map(location => (
@@ -301,9 +366,13 @@ const InstructorManagement = () => {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label>ステータス:</label>
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <div className="flex flex-col min-w-[150px]">
+            <label className="font-semibold text-gray-700 mb-2 text-sm">ステータス:</label>
+            <select 
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
+            >
               <option value="all">全て</option>
               <option value="active">アクティブ</option>
               <option value="inactive">非アクティブ</option>
@@ -311,7 +380,7 @@ const InstructorManagement = () => {
           </div>
 
           <button 
-            className="clear-filters"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-700"
             onClick={() => {
               setSearchTerm('');
               setFacilityFilter('all');
@@ -323,115 +392,181 @@ const InstructorManagement = () => {
           </button>
         </div>
 
-        <div className="results-summary">
+        <div className="font-semibold text-gray-700 text-sm">
           表示中: {getFilteredInstructors().length}名 / 全{instructors.length}名
         </div>
       </div>
 
       {/* 指導員一覧テーブル */}
-      <div className="instructors-table-container">
-        <table className="instructors-table">
-          <thead>
-            <tr>
-              <th>指導員名</th>
-              <th>メールアドレス</th>
-              <th>学科</th>
-              <th>事業所・拠点</th>
-              <th>生徒数</th>
-              <th>ステータス</th>
-              <th>最終ログイン</th>
-              <th>パスワード</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getFilteredInstructors().map(instructor => (
-              <tr key={instructor.id} className={`instructor-row ${instructor.status}`}>
-                <td className="instructor-name">
-                  <div className="name-info">
-                    <strong>{instructor.name}</strong>
-                    <small>ID: {instructor.id}</small>
-                  </div>
-                </td>
-                <td className="instructor-email">{instructor.email}</td>
-                <td className="instructor-department">{instructor.department}</td>
-                <td className="instructor-location">
-                  <div className="location-info">
-                    <div className="facility-name">{instructor.facilityName}</div>
-                    <div className="location-name">{instructor.locationName}</div>
-                  </div>
-                </td>
-                <td className="instructor-students">
-                  <span className="student-count">{instructor.studentsCount}名</span>
-                </td>
-                <td className="instructor-status">
-                  <span className={`status-badge ${instructor.status}`}>
-                    {instructor.status === 'active' ? 'アクティブ' : '非アクティブ'}
-                  </span>
-                  {instructor.passwordResetRequired && (
-                    <span className="password-reset-required">パスワード変更要求中</span>
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-red-50">
+              <tr>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('name')}
+                >
+                  👤 指導員名
+                  {sortConfig.key === 'name' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
                   )}
-                </td>
-                <td className="instructor-last-login">{instructor.lastLogin}</td>
-                <td className="password-actions">
-                  <button 
-                    className="password-reset-btn"
-                    onClick={() => handlePasswordReset(instructor)}
-                  >
-                    🔑 パスワード管理
-                  </button>
-                </td>
-                <td className="instructor-actions">
-                  <button 
-                    className={`status-toggle ${instructor.status}`}
-                    onClick={() => toggleInstructorStatus(instructor.id)}
-                  >
-                    {instructor.status === 'active' ? '無効化' : '有効化'}
-                  </button>
-                </td>
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('email')}
+                >
+                  📧 メールアドレス
+                  {sortConfig.key === 'email' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('department')}
+                >
+                  🎯 専門分野
+                  {sortConfig.key === 'department' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('studentsCount')}
+                >
+                  👥 生徒数
+                  {sortConfig.key === 'studentsCount' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('status')}
+                >
+                  📊 ステータス
+                  {sortConfig.key === 'status' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 登録日</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {getSortedInstructors().map(instructor => (
+                <tr key={instructor.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-red-600 font-bold text-sm">
+                          {instructor.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-gray-800">{instructor.name}</strong>
+                        <div className="text-xs text-gray-500">ID: {instructor.id}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">
+                    📧 {instructor.email}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                      {instructor.department}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                      {instructor.studentsCount}名
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      instructor.status === 'active' 
+                        ? 'bg-green-100 text-green-800'
+                        : instructor.status === 'inactive'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {getStatusLabel(instructor.status)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600 text-sm">
+                    📅 {instructor.joinDate}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button 
+                        className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
+                        onClick={() => handleEditInstructor(instructor)}
+                        title="編集"
+                      >
+                        ✏️ 編集
+                      </button>
+                      <button 
+                        className="bg-orange-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-orange-600"
+                        onClick={() => handlePasswordReset(instructor)}
+                        title="パスワードリセット"
+                      >
+                        🔑 リセット
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        {getFilteredInstructors().length === 0 && (
-          <div className="no-results">
-            <p>条件に合致する指導員が見つかりません。</p>
+        {getSortedInstructors().length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">条件に合致する指導員が見つかりません。</p>
           </div>
         )}
       </div>
 
       {/* パスワードリセットモーダル */}
       {showPasswordResetModal && selectedInstructor && (
-        <div className="modal-overlay">
-          <div className="password-reset-modal">
-            <div className="modal-header">
-              <h3>パスワード管理 - {selectedInstructor.name}</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-2xl mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">パスワード管理 - {selectedInstructor.name}</h3>
               <button 
-                className="close-button"
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors duration-200"
                 onClick={() => setShowPasswordResetModal(false)}
               >
                 ×
               </button>
             </div>
             
-            <div className="password-options">
-              <div className="option-card">
-                <h4>一時パスワード発行</h4>
-                <p>新しい一時パスワードを発行します。指導員は次回ログイン時に新しいパスワードを設定する必要があります。</p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-gray-800 mb-3">一時パスワード発行</h4>
+                <p className="text-gray-600 text-sm mb-4">新しい一時パスワードを発行します。指導員は次回ログイン時に新しいパスワードを設定する必要があります。</p>
                 <button 
-                  className="temp-password-btn"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-blue-600"
                   onClick={() => executePasswordReset('temporary')}
                 >
                   一時パスワードを発行
                 </button>
               </div>
 
-              <div className="option-card">
-                <h4>パスワード変更要求</h4>
-                <p>指導員に次回ログイン時のパスワード変更を要求します。現在のパスワードは無効になりません。</p>
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-gray-800 mb-3">パスワード変更要求</h4>
+                <p className="text-gray-600 text-sm mb-4">指導員に次回ログイン時のパスワード変更を要求します。現在のパスワードは無効になりません。</p>
                 <button 
-                  className="force-change-btn"
+                  className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-orange-600"
                   onClick={() => executePasswordReset('force_change')}
                 >
                   パスワード変更を要求
@@ -439,87 +574,135 @@ const InstructorManagement = () => {
               </div>
             </div>
 
-            <div className="current-status">
-              <h4>現在の状況</h4>
-              <p><strong>ステータス:</strong> {selectedInstructor.status === 'active' ? 'アクティブ' : '非アクティブ'}</p>
-              <p><strong>最終ログイン:</strong> {selectedInstructor.lastLogin}</p>
-              <p><strong>パスワード変更要求:</strong> {selectedInstructor.passwordResetRequired ? 'あり' : 'なし'}</p>
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-semibold text-blue-800 mb-2">現在の状況</h4>
+              <p className="text-blue-700 text-sm">
+                パスワードリセット要求: {selectedInstructor.passwordResetRequired ? 'あり' : 'なし'}
+              </p>
             </div>
           </div>
         </div>
       )}
 
+      {/* 一時パスワードダイアログ */}
+      {showTempPasswordDialog && selectedInstructor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">一時パスワード発行完了</h3>
+              <p className="text-gray-600 mb-6">
+                指導員 <strong>{selectedInstructor.name}</strong> の一時パスワードを発行しました。
+              </p>
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">一時パスワード:</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={generatedTempPassword}
+                    readOnly
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-50 font-mono text-lg text-center"
+                  />
+                  <button
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-200 hover:bg-gray-300 p-2 rounded transition-colors duration-200"
+                    onClick={() => navigator.clipboard.writeText(generatedTempPassword)}
+                    title="コピー"
+                  >
+                    📋
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <p className="text-yellow-800 text-sm">
+                  <strong>注意:</strong> このパスワードは一度だけ表示されます。指導員に安全に伝達してください。
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-center">
+                <button
+                  className="bg-blue-500 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-blue-600"
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedTempPassword);
+                    alert('パスワードをクリップボードにコピーしました！');
+                  }}
+                >
+                  コピーして閉じる
+                </button>
+                <button
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-600"
+                  onClick={() => {
+                    setShowTempPasswordDialog(false);
+                    setSelectedInstructor(null);
+                  }}
+                >
+                  閉じる
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 指導員追加フォームモーダル */}
       {showAddForm && (
-        <div className="modal-overlay">
-          <div className="add-teacher-modal">
-            <div className="modal-header">
-              <h3>新しい指導員を追加</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">新しい指導員を追加</h3>
               <button 
-                className="close-button"
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors duration-200"
                 onClick={() => setShowAddForm(false)}
               >
                 ×
               </button>
             </div>
             
-            <form onSubmit={handleAddInstructor} className="add-teacher-form">
-              <div className="form-group">
-                <label htmlFor="name">名前</label>
+            <form onSubmit={handleAddInstructor} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">指導員名:</label>
                 <input
                   type="text"
-                  id="name"
                   name="name"
                   value={newInstructor.name}
                   onChange={handleInputChange}
                   required
-                  placeholder="指導員の名前を入力"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                 />
               </div>
               
-              <div className="form-group">
-                <label htmlFor="email">メールアドレス</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">メールアドレス:</label>
                 <input
                   type="email"
-                  id="email"
                   name="email"
                   value={newInstructor.email}
                   onChange={handleInputChange}
                   required
-                  placeholder="メールアドレスを入力"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                 />
               </div>
               
-              <div className="form-group">
-                <label htmlFor="department">学科</label>
-                <select
-                  id="department"
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">学科:</label>
+                <input
+                  type="text"
                   name="department"
                   value={newInstructor.department}
                   onChange={handleInputChange}
                   required
-                >
-                  <option value="">学科を選択</option>
-                  <option value="IT基礎・AI学科">IT基礎・AI学科</option>
-                  <option value="SNS運用・デザイン学科">SNS運用・デザイン学科</option>
-                  <option value="LP制作・案件対応学科">LP制作・案件対応学科</option>
-                  <option value="オフィスソフト・文書作成学科">オフィスソフト・文書作成学科</option>
-                </select>
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
+                />
               </div>
-
-              <div className="form-group">
-                <label htmlFor="facilityId">事業所</label>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">事業所:</label>
                 <select
-                  id="facilityId"
                   name="facilityId"
                   value={newInstructor.facilityId}
-                  onChange={(e) => {
-                    setNewInstructor(prev => ({
-                      ...prev,
-                      facilityId: e.target.value,
-                      locationId: '' // 事業所変更時は拠点をリセット
-                    }));
-                  }}
+                  onChange={handleInputChange}
                   required
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                 >
                   <option value="">事業所を選択</option>
                   {facilities.map(facility => (
@@ -529,16 +712,16 @@ const InstructorManagement = () => {
                   ))}
                 </select>
               </div>
-
-              <div className="form-group">
-                <label htmlFor="locationId">拠点</label>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">拠点:</label>
                 <select
-                  id="locationId"
                   name="locationId"
                   value={newInstructor.locationId}
                   onChange={handleInputChange}
                   required
                   disabled={!newInstructor.facilityId}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300 disabled:bg-gray-100 disabled:text-gray-500"
                 >
                   <option value="">拠点を選択</option>
                   {getAvailableLocations().map(location => (
@@ -549,106 +732,34 @@ const InstructorManagement = () => {
                 </select>
               </div>
               
-              <div className="form-group">
-                <label htmlFor="password">初期パスワード</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">初期パスワード:</label>
                 <input
                   type="password"
-                  id="password"
                   name="password"
                   value={newInstructor.password}
                   onChange={handleInputChange}
                   required
-                  placeholder="初期パスワードを設定"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                 />
               </div>
               
-              <div className="form-actions">
-                <button type="button" onClick={() => setShowAddForm(false)}>
-                  キャンセル
-                </button>
-                <button type="submit" className="submit-button">
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-indigo-600"
+                >
                   追加
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-600"
+                  onClick={() => setShowAddForm(false)}
+                >
+                  キャンセル
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-             {showTempPasswordDialog && generatedTempPassword && selectedInstructor && (
-         <div className="modal-overlay">
-           <div className="temp-password-dialog">
-             <div className="modal-header">
-               <h3>一時パスワードをコピー</h3>
-               <button 
-                 className="close-button"
-                 onClick={() => {
-                   setShowTempPasswordDialog(false);
-                   setGeneratedTempPassword('');
-                   setSelectedInstructor(null);
-                 }}
-               >
-                 ×
-               </button>
-             </div>
-             <div className="temp-password-content">
-               <p>指導員: <strong>{selectedInstructor.name}</strong></p>
-               <div className="password-display">
-                 <label>一時パスワード:</label>
-                 <div className="password-box">
-                   <input 
-                     type="text" 
-                     value={generatedTempPassword} 
-                     readOnly 
-                     className="password-input"
-                     onClick={(e) => e.target.select()}
-                   />
-                   <button 
-                     className="copy-icon-btn"
-                     onClick={() => {
-                       navigator.clipboard.writeText(generatedTempPassword).then(() => {
-                         alert('一時パスワードをクリップボードにコピーしました！');
-                       }).catch(err => {
-                         console.error('クリップボードへのコピーに失敗しました:', err);
-                         alert('クリップボードへのコピーに失敗しました。');
-                       });
-                     }}
-                     title="クリップボードにコピー"
-                   >
-                     📋
-                   </button>
-                 </div>
-               </div>
-               <p className="password-notice">このパスワードで初回ログイン後、新しいパスワードの設定が必要です。</p>
-               <div className="dialog-actions">
-                 <button 
-                   className="copy-button"
-                   onClick={() => {
-                     navigator.clipboard.writeText(generatedTempPassword).then(() => {
-                       alert('一時パスワードをクリップボードにコピーしました！');
-                     }).catch(err => {
-                       console.error('クリップボードへのコピーに失敗しました:', err);
-                       alert('クリップボードへのコピーに失敗しました。');
-                     });
-                     setShowTempPasswordDialog(false);
-                     setGeneratedTempPassword('');
-                     setSelectedInstructor(null);
-                   }}
-                 >
-                   コピーして閉じる
-                 </button>
-                 <button 
-                   className="close-only-button"
-                   onClick={() => {
-                     setShowTempPasswordDialog(false);
-                     setGeneratedTempPassword('');
-                     setSelectedInstructor(null);
-                   }}
-                 >
-                   閉じる
-                 </button>
-               </div>
-             </div>
           </div>
         </div>
       )}

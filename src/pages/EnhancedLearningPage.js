@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import './EnhancedLearningPage.css';
 
 const EnhancedLearningPage = () => {
   const navigate = useNavigate();
@@ -201,69 +200,122 @@ const EnhancedLearningPage = () => {
     };
 
     return (
-      <ReactMarkdown 
+      <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          h1: ({node, ...props}) => <h1 id={generateId(props.children)} style={{color: '#2c3e50', fontSize: '24px', fontWeight: '700', margin: '25px 0 15px 0', paddingBottom: '8px', borderBottom: '2px solid #667eea'}} {...props} />,
-          h2: ({node, ...props}) => <h2 id={generateId(props.children)} style={{color: '#2c3e50', fontSize: '20px', fontWeight: '700', margin: '25px 0 15px 0', paddingBottom: '8px', borderBottom: '2px solid #667eea'}} {...props} />,
-          h3: ({node, ...props}) => <h3 id={generateId(props.children)} style={{color: '#34495e', fontSize: '16px', fontWeight: '600', margin: '20px 0 10px 0'}} {...props} />,
-          h4: ({node, ...props}) => <h4 id={generateId(props.children)} style={{color: '#34495e', fontSize: '14px', fontWeight: '600', margin: '15px 0 8px 0'}} {...props} />,
-          p: ({node, ...props}) => <p style={{margin: '10px 0', lineHeight: '1.6'}} {...props} />,
-          ul: ({node, ...props}) => <ul style={{margin: '15px 0', paddingLeft: '20px'}} {...props} />,
-          ol: ({node, ...props}) => <ol style={{margin: '15px 0', paddingLeft: '20px'}} {...props} />,
-          li: ({node, ...props}) => <li style={{margin: '8px 0', lineHeight: '1.6'}} {...props} />,
-          blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #667eea', margin: '15px 0', padding: '10px 20px', backgroundColor: '#f8f9fa', fontStyle: 'italic'}} {...props} />,
-          code: ({node, inline, ...props}) => inline ? 
-            <code style={{backgroundColor: '#f1f3f4', padding: '2px 4px', borderRadius: '3px', fontFamily: 'monospace', fontSize: '0.9em'}} {...props} /> :
-            <code style={{display: 'block', backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px', fontFamily: 'monospace', fontSize: '0.9em', overflow: 'auto'}} {...props} />,
-          pre: ({node, ...props}) => <pre style={{backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px', overflow: 'auto', margin: '15px 0'}} {...props} />,
-          a: ({node, href, ...props}) => {
-            if (href && href.startsWith('#')) {
+          h1: ({ children, ...props }) => {
+            const id = generateId(children);
+            return (
+              <h1 
+                id={id} 
+                className="text-3xl font-bold text-gray-800 mt-8 mb-4 pb-2 border-b-2 border-blue-200 scroll-mt-20"
+                {...props}
+              >
+                {children}
+              </h1>
+            );
+          },
+          h2: ({ children, ...props }) => {
+            const id = generateId(children);
+            return (
+              <h2 
+                id={id} 
+                className="text-2xl font-bold text-gray-700 mt-6 mb-3 pb-1 border-b border-blue-100 scroll-mt-16"
+                {...props}
+              >
+                {children}
+              </h2>
+            );
+          },
+          h3: ({ children, ...props }) => {
+            const id = generateId(children);
+            return (
+              <h3 
+                id={id} 
+                className="text-xl font-semibold text-gray-700 mt-4 mb-2 scroll-mt-12"
+                {...props}
+              >
+                {children}
+              </h3>
+            );
+          },
+          p: ({ children, ...props }) => (
+            <p className="text-gray-700 leading-relaxed mb-4" {...props}>
+              {children}
+            </p>
+          ),
+          ul: ({ children, ...props }) => (
+            <ul className="list-disc list-inside text-gray-700 mb-4 space-y-1" {...props}>
+              {children}
+            </ul>
+          ),
+          ol: ({ children, ...props }) => (
+            <ol className="list-decimal list-inside text-gray-700 mb-4 space-y-1" {...props}>
+              {children}
+            </ol>
+          ),
+          li: ({ children, ...props }) => (
+            <li className="ml-4" {...props}>
+              {children}
+            </li>
+          ),
+          blockquote: ({ children, ...props }) => (
+            <blockquote className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 text-gray-700 italic mb-4" {...props}>
+              {children}
+            </blockquote>
+          ),
+          code: ({ children, className, ...props }) => {
+            if (className && className.startsWith('language-')) {
               return (
-                <a 
-                  style={{color: '#667eea', textDecoration: 'none', cursor: 'pointer'}} 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const targetId = href.substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement && textContainerRef.current) {
-                      const containerTop = textContainerRef.current.offsetTop;
-                      const elementTop = targetElement.offsetTop;
-                      const scrollTop = elementTop - containerTop - 20;
-                      
-                      // スムーズスクロールを実行
-                      textContainerRef.current.scrollTo({
-                        top: Math.max(0, scrollTop),
-                        behavior: 'smooth'
-                      });
-                      
-                      // デバッグ用のログ
-                      console.log('スクロール実行:', {
-                        targetId,
-                        elementTop,
-                        containerTop,
-                        scrollTop
-                      });
-                    } else {
-                      console.log('要素が見つからないか、コンテナが存在しません:', {
-                        targetId,
-                        targetElement: !!targetElement,
-                        containerRef: !!textContainerRef.current
-                      });
-                    }
-                  }}
-                  {...props}
-                />
+                <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4">
+                  <code className={`${className} text-sm`} {...props}>
+                    {children}
+                  </code>
+                </pre>
               );
             }
-            return <a style={{color: '#667eea', textDecoration: 'none'}} target="_blank" rel="noopener noreferrer" href={href} {...props} />;
+            return (
+              <code className="bg-gray-200 px-2 py-1 rounded text-sm font-mono" {...props}>
+                {children}
+              </code>
+            );
           },
-          strong: ({node, ...props}) => <strong style={{fontWeight: '700', color: '#2c3e50'}} {...props} />,
-          em: ({node, ...props}) => <em style={{fontStyle: 'italic', color: '#34495e'}} {...props} />,
-          hr: ({node, ...props}) => <hr style={{border: 'none', borderTop: '2px solid #e9ecef', margin: '20px 0'}} {...props} />,
-          table: ({node, ...props}) => <table style={{width: '100%', borderCollapse: 'collapse', margin: '15px 0'}} {...props} />,
-          th: ({node, ...props}) => <th style={{border: '1px solid #dee2e6', padding: '8px 12px', backgroundColor: '#f8f9fa', fontWeight: '600'}} {...props} />,
-          td: ({node, ...props}) => <td style={{border: '1px solid #dee2e6', padding: '8px 12px'}} {...props} />,
+          table: ({ children, ...props }) => (
+            <div className="overflow-x-auto mb-4">
+              <table className="min-w-full border border-gray-300" {...props}>
+                {children}
+              </table>
+            </div>
+          ),
+          th: ({ children, ...props }) => (
+            <th className="border border-gray-300 px-4 py-2 bg-gray-100 font-semibold text-left" {...props}>
+              {children}
+            </th>
+          ),
+          td: ({ children, ...props }) => (
+            <td className="border border-gray-300 px-4 py-2" {...props}>
+              {children}
+            </td>
+          ),
+          a: ({ children, href, ...props }) => (
+            <a 
+              href={href} 
+              className="text-blue-600 hover:text-blue-800 underline" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              {...props}
+            >
+              {children}
+            </a>
+          ),
+          img: ({ src, alt, ...props }) => (
+            <img 
+              src={src} 
+              alt={alt} 
+              className="max-w-full h-auto rounded-lg shadow-md my-4" 
+              {...props}
+            />
+          )
         }}
       >
         {markdown}
@@ -271,7 +323,7 @@ const EnhancedLearningPage = () => {
     );
   };
 
-  // テキストの特定の位置にスクロール
+  // テキストスクロール位置を保存・復元
   const scrollToTextPosition = (position) => {
     if (textContainerRef.current) {
       textContainerRef.current.scrollTop = position;
@@ -303,254 +355,259 @@ const EnhancedLearningPage = () => {
   };
 
   return (
-    <div className="enhanced-learning-page">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
       {/* ヘッダー */}
-      <div className="enhanced-learning-header">
-        <div className="header-left">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/student/dashboard')}
-          >
-            ← ダッシュボードに戻る
-          </button>
-          <h1>学習画面（改善版） - {currentLessonData.title}</h1>
-          <span className="lesson-description">{currentLessonData.description}</span>
-        </div>
-        <div className="lesson-selector">
-          <label>レッスン選択: </label>
-          <select 
-            value={currentLesson} 
-            onChange={(e) => changeLesson(parseInt(e.target.value))}
-          >
-            {Object.keys(lessonData).map(lessonNum => (
-              <option key={lessonNum} value={lessonNum}>
-                {lessonData[lessonNum].title}
-              </option>
-            ))}
-          </select>
-          <button 
-            className="upload-button"
-            onClick={() => setShowUploadModal(true)}
-          >
-            📁 成果物アップロード
-          </button>
-          <button 
-            className="test-button"
-            onClick={() => navigate(`/student/test?lesson=${currentLesson}`)}
-          >
-            📝 学習効果テスト
-          </button>
+      <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button 
+                className="px-4 py-2 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg hover:bg-opacity-20 transition-all duration-200 font-medium"
+                onClick={() => navigate('/student/dashboard')}
+              >
+                ← ダッシュボードに戻る
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold">改善版学習画面 - {currentLessonData.title}</h1>
+                <span className="text-blue-100 text-sm">{currentLessonData.description}</span>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">レッスン選択: </label>
+                <select 
+                  value={currentLesson} 
+                  onChange={(e) => changeLesson(parseInt(e.target.value))}
+                  className="px-3 py-1 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                >
+                  {Object.keys(lessonData).map(lessonNum => (
+                    <option key={lessonNum} value={lessonNum} className="text-gray-800">
+                      {lessonData[lessonNum].title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button 
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => setShowUploadModal(true)}
+              >
+                📁 成果物アップロード
+              </button>
+              <button 
+                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => navigate(`/student/test?lesson=${currentLesson}`)}
+              >
+                📝 学習効果テスト
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 3カラムレイアウト */}
-      <div className="enhanced-learning-content">
-        {/* 左カラム: 動画 */}
-        <div className="video-column">
-          <div className="video-container">
-            <div className="section-header">
-              <h3>動画学習</h3>
-              <div className="video-controls">
-                <span className="video-info-text">動画学習</span>
+      {/* メインコンテンツ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左カラム: 動画 + テキスト */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* 動画セクション */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">🎥</span>
+                <h3 className="text-xl font-bold text-gray-800">動画学習</h3>
               </div>
-            </div>
-            {currentLessonData.videoUrl ? (
-              <>
-                <div className="video-info">
-                  <p className="video-title">{currentLessonData.title}</p>
-                  <p className="video-url">URL: {currentLessonData.videoUrl}</p>
-                </div>
-                <div className="enhanced-video-player-container">
-                  {videoLoading && !videoError && (
-                    <div className="video-loading">
-                      <p>動画を読み込み中...</p>
-                      <div className="loading-spinner"></div>
-                    </div>
-                  )}
-                  {videoError && (
-                    <div className="video-fallback">
-                      <p>動画の読み込みに失敗しました。以下のリンクをクリックしてください：</p>
-                      <a 
-                        href={currentLessonData.videoUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="video-link"
-                      >
-                        YouTubeで開く
-                      </a>
-                    </div>
-                  )}
-                  {!videoError && (
-                    <div className="enhanced-video-iframe-container">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(currentLessonData.videoUrl)}?modestbranding=1&rel=0`}
-                        width="100%"
-                        height="100%"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title="YouTube video player"
-                        onLoad={() => {
-                          console.log('iframe動画が読み込まれました');
-                          setVideoLoading(false);
-                          setVideoError(false);
-                        }}
-                        onError={() => {
-                          console.error('iframe動画読み込みエラー');
-                          setVideoError(true);
-                          setVideoLoading(false);
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="no-video">
-                <p>このレッスンには動画がありません</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 中央カラム: テキスト */}
-        <div className="text-column">
-          <div className="text-container">
-            <div className="section-header">
-              <h3>教材テキスト</h3>
-              <div className="text-controls">
-                <a
-                  className="pdf-download-button"
-                  href="/doc/pdf-samples/ITリテラシー・AIの基本_第1回.pdf"
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  📄 PDFダウンロード
-                </a>
-                <button
-                  className="scroll-to-top-button"
-                  onClick={() => {
-                    if (textContainerRef.current) {
-                      textContainerRef.current.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                      });
-                    }
-                  }}
-                >
-                  ⬆️ 最上部に戻る
-                </button>
-              </div>
-            </div>
-            <div className="text-viewer" ref={textContainerRef}>
-              {textLoading ? (
-                <div className="text-loading">
-                  <p>テキストを読み込み中...</p>
-                  <div className="loading-spinner"></div>
-                </div>
+              {currentLessonData.videoUrl ? (
+                <>
+                  <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                    <p className="font-semibold text-blue-800 mb-1">{currentLessonData.title}</p>
+                    <p className="text-sm text-blue-600">URL: {currentLessonData.videoUrl}</p>
+                  </div>
+                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                    {videoLoading && (
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">動画を読み込み中...</p>
+                      </div>
+                    )}
+                    {videoError && (
+                      <div className="text-center text-red-600">
+                        <p>動画の読み込みに失敗しました。</p>
+                        <p className="text-sm mt-2">URL: {currentLessonData.videoUrl}</p>
+                      </div>
+                    )}
+                    {!videoLoading && !videoError && (
+                      <div className="text-center text-gray-600">
+                        <p>動画プレイヤーがここに表示されます</p>
+                        <p className="text-sm mt-2">YouTube動画: {currentLessonData.videoUrl}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
               ) : (
-                <div className="markdown-content">
-                  {renderMarkdown(textContent)}
+                <div className="text-center py-8 text-gray-600">
+                  <p>このレッスンには動画がありません。</p>
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* 右カラム: チャット */}
-        <div className="chat-column">
-          <div className="chat-container">
-            <h3>AI学習アシスタント</h3>
-            <div className="chat-messages">
-              {chatMessages.map(message => (
-                <div 
-                  key={message.id} 
-                  className={`chat-message ${message.sender}`}
-                >
-                  <div className="message-content">
-                    {message.text}
-                  </div>
-                  <div className="message-time">
-                    {message.timestamp}
-                  </div>
+            {/* テキストセクション */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📄</span>
+                  <h3 className="text-xl font-bold text-gray-800">教材テキスト</h3>
                 </div>
-              ))}
+                <div className="flex gap-2">
+                  <button
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      displayMode === 'text'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                    onClick={() => setDisplayMode('text')}
+                  >
+                    テキスト
+                  </button>
+                  <button
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      displayMode === 'markdown'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                    onClick={() => setDisplayMode('markdown')}
+                  >
+                    Markdown
+                  </button>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 min-h-[600px] overflow-y-auto">
+                {textLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">テキストを読み込み中...</p>
+                  </div>
+                ) : (
+                  <div 
+                    ref={textContainerRef}
+                    className="prose prose-blue max-w-none"
+                  >
+                    {displayMode === 'markdown' ? (
+                      renderMarkdown(textContent)
+                    ) : (
+                      <pre className="whitespace-pre-wrap text-gray-700 font-sans text-sm leading-relaxed">
+                        {textContent}
+                      </pre>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="chat-input-container">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="質問を入力してください..."
-                className="chat-input"
-              />
-              <button 
-                onClick={handleSendMessage}
-                className="send-button"
-              >
-                送信
-              </button>
+          </div>
+
+          {/* 右カラム: チャット + アップロード */}
+          <div className="space-y-6">
+            {/* チャット */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">💬</span>
+                <h3 className="text-xl font-bold text-gray-800">AIアシスタント</h3>
+              </div>
+              <div className="h-64 overflow-y-auto mb-4 space-y-3">
+                {chatMessages.map(message => (
+                  <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs px-4 py-2 rounded-lg ${
+                      message.sender === 'user' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="text-sm">{message.text}</p>
+                      <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="質問を入力..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button 
+                  onClick={handleSendMessage}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200"
+                >
+                  送信
+                </button>
+              </div>
+            </div>
+
+            {/* アップロード済みファイル */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">📁</span>
+                <h3 className="text-xl font-bold text-gray-800">アップロード済みファイル</h3>
+              </div>
+              <div className="space-y-3">
+                {uploadedFiles.map(file => (
+                  <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">{file.uploadDate}</p>
+                    </div>
+                    <button 
+                      onClick={() => handleFileDelete(file.id)}
+                      className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {uploadedFiles.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">アップロードされたファイルはありません</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 成果物アップロードモーダル */}
+      {/* アップロードモーダル */}
       {showUploadModal && (
-        <div className="upload-modal-overlay">
-          <div className="upload-modal">
-            <div className="upload-modal-header">
-              <h3>成果物アップロード</h3>
-              <button 
-                className="close-button"
-                onClick={() => setShowUploadModal(false)}
-              >
-                ×
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-800">成果物アップロード</h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-200"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
-            <div className="upload-modal-content">
-              <div className="upload-area">
+            <div className="p-6">
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ファイルを選択してください
+                </label>
                 <input
                   type="file"
                   multiple
                   onChange={handleFileUpload}
-                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mov,.avi"
-                  id="file-upload"
-                  style={{ display: 'none' }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
-                <label htmlFor="file-upload" className="upload-label">
-                  <div className="upload-icon">📁</div>
-                  <p>ファイルを選択またはドラッグ&ドロップ</p>
-                  <span className="upload-hint">
-                    対応形式: PDF, Word, テキスト, 画像, 動画
-                  </span>
-                </label>
               </div>
-              
-              {uploadedFiles.length > 0 && (
-                <div className="uploaded-files">
-                  <h4>アップロード済みファイル</h4>
-                  {uploadedFiles.map(file => (
-                    <div key={file.id} className="uploaded-file-item">
-                      <div className="file-info">
-                        <span className="file-name">{file.name}</span>
-                        <span className="file-size">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </span>
-                        <span className="file-date">{file.uploadDate}</span>
-                      </div>
-                      <button 
-                        className="delete-button"
-                        onClick={() => handleFileDelete(file.id)}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button 
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  キャンセル
+                </button>
+              </div>
             </div>
           </div>
         </div>

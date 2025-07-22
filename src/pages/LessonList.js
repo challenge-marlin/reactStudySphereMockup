@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LessonList.css';
 
 const LessonList = () => {
   const navigate = useNavigate();
@@ -203,149 +202,196 @@ const LessonList = () => {
     navigate(`/student/advanced-learning?lesson=${lessonNumber}`);
   };
 
-  // テスト受講・復習へのリンク
+  // テスト受験へのリンク
   const handleTakeTest = (lesson) => {
-    if (lesson.status === 'completed') {
-      alert(`レッスン「${lesson.title}」のテスト復習を開始します。\n前回のスコア: ${lesson.testScore}点`);
-    } else {
-      alert(`レッスン「${lesson.title}」のテストを受講します。`);
-    }
+    // レッスン番号を取得（orderを使用）
+    const lessonNumber = lesson.order;
+    
+    // テスト画面に遷移（レッスン番号をパラメータとして渡す）
+    navigate(`/student/test?lesson=${lessonNumber}`);
   };
 
   // 課題提出へのリンク
   const handleSubmitAssignment = (lesson) => {
-    alert(`レッスン「${lesson.title}」の課題提出画面を開きます。`);
+    alert(`${lesson.title}の課題提出機能は開発中です。`);
   };
 
-  if (!currentUser || enrolledCourses.length === 0) {
+  if (!currentUser) {
     return (
-      <div className="lesson-list">
-        <div className="lesson-list-header">
-          <h2>レッスン一覧</h2>
-          <p>受講中のコースのレッスンを確認できます</p>
-        </div>
-        <div className="no-courses">
-          <p>現在受講中のコースがありません。</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
+        <div className="text-blue-600 text-xl font-semibold">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="lesson-list">
-      <div className="lesson-list-header">
-        <h2>レッスン一覧</h2>
-        <p>受講中のコースのレッスンを確認できます</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+      {/* ヘッダー */}
+      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+              📚 レッスン一覧
+            </h2>
+            <p className="text-lg text-gray-600">{currentUser.name}さんの受講コース</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+              {enrolledCourses.length}コース受講中
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* コース選択フィルター */}
-      <div className="course-selector">
-        <label htmlFor="course-select">コースを選択:</label>
-        <select 
-          id="course-select"
-          value={selectedCourse?.id || ''}
-          onChange={(e) => {
-            const course = enrolledCourses.find(c => c.id === e.target.value);
-            setSelectedCourse(course);
-          }}
-        >
-          {enrolledCourses.map(course => (
-            <option key={course.id} value={course.id}>
-              {course.title} (進捗: {course.progress}%)
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {selectedCourse && (
-        <div className="course-info">
-          <h3>{selectedCourse.title}</h3>
-          <div className="course-progress">
-            <span>全体進捗: {selectedCourse.progress}%</span>
-            <div className="progress-bar">
-              <div 
-                className="progress-fill" 
-                style={{ width: `${selectedCourse.progress}%` }}
-              ></div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* コース選択サイドバー */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">受講コース</h3>
+            <div className="space-y-3">
+              {enrolledCourses.map(course => (
+                <button
+                  key={course.id}
+                  className={`w-full text-left p-4 rounded-xl transition-all duration-200 ${
+                    selectedCourse?.id === course.id
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg'
+                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                  }`}
+                  onClick={() => setSelectedCourse(course)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold text-sm">{course.title}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      selectedCourse?.id === course.id
+                        ? 'bg-white bg-opacity-20'
+                        : course.category === '必修科目'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {course.category}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        selectedCourse?.id === course.id
+                          ? 'bg-white'
+                          : 'bg-gradient-to-r from-blue-400 to-cyan-500'
+                      }`}
+                      style={{ width: `${course.progress}%` }}
+                    />
+                  </div>
+                  <div className="text-xs mt-1 opacity-75">
+                    進捗: {course.progress}%
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>
-      )}
 
-      {/* レッスン一覧 */}
-      {selectedCourse && (
-        <div className="lessons-container">
-          <div className="lessons-grid">
-            {selectedCourse.lessons.map(lesson => {
-              const status = getLessonStatus(lesson);
-              return (
-                <div key={lesson.id} className={`lesson-card ${status.class}`}>
-                  <div className="lesson-header">
-                    <div className="lesson-order">
-                      <span className="order-badge">第{lesson.order}回</span>
-                    </div>
-                    <div className="lesson-status">
-                      <span className={`status-badge ${status.class}`}>
-                        {status.icon} {status.label}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="lesson-content">
-                    <h4 className="lesson-title">{lesson.title}</h4>
-                    <p className="lesson-description">{lesson.description}</p>
-                    <div className="lesson-meta">
-                      <span className="duration">⏱️ {lesson.duration}</span>
-                      {lesson.testScore !== null && (
-                        <span className="test-score">📊 テスト: {lesson.testScore}点</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="lesson-actions">
-                    <button 
-                      className="action-btn primary"
-                      onClick={() => handleStartLesson(lesson)}
-                    >
-                      📖 レッスン学習
-                    </button>
-                    
-                    <button 
-                      className="action-btn enhanced"
-                      onClick={() => handleStartEnhancedLesson(lesson)}
-                    >
-                      🚀 改善版学習
-                    </button>
-                    
-                    <button 
-                      className="action-btn advanced"
-                      onClick={() => handleStartAdvancedLesson(lesson)}
-                    >
-                      ⭐ 高度な学習
-                    </button>
-                    
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => handleTakeTest(lesson)}
-                    >
-                      {lesson.status === 'completed' ? '🔄 テスト復習' : '📝 テスト受講'}
-                    </button>
-
-                    {lesson.hasAssignment && (
-                      <button 
-                        className="action-btn assignment"
-                        onClick={() => handleSubmitAssignment(lesson)}
-                      >
-                        📋 課題提出
-                      </button>
-                    )}
-                  </div>
+        {/* レッスン一覧 */}
+        <div className="lg:col-span-3">
+          {selectedCourse && (
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedCourse.title}</h3>
+                  <p className="text-gray-600">{selectedCourse.lessons.length}レッスン</p>
                 </div>
-              );
-            })}
-          </div>
+                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                  selectedCourse.category === '必修科目'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {selectedCourse.category}
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                {selectedCourse.lessons.map((lesson, index) => {
+                  const status = getLessonStatus(lesson);
+                  return (
+                    <div key={lesson.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                            lesson.status === 'completed'
+                              ? 'bg-green-500'
+                              : lesson.status === 'in-progress'
+                                ? 'bg-blue-500'
+                                : 'bg-gray-400'
+                          }`}>
+                            {lesson.order}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-2">{lesson.title}</h4>
+                            <p className="text-gray-600 text-sm mb-3">{lesson.description}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <span>⏱️ {lesson.duration}</span>
+                              {lesson.testScore && (
+                                <span className="text-green-600 font-medium">📊 テスト: {lesson.testScore}点</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            lesson.status === 'completed'
+                              ? 'bg-green-100 text-green-800'
+                              : lesson.status === 'in-progress'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {status.icon} {status.label}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+                          onClick={() => handleStartLesson(lesson)}
+                        >
+                          🎓 学習開始
+                        </button>
+                        <button
+                          className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+                          onClick={() => handleStartEnhancedLesson(lesson)}
+                        >
+                          🚀 改善版学習
+                        </button>
+                        <button
+                          className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+                          onClick={() => handleStartAdvancedLesson(lesson)}
+                        >
+                          ⭐ 高度な学習
+                        </button>
+                        {lesson.status === 'completed' && (
+                          <button
+                            className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+                            onClick={() => handleTakeTest(lesson)}
+                          >
+                            📝 テスト受験
+                          </button>
+                        )}
+                        {lesson.hasAssignment && (
+                          <button
+                            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+                            onClick={() => handleSubmitAssignment(lesson)}
+                          >
+                            📋 課題提出
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

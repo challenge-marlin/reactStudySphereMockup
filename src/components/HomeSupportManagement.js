@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './HomeSupportManagement.css';
 
 const HomeSupportManagement = ({ instructorId }) => {
   const navigate = useNavigate();
@@ -208,226 +207,294 @@ const HomeSupportManagement = ({ instructorId }) => {
     }
 
     setShowPlanModal(false);
-    setSelectedStudent(null);
-    setPlanForm({
-      longTermGoal: '',
-      shortTermGoal: '',
-      needs: '',
-      supportContent: '',
-      targetDate: ''
-    });
+    alert('個別支援計画を保存しました。');
   };
 
-  // 個別支援計画の存在確認
+  // 計画があるかどうかをチェック
   const hasPlan = (studentId) => {
     return supportPlans.some(plan => plan.userId === studentId);
   };
 
+  // 進捗に応じた色を取得
+  const getProgressColor = (progress) => {
+    if (progress >= 90) return 'text-green-600';
+    if (progress >= 70) return 'text-blue-600';
+    if (progress >= 50) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  // 進捗に応じたアイコンを取得
+  const getProgressIcon = (progress) => {
+    if (progress >= 90) return '🏆';
+    if (progress >= 70) return '🚀';
+    if (progress >= 50) return '📈';
+    return '📊';
+  };
+
   return (
-    <div className="home-support-management">
-      <div className="home-support-header">
-        <h2>🏠 在宅支援管理</h2>
-        <p>在宅学習可能なユーザーに対する個別支援計画を管理します。</p>
-      </div>
-
-      <div className="management-actions">
-        <button 
-          className="action-btn primary"
-          onClick={() => navigate('/instructor/daily-records')}
-        >
-          📝 日々の記録管理
-        </button>
-        <button 
-          className="action-btn primary"
-          onClick={() => navigate('/instructor/evaluations')}
-        >
-          📊 達成度評価管理
-        </button>
-      </div>
-
-      <div className="students-table-container">
-        <div className="table-header">
-          <h3>在宅学習可能ユーザー一覧</h3>
-          <div className="table-actions">
-            <span className="student-count">
-              {students.length}名の在宅学習可能ユーザー
-            </span>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+      {/* ヘッダー */}
+      <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold">🏠 在宅支援管理</h1>
+              <p className="text-green-100 text-sm">在宅学習可能な生徒の管理と個別支援計画</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm font-semibold">
+                {students.length}名の在宅学習者
+              </span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="students-table">
-          <table>
-            <thead>
-              <tr>
-                <th>氏名</th>
-                <th>コース</th>
-                <th>指導員</th>
-                <th>拠点</th>
-                <th>進捗</th>
-                <th>最終ログイン</th>
-                <th>ログインURL</th>
-                <th>個別支援計画</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map(student => (
-                <tr key={student.id}>
-                  <td>
-                    <div className="student-info">
-                      <span className="student-name">{student.name}</span>
-                      <span className="student-email">{student.email}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="course-name">{student.class}</span>
-                  </td>
-                  <td>
-                    <span className="instructor-name">{student.instructorName}</span>
-                  </td>
-                  <td>
-                    <span className="location-name">{student.locationName}</span>
-                  </td>
-                  <td>
-                    <div className="progress-container">
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-fill" 
-                          style={{ width: `${student.progress}%` }}
-                        ></div>
+      {/* メインコンテンツ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左カラム: 生徒一覧 */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-800">在宅学習者一覧</h2>
+                <div className="text-sm text-gray-600">
+                  最終更新: {new Date().toLocaleDateString()}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {students.map(student => (
+                  <div key={student.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {student.name.charAt(0)}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-800 mb-1">{student.name}</h3>
+                          <p className="text-gray-600 text-sm mb-2">{student.email}</p>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <span>📚 {student.class}</span>
+                            <span>👨‍🏫 {student.instructorName}</span>
+                            <span>📍 {student.locationName}</span>
+                          </div>
+                        </div>
                       </div>
-                      <span className="progress-text">{student.progress}%</span>
+                      <div className="text-right">
+                        <div className={`text-lg font-bold ${getProgressColor(student.progress)}`}>
+                          {getProgressIcon(student.progress)} {student.progress}%
+                        </div>
+                        <div className="text-sm text-gray-500">進捗</div>
+                      </div>
                     </div>
-                  </td>
-                  <td>
-                    <span className="last-login">{student.lastLogin}</span>
-                  </td>
-                  <td>
-                    <div className="login-url-container">
-                      <span className="login-token">{student.loginToken}</span>
-                      <button 
-                        className="copy-button"
-                        onClick={() => copyLoginUrl(student.loginToken)}
-                        title="ログインURLをコピー"
-                      >
-                        📋
-                      </button>
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {student.tags.map((tag, index) => (
+                        <span 
+                          key={index}
+                          className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
-                  </td>
-                  <td>
-                    {hasPlan(student.id) ? (
-                      <span className="status active">作成済み</span>
-                    ) : (
-                      <span className="status inactive">未作成</span>
-                    )}
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button 
-                        className="action-btn primary"
-                        onClick={() => openPlanModal(student)}
-                      >
-                        {hasPlan(student.id) ? '計画編集' : '計画作成'}
-                      </button>
+
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm text-gray-600">
+                        <span>最終ログイン: {student.lastLogin}</span>
+                        <span className="mx-2">•</span>
+                        <span>ログイントークン: {student.loginToken}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-all duration-200"
+                          onClick={() => copyLoginUrl(student.loginToken)}
+                        >
+                          🔗 URLコピー
+                        </button>
+                        <button
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            hasPlan(student.id)
+                              ? 'bg-green-500 hover:bg-green-600 text-white'
+                              : 'bg-orange-500 hover:bg-orange-600 text-white'
+                          }`}
+                          onClick={() => openPlanModal(student)}
+                        >
+                          {hasPlan(student.id) ? '📋 計画編集' : '📝 計画作成'}
+                        </button>
+                        <button
+                          className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-all duration-200"
+                          onClick={() => navigate(`/instructor/student-detail/${student.id}`)}
+                        >
+                          👁️ 詳細
+                        </button>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 右カラム: 統計・サマリー */}
+          <div className="space-y-6">
+            {/* 統計カード */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">📊 統計サマリー</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <span className="text-green-800 font-medium">総在宅学習者</span>
+                  <span className="text-2xl font-bold text-green-600">{students.length}名</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <span className="text-blue-800 font-medium">計画作成済み</span>
+                  <span className="text-2xl font-bold text-blue-600">
+                    {students.filter(s => hasPlan(s.id)).length}名
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                  <span className="text-orange-800 font-medium">計画未作成</span>
+                  <span className="text-2xl font-bold text-orange-600">
+                    {students.filter(s => !hasPlan(s.id)).length}名
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                  <span className="text-purple-800 font-medium">平均進捗</span>
+                  <span className="text-2xl font-bold text-purple-600">
+                    {Math.round(students.reduce((acc, s) => acc + s.progress, 0) / students.length)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* クイックアクション */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">⚡ クイックアクション</h3>
+              <div className="space-y-3">
+                <button
+                  className="w-full px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                  onClick={() => navigate('/instructor/home-support-evaluations')}
+                >
+                  📋 評価一覧を表示
+                </button>
+                <button
+                  className="w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                  onClick={() => navigate('/instructor/daily-records')}
+                >
+                  📝 日次記録を表示
+                </button>
+                <button
+                  className="w-full px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                  onClick={() => alert('一括メール送信機能は開発中です')}
+                >
+                  📧 一括メール送信
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 個別支援計画作成フォーム */}
-      {showPlanModal && (
-        <div className="modal-overlay">
-          <div className="modal plan-form-modal">
-            <div className="modal-header">
-              <h3>個別支援計画作成</h3>
-              <button 
-                className="close-button"
-                onClick={() => setShowPlanModal(false)}
-              >
-                ×
-              </button>
+      {/* 個別支援計画モーダル */}
+      {showPlanModal && selectedStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-800">
+                  📋 {selectedStudent.name}さんの個別支援計画
+                </h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-200"
+                  onClick={() => setShowPlanModal(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             
-            <form onSubmit={savePlan}>
-              <div className="form-group">
-                <label>対象者 *</label>
-                <select 
-                  value={selectedStudent ? selectedStudent.id : ''}
-                  onChange={(e) => {
-                    const student = students.find(s => s.id === e.target.value);
-                    setSelectedStudent(student);
-                  }}
-                  required
+            <form onSubmit={savePlan} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    長期目標
+                  </label>
+                  <textarea
+                    value={planForm.longTermGoal}
+                    onChange={(e) => setPlanForm({...planForm, longTermGoal: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                    rows="3"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    短期目標
+                  </label>
+                  <textarea
+                    value={planForm.shortTermGoal}
+                    onChange={(e) => setPlanForm({...planForm, shortTermGoal: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                    rows="3"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    ニーズ・課題
+                  </label>
+                  <textarea
+                    value={planForm.needs}
+                    onChange={(e) => setPlanForm({...planForm, needs: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                    rows="4"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    支援内容
+                  </label>
+                  <textarea
+                    value={planForm.supportContent}
+                    onChange={(e) => setPlanForm({...planForm, supportContent: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                    rows="4"
+                    required
+                  />
+                </div>
+                
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    目標達成予定日
+                  </label>
+                  <input
+                    type="date"
+                    value={planForm.targetDate}
+                    onChange={(e) => setPlanForm({...planForm, targetDate: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button 
+                  type="button"
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                  onClick={() => setShowPlanModal(false)}
                 >
-                  <option value="">選択してください</option>
-                  {students.map(student => (
-                    <option key={student.id} value={student.id}>
-                      {student.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>長期目標</label>
-                <textarea
-                  value={planForm.longTermGoal}
-                  onChange={(e) => setPlanForm({...planForm, longTermGoal: e.target.value})}
-                  placeholder="例: しっかりと就労できるよう、心身の健康を維持する"
-                  required
-                  rows="3"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>短期目標</label>
-                <textarea
-                  value={planForm.shortTermGoal}
-                  onChange={(e) => setPlanForm({...planForm, shortTermGoal: e.target.value})}
-                  placeholder="例: 新しい環境や就労のスタイルに慣れる"
-                  rows="3"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>本人のニーズ</label>
-                <textarea
-                  value={planForm.needs}
-                  onChange={(e) => setPlanForm({...planForm, needs: e.target.value})}
-                  placeholder="例: ・いずれはスキルアップしたい&#10;・天候が悪くなると頭痛などで体調が悪くなることがある"
-                  rows="4"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>個別支援内容</label>
-                <textarea
-                  value={planForm.supportContent}
-                  onChange={(e) => setPlanForm({...planForm, supportContent: e.target.value})}
-                  placeholder="具体的な支援内容を記載してください"
-                  rows="6"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>目標達成時期</label>
-                <input
-                  type="date"
-                  value={planForm.targetDate}
-                  onChange={(e) => setPlanForm({...planForm, targetDate: e.target.value})}
-                />
-              </div>
-
-              <div className="form-actions">
-                <button type="button" onClick={() => setShowPlanModal(false)}>
                   キャンセル
                 </button>
-                <button type="submit" className="primary">
-                  作成
+                <button 
+                  type="submit"
+                  className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium transition-all duration-200"
+                >
+                  保存
                 </button>
               </div>
             </form>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './CourseManagement.css';
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([
@@ -135,8 +134,6 @@ const CourseManagement = () => {
     return course ? course.title : courseId;
   };
 
-
-
   // フィルタリング機能
   const getFilteredCourses = () => {
     let filtered = courses;
@@ -162,6 +159,34 @@ const CourseManagement = () => {
     }
 
     return filtered;
+  };
+
+  // ソート機能を追加
+  const [sortConfig, setSortConfig] = useState({ key: 'title', direction: 'asc' });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortedCourses = () => {
+    const filtered = getFilteredCourses();
+    return [...filtered].sort((a, b) => {
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
+      
+      if (sortConfig.key === 'status') {
+        aValue = aValue === 'active' ? '公開中' : '非公開';
+        bValue = bValue === 'active' ? '公開中' : '非公開';
+      }
+      
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
   };
 
   // コース追加処理
@@ -198,7 +223,6 @@ const CourseManagement = () => {
       order: 1
     });
     setShowAddForm(false);
-    alert('新しいコースが作成されました！');
   };
 
   // コース編集処理
@@ -207,44 +231,49 @@ const CourseManagement = () => {
     setShowEditModal(true);
   };
 
-  // レッスン管理画面への遷移
+  // レッスン管理処理
   const handleManageLessons = (courseId) => {
-    // レッスン管理タブに遷移する処理
-    // 実際の実装では、親コンポーネントから渡された関数を使用
-    alert(`${courseId}のレッスン管理画面に遷移します。レッスン管理タブをご確認ください。`);
+    // TODO: レッスン管理ページへの遷移
+    console.log('レッスン管理:', courseId);
   };
 
   // コース削除処理
   const handleDeleteCourse = (courseId) => {
-    if (window.confirm('このコースを削除してもよろしいですか？\n※削除すると元に戻せません。')) {
+    if (window.confirm('このコースを削除しますか？この操作は取り消せません。')) {
       const updatedCourses = courses.filter(course => course.id !== courseId);
       setCourses(updatedCourses);
-      
-      // ローカルストレージにコースデータを保存
       localStorage.setItem('courses', JSON.stringify(updatedCourses));
-      
-      alert('コースが削除されました。');
     }
   };
 
   // コースステータス切り替え
   const toggleCourseStatus = (courseId) => {
-    const updatedCourses = courses.map(course => 
-      course.id === courseId 
-        ? { 
-            ...course, 
-            status: course.status === 'active' ? 'inactive' : 'active',
-            lastUpdated: new Date().toISOString().split('T')[0]
-          }
-        : course
-    );
-    setCourses(updatedCourses);
+    const updatedCourses = courses.map(course => {
+      if (course.id === courseId) {
+        let newStatus;
+        switch (course.status) {
+          case 'active':
+            newStatus = 'inactive';
+            break;
+          case 'inactive':
+            newStatus = 'active';
+            break;
+          case 'draft':
+            newStatus = 'active';
+            break;
+          default:
+            newStatus = 'active';
+        }
+        return { ...course, status: newStatus, lastUpdated: new Date().toISOString().split('T')[0] };
+      }
+      return course;
+    });
     
-    // ローカルストレージにコースデータを保存
+    setCourses(updatedCourses);
     localStorage.setItem('courses', JSON.stringify(updatedCourses));
   };
 
-  // 難易度表示用の関数
+  // 難易度ラベル取得
   const getDifficultyLabel = (difficulty) => {
     switch (difficulty) {
       case 'beginner': return '初級';
@@ -254,7 +283,7 @@ const CourseManagement = () => {
     }
   };
 
-  // ステータス表示用の関数
+  // ステータスラベル取得
   const getStatusLabel = (status) => {
     switch (status) {
       case 'active': return '公開中';
@@ -264,20 +293,21 @@ const CourseManagement = () => {
     }
   };
 
+  // 入力値変更処理
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setNewCourse(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   return (
-    <div className="course-management">
-      <div className="management-header">
-        <h2>コース管理</h2>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-8 pb-4 border-b-2 border-gray-200">
+        <h2 className="text-3xl font-bold text-gray-800">コース管理</h2>
         <button 
-          className="add-course-button"
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
           onClick={() => setShowAddForm(true)}
         >
           + 新しいコースを作成
@@ -285,23 +315,24 @@ const CourseManagement = () => {
       </div>
 
       {/* フィルターセクション */}
-      <div className="filters-section">
-        <div className="search-bar">
+      <div className="bg-gray-50 rounded-xl p-6 mb-6 shadow-sm">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="コース名、説明、タグで検索..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
           />
         </div>
 
-        <div className="filters-row">
-          <div className="filter-group">
-            <label>カテゴリ:</label>
+        <div className="flex flex-wrap gap-6 items-end mb-4">
+          <div className="flex flex-col min-w-[150px]">
+            <label className="font-semibold text-gray-700 mb-2 text-sm">カテゴリ:</label>
             <select 
               value={categoryFilter} 
               onChange={(e) => setCategoryFilter(e.target.value)}
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
             >
               <option value="all">全てのカテゴリ</option>
               {categories.map(category => (
@@ -312,11 +343,12 @@ const CourseManagement = () => {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label>難易度:</label>
+          <div className="flex flex-col min-w-[150px]">
+            <label className="font-semibold text-gray-700 mb-2 text-sm">難易度:</label>
             <select 
               value={difficultyFilter} 
               onChange={(e) => setDifficultyFilter(e.target.value)}
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
             >
               <option value="all">全ての難易度</option>
               <option value="beginner">初級</option>
@@ -325,11 +357,12 @@ const CourseManagement = () => {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label>ステータス:</label>
+          <div className="flex flex-col min-w-[150px]">
+            <label className="font-semibold text-gray-700 mb-2 text-sm">ステータス:</label>
             <select 
               value={statusFilter} 
               onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
             >
               <option value="all">全て</option>
               <option value="active">公開中</option>
@@ -339,7 +372,7 @@ const CourseManagement = () => {
           </div>
 
           <button 
-            className="clear-filters"
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-700"
             onClick={() => {
               setSearchTerm('');
               setCategoryFilter('all');
@@ -351,174 +384,259 @@ const CourseManagement = () => {
           </button>
         </div>
 
-        <div className="results-summary">
+        <div className="font-semibold text-gray-700 text-sm">
           表示中: {getFilteredCourses().length}コース / 全{courses.length}コース
         </div>
       </div>
 
-
-
       {/* コース統計サマリー */}
-      <div className="course-stats">
-        <div className="stat-card">
-          <h3>総コース数</h3>
-          <p className="stat-number">{courses.length}</p>
-          <small>全カテゴリ</small>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <h3 className="text-gray-700 font-semibold mb-4">総コース数</h3>
+          <p className="text-3xl font-bold text-indigo-600 mb-2">{courses.length}</p>
+          <small className="text-gray-500">全カテゴリ</small>
         </div>
-        <div className="stat-card">
-          <h3>公開中コース</h3>
-          <p className="stat-number">{courses.filter(c => c.status === 'active').length}</p>
-          <small>アクティブ</small>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <h3 className="text-gray-700 font-semibold mb-4">公開中コース</h3>
+          <p className="text-3xl font-bold text-green-600 mb-2">{courses.filter(c => c.status === 'active').length}</p>
+          <small className="text-gray-500">アクティブ</small>
         </div>
-        <div className="stat-card">
-          <h3>必修科目</h3>
-          <p className="stat-number">{courses.filter(c => !c.isElective).length}</p>
-          <small>必須コース</small>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <h3 className="text-gray-700 font-semibold mb-4">必修科目</h3>
+          <p className="text-3xl font-bold text-blue-600 mb-2">{courses.filter(c => !c.isElective).length}</p>
+          <small className="text-gray-500">必須コース</small>
         </div>
-        <div className="stat-card">
-          <h3>選択科目</h3>
-          <p className="stat-number">{courses.filter(c => c.isElective).length}</p>
-          <small>選択コース</small>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <h3 className="text-gray-700 font-semibold mb-4">選択科目</h3>
+          <p className="text-3xl font-bold text-purple-600 mb-2">{courses.filter(c => c.isElective).length}</p>
+          <small className="text-gray-500">選択コース</small>
         </div>
       </div>
 
       {/* コース一覧テーブル */}
-      <div className="courses-table-container">
-        <table className="courses-table">
-          <thead>
-            <tr>
-              <th>コース名</th>
-              <th>カテゴリ</th>
-              <th>難易度</th>
-              <th>期間</th>
-              <th>レッスン数</th>
-              <th>前提コース</th>
-              <th>ステータス</th>
-              <th>最終更新</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getFilteredCourses().map(course => (
-              <tr key={course.id} className={`course-row ${course.status}`}>
-                <td className="course-title">
-                  <div className="title-info">
-                    <strong>{course.title}</strong>
-                    <small>{course.description}</small>
-                  </div>
-                </td>
-                <td className="course-category">
-                  <span className="category-badge">{course.category}</span>
-                </td>
-                <td className="course-difficulty">
-                  <span className={`difficulty-badge ${course.difficulty}`}>
-                    {getDifficultyLabel(course.difficulty)}
-                  </span>
-                </td>
-                <td className="course-duration">{course.duration}</td>
-                <td className="course-lessons">{course.totalLessons}レッスン</td>
-                <td className="course-prerequisites">
-                  {course.prerequisites.length > 0 ? (
-                    <div className="prerequisites-list">
-                      {course.prerequisites.map((prerequisite, index) => (
-                        <div key={prerequisite} className="prerequisite-item">
-                          <span className="prerequisite-order">{index + 1}</span>
-                          <span className="prerequisite-name">{getCourseName(prerequisite)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="no-prerequisites">なし</span>
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-red-50">
+              <tr>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('title')}
+                >
+                  📚 コース名
+                  {sortConfig.key === 'title' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
                   )}
-                </td>
-                <td className="course-status">
-                  <span className={`status-badge ${course.status}`}>
-                    {getStatusLabel(course.status)}
-                  </span>
-                </td>
-                <td className="course-updated">{course.lastUpdated}</td>
-                <td className="course-actions">
-                  <div className="action-buttons">
-                    <button 
-                      className="edit-btn"
-                      onClick={() => handleEditCourse(course)}
-                      title="編集"
-                    >
-                      ✏️
-                    </button>
-                    <button 
-                      className="lessons-btn"
-                      onClick={() => handleManageLessons(course.id)}
-                      title="レッスン管理"
-                    >
-                      📖
-                    </button>
-                    <button 
-                      className={`status-toggle ${course.status}`}
-                      onClick={() => toggleCourseStatus(course.id)}
-                      title={course.status === 'active' ? '非公開にする' : '公開する'}
-                    >
-                      {course.status === 'active' ? '🔒' : '🔓'}
-                    </button>
-                    <button 
-                      className="delete-btn"
-                      onClick={() => handleDeleteCourse(course.id)}
-                      title="削除"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </td>
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('category')}
+                >
+                  🏷️ カテゴリ
+                  {sortConfig.key === 'category' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('duration')}
+                >
+                  ⏱️ 期間
+                  {sortConfig.key === 'duration' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('lessonCount')}
+                >
+                  📖 レッスン数
+                  {sortConfig.key === 'lessonCount' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('enrollmentCount')}
+                >
+                  👥 受講者数
+                  {sortConfig.key === 'enrollmentCount' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('status')}
+                >
+                  📊 ステータス
+                  {sortConfig.key === 'status' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 作成日</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {getSortedCourses().map(course => (
+                <tr key={course.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-red-600 font-bold text-sm">
+                          {course.title.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-gray-800">{course.title}</strong>
+                        <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
+                          {course.description}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                      {course.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                      {course.duration}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center">
+                      <span className="text-gray-700 font-medium">{course.totalLessons}レッスン</span>
+                      <div className="ml-2 w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-green-500 transition-all duration-300"
+                          style={{ width: `${Math.min((course.totalLessons / 20) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm">
+                      <span className={`font-medium ${course.enrolledStudents > course.maxEnrollment ? 'text-red-600' : 'text-gray-800'}`}>
+                        {course.enrolledStudents}/{course.maxEnrollment}
+                      </span>
+                      <div className="w-20 h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                        <div 
+                          className="h-full bg-green-500 transition-all duration-300"
+                          style={{ width: `${Math.min((course.enrolledStudents / course.maxEnrollment) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      course.status === 'active' 
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {course.status === 'active' ? '公開中' : '非公開'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600 text-sm">
+                    📅 {course.createdDate}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button 
+                        className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
+                        onClick={() => handleEditCourse(course)}
+                        title="編集"
+                      >
+                        ✏️ 編集
+                      </button>
+                      <button 
+                        className={`px-3 py-1 rounded text-sm font-medium transition-colors duration-300 ${
+                          course.status === 'active'
+                            ? 'bg-red-500 text-white hover:bg-red-600'
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
+                        onClick={() => toggleCourseStatus(course.id)}
+                        title={course.status === 'active' ? '非公開にする' : '公開する'}
+                      >
+                        {course.status === 'active' ? '🚫 非公開' : '✅ 公開'}
+                      </button>
+                      <button 
+                        className="bg-red-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-red-600"
+                        onClick={() => handleDeleteCourse(course.id)}
+                        title="削除"
+                      >
+                        🗑️ 削除
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        {getFilteredCourses().length === 0 && (
-          <div className="no-results">
-            <p>条件に合致するコースが見つかりません。</p>
+        {getSortedCourses().length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">条件に合致するコースが見つかりません。</p>
           </div>
         )}
       </div>
 
       {/* コース追加フォーム */}
       {showAddForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>新しいコースを作成</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">新しいコースを作成</h3>
               <button 
-                className="close-btn"
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors duration-200"
                 onClick={() => setShowAddForm(false)}
               >
                 ×
               </button>
             </div>
             
-            <form className="course-form" onSubmit={handleAddCourse}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="title">コース名 <span className="required">*</span></label>
+            <form className="space-y-6" onSubmit={handleAddCourse}>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    コース名 <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
-                    id="title"
                     name="title"
                     value={newCourse.title}
                     onChange={handleInputChange}
                     required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                   />
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="category">カテゴリ <span className="required">*</span></label>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    カテゴリ <span className="text-red-500">*</span>
+                  </label>
                   <select
-                    id="category"
                     name="category"
                     value={newCourse.category}
                     onChange={handleInputChange}
                     required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                   >
-                    <option value="">選択してください</option>
+                    <option value="">カテゴリを選択</option>
                     {categories.map(category => (
                       <option key={category} value={category}>
                         {category}
@@ -526,197 +644,110 @@ const CourseManagement = () => {
                     ))}
                   </select>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="duration">期間 <span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="duration"
-                    name="duration"
-                    value={newCourse.duration}
-                    onChange={handleInputChange}
-                    placeholder="例: 3ヶ月"
-                    required
-                  />
-                </div>
               </div>
-
-              <div className="form-group">
-                <label htmlFor="description">説明 <span className="required">*</span></label>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  説明 <span className="text-red-500">*</span>
+                </label>
                 <textarea
-                  id="description"
                   name="description"
                   value={newCourse.description}
                   onChange={handleInputChange}
-                  rows="3"
                   required
+                  rows={3}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                 />
+                <small className="text-gray-500">コースの概要を簡潔に説明してください</small>
               </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="difficulty">難易度 <span className="required">*</span></label>
+              
+              <div className="grid md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    期間 <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="duration"
+                    value={newCourse.duration}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="例: 3ヶ月"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    難易度 <span className="text-red-500">*</span>
+                  </label>
                   <select
-                    id="difficulty"
                     name="difficulty"
                     value={newCourse.difficulty}
                     onChange={handleInputChange}
                     required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                   >
                     <option value="beginner">初級</option>
                     <option value="intermediate">中級</option>
                     <option value="advanced">上級</option>
                   </select>
                 </div>
-
-                <div className="form-group">
-                  <label htmlFor="totalLessons">レッスン数 <span className="required">*</span></label>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    レッスン数 <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="number"
-                    id="totalLessons"
                     name="totalLessons"
                     value={newCourse.totalLessons}
                     onChange={handleInputChange}
-                    min="1"
                     required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="tags">タグ（カンマ区切り）</label>
-                  <input
-                    type="text"
-                    id="tags"
-                    name="tags"
-                    value={newCourse.tags}
-                    onChange={handleInputChange}
-                    placeholder="例: HTML, CSS, JavaScript"
+                    min="1"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                   />
                 </div>
               </div>
-
-              <div className="form-group">
-                <label htmlFor="isElective">コース種別 <span className="required">*</span></label>
-                <select
-                  id="isElective"
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  タグ
+                </label>
+                <input
+                  type="text"
+                  name="tags"
+                  value={newCourse.tags}
+                  onChange={handleInputChange}
+                  placeholder="カンマ区切りで入力（例: HTML, CSS, Web制作）"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
+                />
+                <small className="text-gray-500">関連キーワードをカンマ区切りで入力してください</small>
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
                   name="isElective"
-                  value={newCourse.isElective}
-                  onChange={(e) => setNewCourse(prev => ({
-                    ...prev,
-                    isElective: e.target.value === 'true',
-                    prerequisites: e.target.value === 'true' ? [] : prev.prerequisites,
-                    order: e.target.value === 'true' ? 0 : prev.order
-                  }))}
-                  required
-                >
-                  <option value={false}>必修科目</option>
-                  <option value={true}>選択科目</option>
-                </select>
+                  checked={newCourse.isElective}
+                  onChange={handleInputChange}
+                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+                <label className="ml-2 text-sm text-gray-700">
+                  選択科目として設定する
+                </label>
               </div>
-
-              {!newCourse.isElective && (
-                <div className="course-sequence-section">
-                  <h4>📚 受講順序の設定</h4>
-                  <p className="section-description">
-                    このコースの受講順序と前提コースを視覚的に設定できます。
-                  </p>
-                  
-                  <div className="sequence-builder">
-                    <div className="available-courses">
-                      <h5>利用可能なコース</h5>
-                      <div className="course-list">
-                        {getPrerequisiteOptions(newCourse.id).map(course => (
-                          <div 
-                            key={course.id}
-                            className={`course-item ${newCourse.prerequisites.includes(course.id) ? 'selected' : ''}`}
-                            onClick={() => {
-                              const isSelected = newCourse.prerequisites.includes(course.id);
-                              const updatedPrerequisites = isSelected
-                                ? newCourse.prerequisites.filter(id => id !== course.id)
-                                : [...newCourse.prerequisites, course.id];
-                              
-                              setNewCourse(prev => ({
-                                ...prev,
-                                prerequisites: updatedPrerequisites,
-                                order: updatedPrerequisites.length + 1
-                              }));
-                            }}
-                          >
-                            <div className="course-info">
-                              <span className="course-title">{course.title}</span>
-                              <span className="course-category">{course.category}</span>
-                            </div>
-                            <div className="course-actions">
-                              {newCourse.prerequisites.includes(course.id) ? (
-                                <span className="selected-indicator">✓</span>
-                              ) : (
-                                <span className="add-indicator">+</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="sequence-display">
-                      <h5>受講順序</h5>
-                      <div className="sequence-list">
-                        {newCourse.prerequisites.length === 0 ? (
-                          <div className="no-prerequisites">
-                            <p>前提コースが設定されていません</p>
-                            <small>このコースは最初に受講できます</small>
-                          </div>
-                        ) : (
-                          newCourse.prerequisites.map((courseId, index) => {
-                            const course = getPrerequisiteOptions(newCourse.id).find(c => c.id === courseId);
-                            return (
-                              <div key={courseId} className="sequence-item">
-                                <div className="sequence-order">{index + 1}</div>
-                                <div className="sequence-course">
-                                  <span className="course-title">{course?.title}</span>
-                                  <span className="course-category">{course?.category}</span>
-                                </div>
-                                <button
-                                  type="button"
-                                  className="remove-sequence-btn"
-                                  onClick={() => {
-                                    const updatedPrerequisites = newCourse.prerequisites.filter(id => id !== courseId);
-                                    setNewCourse(prev => ({
-                                      ...prev,
-                                      prerequisites: updatedPrerequisites,
-                                      order: updatedPrerequisites.length + 1
-                                    }));
-                                  }}
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                      
-                      <div className="current-course">
-                        <div className="sequence-order current">{newCourse.prerequisites.length + 1}</div>
-                        <div className="sequence-course current">
-                          <span className="course-title">{newCourse.title || '新しいコース'}</span>
-                          <span className="course-category">{newCourse.category || '未設定'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-
-
-              <div className="form-actions">
-                <button type="submit" className="submit-button">
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-indigo-600"
+                >
                   コースを作成
                 </button>
-                <button 
-                  type="button" 
-                  className="cancel-button"
+                <button
+                  type="button"
+                  className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-600"
                   onClick={() => setShowAddForm(false)}
                 >
                   キャンセル
@@ -732,18 +763,15 @@ const CourseManagement = () => {
         <CourseEditModal
           course={selectedCourse}
           courses={courses}
-                  onUpdate={(updatedCourse) => {
-          const updatedCourses = courses.map(course => 
-            course.id === updatedCourse.id ? updatedCourse : course
-          );
-          setCourses(updatedCourses);
-          
-          // ローカルストレージにコースデータを保存
-          localStorage.setItem('courses', JSON.stringify(updatedCourses));
-          
-          setShowEditModal(false);
-          setSelectedCourse(null);
-        }}
+          onUpdate={(updatedCourse) => {
+            const updatedCourses = courses.map(c => 
+              c.id === updatedCourse.id ? updatedCourse : c
+            );
+            setCourses(updatedCourses);
+            localStorage.setItem('courses', JSON.stringify(updatedCourses));
+            setShowEditModal(false);
+            setSelectedCourse(null);
+          }}
           onClose={() => {
             setShowEditModal(false);
             setSelectedCourse(null);
@@ -757,269 +785,183 @@ const CourseManagement = () => {
 
 // コース編集モーダルコンポーネント
 const CourseEditModal = ({ course, courses, onUpdate, onClose, onManageLessons }) => {
-  const [formData, setFormData] = useState({
-    title: course.title,
-    category: course.category,
-    description: course.description,
-    duration: course.duration,
-    difficulty: course.difficulty,
-    totalLessons: course.totalLessons,
-    tags: course.tags.join(', '),
-    isElective: course.isElective,
-    prerequisites: course.prerequisites,
-    order: course.order
+  const [editData, setEditData] = useState({
+    ...course,
+    tags: course.tags.join(', ')
   });
 
-  const categories = ['選択科目', '必修科目'];
-
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+    const { name, value, type, checked } = e.target;
+    setEditData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedCourse = {
-      ...course,
-      ...formData,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      ...editData,
+      tags: editData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
       lastUpdated: new Date().toISOString().split('T')[0]
     };
     onUpdate(updatedCourse);
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h3>コース編集: {course.title}</h3>
-          <button className="close-btn" onClick={onClose}>×</button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-gray-800">コース編集 - {course.title}</h3>
+          <button 
+            className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors duration-200"
+            onClick={onClose}
+          >
+            ×
+          </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="course-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label>コース名 *</label>
+        
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                コース名 <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="title"
-                value={formData.title}
+                value={editData.title}
                 onChange={handleInputChange}
                 required
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
               />
             </div>
-            <div className="form-group">
-              <label>カテゴリ *</label>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                カテゴリ <span className="text-red-500">*</span>
+              </label>
               <select
                 name="category"
-                value={formData.category}
+                value={editData.category}
                 onChange={handleInputChange}
                 required
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
               >
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
+                <option value="選択科目">選択科目</option>
+                <option value="必修科目">必修科目</option>
               </select>
             </div>
-            <div className="form-group">
-              <label>期間 *</label>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              説明 <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              name="description"
+              value={editData.description}
+              onChange={handleInputChange}
+              required
+              rows={3}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
+            />
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                期間 <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="duration"
-                value={formData.duration}
+                value={editData.duration}
                 onChange={handleInputChange}
-                placeholder="例: 3ヶ月"
                 required
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
               />
             </div>
-          </div>
-
-          <div className="form-group">
-            <label>説明 *</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows="3"
-              required
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label>難易度 *</label>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                難易度 <span className="text-red-500">*</span>
+              </label>
               <select
                 name="difficulty"
-                value={formData.difficulty}
+                value={editData.difficulty}
                 onChange={handleInputChange}
                 required
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
               >
                 <option value="beginner">初級</option>
                 <option value="intermediate">中級</option>
                 <option value="advanced">上級</option>
               </select>
             </div>
-            <div className="form-group">
-              <label>レッスン数 *</label>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                レッスン数 <span className="text-red-500">*</span>
+              </label>
               <input
                 type="number"
                 name="totalLessons"
-                value={formData.totalLessons}
+                value={editData.totalLessons}
                 onChange={handleInputChange}
-                min="1"
                 required
-              />
-            </div>
-            <div className="form-group">
-              <label>タグ</label>
-              <input
-                type="text"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                placeholder="カンマ区切りで入力"
+                min="1"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
               />
             </div>
           </div>
-
-
-
-          <div className="form-group">
-            <label>選択科目</label>
-            <div className="checkbox-group">
-              <input
-                type="checkbox"
-                name="isElective"
-                checked={formData.isElective}
-                onChange={(e) => setFormData(prev => ({ ...prev, isElective: e.target.checked }))}
-              />
-              <label>選択科目として設定</label>
-            </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              タグ
+            </label>
+            <input
+              type="text"
+              name="tags"
+              value={editData.tags}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
+            />
           </div>
-
-          {!formData.isElective && (
-            <div className="course-sequence-section">
-              <h4>📚 受講順序の設定</h4>
-              <p className="section-description">
-                このコースの受講順序と前提コースを視覚的に設定できます。
-              </p>
-              
-              <div className="sequence-builder">
-                <div className="available-courses">
-                  <h5>利用可能なコース</h5>
-                  <div className="course-list">
-                    {courses
-                      .filter(c => c.id !== course.id && !c.isElective)
-                      .sort((a, b) => a.order - b.order)
-                      .map(c => (
-                        <div 
-                          key={c.id}
-                          className={`course-item ${formData.prerequisites.includes(c.id) ? 'selected' : ''}`}
-                          onClick={() => {
-                            const isSelected = formData.prerequisites.includes(c.id);
-                            const updatedPrerequisites = isSelected
-                              ? formData.prerequisites.filter(id => id !== c.id)
-                              : [...formData.prerequisites, c.id];
-                            
-                            setFormData(prev => ({
-                              ...prev,
-                              prerequisites: updatedPrerequisites,
-                              order: updatedPrerequisites.length + 1
-                            }));
-                          }}
-                        >
-                          <div className="course-info">
-                            <span className="course-title">{c.title}</span>
-                            <span className="course-category">{c.category}</span>
-                          </div>
-                          <div className="course-actions">
-                            {formData.prerequisites.includes(c.id) ? (
-                              <span className="selected-indicator">✓</span>
-                            ) : (
-                              <span className="add-indicator">+</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                <div className="sequence-display">
-                  <h5>受講順序</h5>
-                  <div className="sequence-list">
-                    {formData.prerequisites.length === 0 ? (
-                      <div className="no-prerequisites">
-                        <p>前提コースが設定されていません</p>
-                        <small>このコースは最初に受講できます</small>
-                      </div>
-                    ) : (
-                      formData.prerequisites.map((courseId, index) => {
-                        const course = courses.find(c => c.id === courseId);
-                        return (
-                          <div key={courseId} className="sequence-item">
-                            <div className="sequence-order">{index + 1}</div>
-                            <div className="sequence-course">
-                              <span className="course-title">{course?.title}</span>
-                              <span className="course-category">{course?.category}</span>
-                            </div>
-                            <button
-                              type="button"
-                              className="remove-sequence-btn"
-                              onClick={() => {
-                                const updatedPrerequisites = formData.prerequisites.filter(id => id !== courseId);
-                                setFormData(prev => ({
-                                  ...prev,
-                                  prerequisites: updatedPrerequisites,
-                                  order: updatedPrerequisites.length + 1
-                                }));
-                              }}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                  
-                  <div className="current-course">
-                    <div className="sequence-order current">{formData.prerequisites.length + 1}</div>
-                    <div className="sequence-course current">
-                      <span className="course-title">{formData.title}</span>
-                      <span className="course-category">{formData.category}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="lesson-management-notice">
-            <div className="notice-content">
-              <h4>📖 レッスン管理について</h4>
-              <p>このコースのレッスン詳細は、別画面で管理します。</p>
-              <p>レッスンの追加・編集・削除、PDF・動画ファイルのアップロード、動画の分割設定などが可能です。</p>
-              <button 
-                type="button" 
-                className="manage-lessons-btn"
-                onClick={() => onManageLessons(course.id)}
-              >
-                📖 レッスン管理画面を開く
-              </button>
-            </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="isElective"
+              checked={editData.isElective}
+              onChange={handleInputChange}
+              className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            />
+            <label className="ml-2 text-sm text-gray-700">
+              選択科目として設定する
+            </label>
           </div>
-
-          <div className="form-actions">
-            <button type="button" onClick={onClose} className="cancel-btn">
-              キャンセル
+          
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              className="flex-1 bg-indigo-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-indigo-600"
+            >
+              更新
             </button>
-            <button type="submit" className="save-btn">
-              保存
+            <button
+              type="button"
+              className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-green-600"
+              onClick={() => onManageLessons(course.id)}
+            >
+              レッスン管理
+            </button>
+            <button
+              type="button"
+              className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-600"
+              onClick={onClose}
+            >
+              キャンセル
             </button>
           </div>
         </form>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './StudentManagement.css';
 
 const StudentManagement = ({ teacherId }) => {
   // 管理者画面で作成されたコースデータを取得
@@ -687,441 +686,551 @@ const StudentManagement = ({ teacherId }) => {
   };
 
   return (
-    <div className="student-management">
-      <div className="management-header">
-        <div className="header-info">
-          <h2>生徒管理</h2>
-          {(currentInstructor.role === 'instructor' || currentInstructor.role === 'teacher') && (
-            <p className="location-info">
-              📍 {currentInstructor.locationName} ({currentInstructor.facilityName})
-              <br />
-              <small>※同一拠点の他の指導員の生徒も管理できます</small>
-            </p>
-          )}
-        </div>
-        <div className="header-actions">
-          <button 
-            className="bulk-tag-button"
-            onClick={() => setShowTagModal(true)}
-          >
-            🏷️ タグ一括追加
-          </button>
-          <button 
-            className="today-active-button"
-            onClick={sendTodayActiveEmails}
-          >
-            📧 本日有効
-          </button>
-          <button 
-            className="add-student-button"
-            onClick={() => setShowAddForm(true)}
-          >
-            + 新しい生徒を追加
-          </button>
-        </div>
-      </div>
-
-      <div className="filters-section">
-        <div className="top-filters">
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="生徒名、メール、クラス、指導員名で検索..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-            <button className="clear-filters" onClick={clearFilters}>
-              クリア
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 p-6">
+      {/* ヘッダー部分 */}
+      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              👥 生徒管理
+            </h2>
+            {(currentInstructor.role === 'instructor' || currentInstructor.role === 'teacher') && (
+              <div className="flex items-center gap-2 text-gray-600">
+                <span className="text-lg">📍</span>
+                <div>
+                  <p className="font-medium">{currentInstructor.locationName} ({currentInstructor.facilityName})</p>
+                  <p className="text-sm text-gray-500">※同一拠点の他の指導員の生徒も管理できます</p>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button 
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
+              onClick={() => setShowTagModal(true)}
+            >
+              🏷️ タグ一括追加
+            </button>
+            <button 
+              className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
+              onClick={sendTodayActiveEmails}
+            >
+              📧 本日有効
+            </button>
+            <button 
+              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
+              onClick={() => setShowAddForm(true)}
+            >
+              + 新しい生徒を追加
             </button>
           </div>
-
-          <div className="status-filter">
-            <label>ステータス:</label>
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="all">全て</option>
-              <option value="active">稼働中</option>
-              <option value="inactive">停止中</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="tags-filter">
-          <label>タグフィルター:</label>
-          <div className="tags-container">
-            {getAllTags().map(tag => (
-              <button
-                key={tag}
-                className={`tag-button ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="filter-summary">
-          表示中: {getFilteredStudents().length}名 / 全{students.length}名
-          {selectedTags.length > 0 && (
-            <span className="selected-tags">
-              (選択中のタグ: {selectedTags.join(', ')})
-            </span>
-          )}
         </div>
       </div>
 
-      {showAddForm && (
-        <div className="modal-overlay">
-          <div className="add-student-modal">
-            <div className="modal-header">
-              <h3>新しい生徒を追加</h3>
-              <button 
-                className="close-button"
-                onClick={() => {
-                  setShowAddForm(false);
-                  setBulkInputMode(false);
-                  setBulkInputText('');
-                  setBulkLocationId('');
-                  setBulkCanStudyAtHome(false);
-                }}
+      {/* フィルター部分 */}
+      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
+        <div className="space-y-6">
+          {/* トップフィルター */}
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="生徒名、メール、クラス、指導員名で検索..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                />
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <select 
+                value={statusFilter} 
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               >
-                ×
+                <option value="all">全てのステータス</option>
+                <option value="active">稼働中</option>
+                <option value="inactive">停止中</option>
+              </select>
+              <button 
+                className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                onClick={clearFilters}
+              >
+                クリア
               </button>
             </div>
-            
-            <div className="input-mode-toggle">
-              <button 
-                className={`mode-button ${!bulkInputMode ? 'active' : ''}`}
-                onClick={() => setBulkInputMode(false)}
-              >
-                個別入力
-              </button>
-              <button 
-                className={`mode-button ${bulkInputMode ? 'active' : ''}`}
-                onClick={() => setBulkInputMode(true)}
-              >
-                一括入力
-              </button>
-            </div>
-            
-            <form onSubmit={handleAddStudent} className="add-student-form">
-              {!bulkInputMode ? (
-                // 個別入力モード
-                <>
-                  <div className="form-group">
-                    <label htmlFor="name">生徒名</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={newStudent.name}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="生徒の名前を入力"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="email">メールアドレス</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={newStudent.email}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="メールアドレスを入力"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="location">拠点</label>
-                    <select
-                      id="location"
-                      name="locationId"
-                      value={newStudent.locationId}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="">拠点を選択</option>
-                      {getAvailableLocations().map(location => (
-                        <option key={location.id} value={location.id}>
-                          {location.name} ({location.facilityName})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+          </div>
 
-                  <div className="form-group">
-                    <label htmlFor="canStudyAtHome">在宅学習可能</label>
-                    <input
-                      type="checkbox"
-                      id="canStudyAtHome"
-                      name="canStudyAtHome"
-                      checked={newStudent.canStudyAtHome}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </>
-              ) : (
-                // 一括入力モード
-                <>
-                  <div className="form-group">
-                    <label htmlFor="bulkInput">生徒情報（1行に1人）</label>
-                    <textarea
-                      id="bulkInput"
-                      value={bulkInputText}
-                      onChange={(e) => setBulkInputText(e.target.value)}
-                      placeholder="生徒名,メールアドレス&#10;例:&#10;田中太郎,tanaka@example.com&#10;佐藤花子,sato@example.com"
-                      rows={8}
-                      required
-                    />
-                    <small className="input-help">
-                      形式: 生徒名,メールアドレス（カンマ区切り）
-                    </small>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="bulkLocation">拠点</label>
-                    <select
-                      id="bulkLocation"
-                      value={bulkLocationId}
-                      onChange={(e) => setBulkLocationId(e.target.value)}
-                      required
-                    >
-                      <option value="">拠点を選択</option>
-                      {getAvailableLocations().map(location => (
-                        <option key={location.id} value={location.id}>
-                          {location.name} ({location.facilityName})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="bulkCanStudyAtHome">在宅学習可能</label>
-                    <input
-                      type="checkbox"
-                      id="bulkCanStudyAtHome"
-                      checked={bulkCanStudyAtHome}
-                      onChange={(e) => setBulkCanStudyAtHome(e.target.checked)}
-                    />
-                  </div>
-                </>
-              )}
-              
-              <div className="form-actions">
-                <button type="button" onClick={() => {
-                  setShowAddForm(false);
-                  setBulkInputMode(false);
-                  setBulkInputText('');
-                  setBulkLocationId('');
-                  setBulkCanStudyAtHome(false);
-                }}>
-                  キャンセル
+          {/* タグフィルター */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">タグフィルター:</label>
+            <div className="flex flex-wrap gap-2">
+              {getAllTags().map(tag => (
+                <button
+                  key={tag}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
+                    selectedTags.includes(tag) 
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
                 </button>
-                <button type="submit" className="submit-button">
-                  {bulkInputMode ? '一括追加' : '追加'}
+              ))}
+            </div>
+          </div>
+
+          {/* フィルターサマリー */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📊</span>
+              <span className="font-semibold text-gray-700">
+                表示中: {getFilteredStudents().length}名 / 全{students.length}名
+              </span>
+            </div>
+            {selectedTags.length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">選択中のタグ:</span>
+                <div className="flex gap-1">
+                  {selectedTags.map(tag => (
+                    <span key={tag} className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 生徒追加モーダル */}
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-gray-800">新しい生徒を追加</h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-200"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setBulkInputMode(false);
+                    setBulkInputText('');
+                    setBulkLocationId('');
+                    setBulkCanStudyAtHome(false);
+                  }}
+                >
+                  ×
                 </button>
               </div>
-            </form>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+                <button 
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    !bulkInputMode 
+                      ? 'bg-white text-indigo-600 shadow-md' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  onClick={() => setBulkInputMode(false)}
+                >
+                  個別入力
+                </button>
+                <button 
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    bulkInputMode 
+                      ? 'bg-white text-indigo-600 shadow-md' 
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                  onClick={() => setBulkInputMode(true)}
+                >
+                  一括入力
+                </button>
+              </div>
+              
+              <form onSubmit={handleAddStudent} className="space-y-6">
+                {!bulkInputMode ? (
+                  // 個別入力モード
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">生徒名</label>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={newStudent.name}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="生徒の名前を入力"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">メールアドレス</label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={newStudent.email}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="メールアドレスを入力"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-2">拠点</label>
+                        <select
+                          id="location"
+                          name="locationId"
+                          value={newStudent.locationId}
+                          onChange={handleInputChange}
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="">拠点を選択</option>
+                          {getAvailableLocations().map(location => (
+                            <option key={location.id} value={location.id}>
+                              {location.name} ({location.facilityName})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <label htmlFor="canStudyAtHome" className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            id="canStudyAtHome"
+                            name="canStudyAtHome"
+                            checked={newStudent.canStudyAtHome}
+                            onChange={handleInputChange}
+                            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                          />
+                          <span className="text-sm font-semibold text-gray-700">在宅学習可能</span>
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  // 一括入力モード
+                  <>
+                    <div>
+                      <label htmlFor="bulkInput" className="block text-sm font-semibold text-gray-700 mb-2">生徒情報（1行に1人）</label>
+                      <textarea
+                        id="bulkInput"
+                        value={bulkInputText}
+                        onChange={(e) => setBulkInputText(e.target.value)}
+                        placeholder="生徒名,メールアドレス&#10;例:&#10;田中太郎,tanaka@example.com&#10;佐藤花子,sato@example.com"
+                        rows={8}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                      />
+                      <p className="text-sm text-gray-500 mt-2">形式: 生徒名,メールアドレス（カンマ区切り）</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="bulkLocation" className="block text-sm font-semibold text-gray-700 mb-2">拠点</label>
+                        <select
+                          id="bulkLocation"
+                          value={bulkLocationId}
+                          onChange={(e) => setBulkLocationId(e.target.value)}
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="">拠点を選択</option>
+                          {getAvailableLocations().map(location => (
+                            <option key={location.id} value={location.id}>
+                              {location.name} ({location.facilityName})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <label htmlFor="bulkCanStudyAtHome" className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            id="bulkCanStudyAtHome"
+                            checked={bulkCanStudyAtHome}
+                            onChange={(e) => setBulkCanStudyAtHome(e.target.checked)}
+                            className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                          />
+                          <span className="text-sm font-semibold text-gray-700">在宅学習可能</span>
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                <div className="flex gap-4 pt-6 border-t border-gray-200">
+                  <button 
+                    type="button" 
+                    className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setBulkInputMode(false);
+                      setBulkInputText('');
+                      setBulkLocationId('');
+                      setBulkCanStudyAtHome(false);
+                    }}
+                  >
+                    キャンセル
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                  >
+                    {bulkInputMode ? '一括追加' : '追加'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="students-table-container">
-        <table className="students-table">
-          <thead>
-            <tr>
-              <th>
-                <input
-                  type="checkbox"
-                  checked={selectedStudents.length === getFilteredStudents().length && getFilteredStudents().length > 0}
-                  onChange={toggleAllStudents}
-                  className="select-all-checkbox"
-                />
-              </th>
-              <th>利用者名</th>
-              <th>タグ</th>
-              <th>ログインURL</th>
-              <th>状態</th>
-              <th>進行度</th>
-              <th>合格確認</th>
-              <th>成果物確認</th>
-              <th>メール送信</th>
-              <th>一時停止/再開</th>
-              <th>削除</th>
-              <th>在宅記録</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getFilteredStudents().map(student => (
-              <tr key={student.id} className="student-row">
-                <td className="student-checkbox">
+      {/* 生徒テーブル */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gradient-to-r from-indigo-50 to-purple-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">
                   <input
                     type="checkbox"
-                    checked={selectedStudents.includes(student.id)}
-                    onChange={() => toggleStudentSelection(student.id)}
-                    className="student-select-checkbox"
+                    checked={selectedStudents.length === getFilteredStudents().length && getFilteredStudents().length > 0}
+                    onChange={toggleAllStudents}
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                   />
-                </td>
-                <td className="student-name">
-                  <div className="name-info">
-                    <strong 
-                      className="student-name-link"
-                      onClick={() => handleViewStudentDetail(student.id)}
-                      title="生徒詳細を表示"
-                    >
-                      {student.name}
-                    </strong>
-                    <small className="teacher-info">
-                      担当: {student.instructorName}
-                    </small>
-                  </div>
-                </td>
-                <td className="student-tags">
-                  <div className="tags-display">
-                    {student.tags?.map(tag => (
-                      <span key={tag} className="tag-chip">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td className="student-token">
-                  <div className="token-container">
-                    <code className="token-code">{student.loginToken}</code>
-                    <button 
-                      className="copy-token-btn"
-                      onClick={() => copyLoginUrl(student.loginToken)}
-                      title="トークンをコピー"
-                    >
-                      📋
-                    </button>
-                  </div>
-                </td>
-                <td className="student-status">
-                  <span className={`status-indicator ${student.status}`}>
-                    {student.status === 'active' ? '稼働中' : '停止中'}
-                  </span>
-                </td>
-                <td className="student-progress">
-                  <div className="name-info">
-                    <strong>担当: {student.instructorName}</strong>
-                    <br />
-                    <small className="teacher-info">
-                      {(() => {
-                        const course = availableCourses.find(c => c.title === student.class);
-                        if (course) {
-                          const currentLesson = Math.ceil((student.progress / 100) * course.totalLessons);
-                          return `進捗: ${student.progress}% (第${currentLesson}回 / ${course.totalLessons}回)`;
-                        }
-                        return `進捗: ${student.progress}%`;
-                      })()}
-                    </small>
-                  </div>
-                </td>
-                <td className="pass-confirmation">
-                  <span className={`pass-status ${student.progress >= 75 ? 'passed' : 'not-passed'}`}>
-                    {student.progress >= 75 ? '合格' : student.progress > 0 ? '受講中' : '未開始'}
-                  </span>
-                </td>
-                <td className="work-confirmation">
-                  <span className={`work-status ${student.progress >= 50 ? 'confirmed' : 'unconfirmed'}`}>
-                    {student.progress >= 50 ? '確認済' : student.progress > 0 ? '確認待ち' : '未開始'}
-                  </span>
-                </td>
-                 <td className="email-action">
-                   <button 
-                     className="action-btn email-btn"
-                     onClick={() => resendEmail(student)}
-                   >
-                     📧 再送信
-                   </button>
-                 </td>
-                 <td className="pause-resume">
-                  <button 
-                    className={`action-btn ${student.status === 'active' ? 'pause-btn' : 'resume-btn'}`}
-                    onClick={() => toggleStudentStatus(student.id)}
-                  >
-                    {student.status === 'active' ? '停止' : '再開'}
-                  </button>
-                </td>
-                <td className="delete-action">
-                  <button 
-                    className="action-btn delete-btn"
-                    onClick={() => deleteStudent(student.id)}
-                  >
-                    削除
-                  </button>
-                </td>
-                <td className="home-record">
-                  {student.canStudyAtHome ? (
-                    <button 
-                      className="action-btn record-btn"
-                      onClick={() => openRecordModal(student.id)}
-                    >
-                      在宅学習
-                    </button>
-                  ) : (
-                    <span className="no-home-study">在宅不可</span>
-                  )}
-                </td>
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">利用者名</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">タグ</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">ログインURL</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">状態</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">進行度</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">合格確認</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">成果物確認</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">メール送信</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">一時停止/再開</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">削除</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">在宅記録</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {getFilteredStudents().map(student => (
+                <tr key={student.id} className="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200">
+                  <td className="px-6 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedStudents.includes(student.id)}
+                      onChange={() => toggleStudentSelection(student.id)}
+                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <button 
+                        className="text-left font-semibold text-indigo-600 hover:text-indigo-800 transition-colors duration-200"
+                        onClick={() => handleViewStudentDetail(student.id)}
+                        title="生徒詳細を表示"
+                      >
+                        {student.name}
+                      </button>
+                      <span className="text-sm text-gray-500">
+                        担当: {student.instructorName}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      {student.tags?.map(tag => (
+                        <span key={tag} className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <code className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-mono">
+                        {student.loginToken}
+                      </code>
+                      <button 
+                        className="p-1 text-gray-400 hover:text-indigo-600 transition-colors duration-200"
+                        onClick={() => copyLoginUrl(student.loginToken)}
+                        title="トークンをコピー"
+                      >
+                        📋
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      student.status === 'active' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {student.status === 'active' ? '稼働中' : '停止中'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{student.progress}%</span>
+                        <span className="text-gray-500">
+                          {(() => {
+                            const course = availableCourses.find(c => c.title === student.class);
+                            if (course) {
+                              const currentLesson = Math.ceil((student.progress / 100) * course.totalLessons);
+                              return `第${currentLesson}回 / ${course.totalLessons}回`;
+                            }
+                            return '';
+                          })()}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            student.progress >= 75 
+                              ? 'bg-gradient-to-r from-green-400 to-green-600' 
+                              : student.progress >= 50 
+                                ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' 
+                                : 'bg-gradient-to-r from-red-400 to-red-600'
+                          }`}
+                          style={{ width: `${student.progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      student.progress >= 75 
+                        ? 'bg-green-100 text-green-800' 
+                        : student.progress > 0 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {student.progress >= 75 ? '合格' : student.progress > 0 ? '受講中' : '未開始'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      student.progress >= 50 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : student.progress > 0 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {student.progress >= 50 ? '確認済' : student.progress > 0 ? '確認待ち' : '未開始'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button 
+                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition-all duration-200"
+                      onClick={() => resendEmail(student)}
+                    >
+                      📧 再送信
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button 
+                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        student.status === 'active' 
+                          ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                          : 'bg-green-100 text-green-700 hover:bg-green-200'
+                      }`}
+                      onClick={() => toggleStudentStatus(student.id)}
+                    >
+                      {student.status === 'active' ? '停止' : '再開'}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button 
+                      className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-all duration-200"
+                      onClick={() => deleteStudent(student.id)}
+                    >
+                      削除
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    {student.canStudyAtHome ? (
+                      <button 
+                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition-all duration-200"
+                        onClick={() => openRecordModal(student.id)}
+                      >
+                        在宅学習
+                      </button>
+                    ) : (
+                      <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-sm">
+                        在宅不可
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* タグ一括追加モーダル */}
       {showTagModal && (
-        <div className="modal-overlay">
-          <div className="tag-modal">
-            <div className="modal-header">
-              <h3>🏷️ タグ一括追加</h3>
-              <button 
-                className="close-button"
-                onClick={() => {
-                  setShowTagModal(false);
-                  setSelectedStudents([]);
-                  setTagsToAdd([]);
-                }}
-              >
-                ×
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-gray-800">🏷️ タグ一括追加</h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-200"
+                  onClick={() => {
+                    setShowTagModal(false);
+                    setSelectedStudents([]);
+                    setTagsToAdd([]);
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             
-            <div className="tag-modal-content">
+            <div className="p-6 space-y-8">
               {/* 生徒選択セクション */}
-              <div className="student-selection-section">
-                <h4>📋 生徒選択</h4>
-                <div className="student-selection-info">
-                  <p>選択中の生徒: <strong>{selectedStudents.length}名</strong></p>
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6">
+                <h4 className="text-lg font-semibold text-gray-800 mb-4">📋 生徒選択</h4>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-gray-700">選択中の生徒: <strong className="text-indigo-600">{selectedStudents.length}名</strong></p>
                   <button 
-                    className="select-all-btn"
+                    className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-medium hover:bg-indigo-200 transition-all duration-200"
                     onClick={toggleAllStudents}
                   >
                     {selectedStudents.length === getFilteredStudents().length ? '全選択解除' : '全選択'}
                   </button>
                 </div>
                 
-                <div className="student-list">
+                <div className="max-h-40 overflow-y-auto space-y-2">
                   {getFilteredStudents().map(student => (
-                    <div 
-                      key={student.id} 
-                      className={`student-item ${selectedStudents.includes(student.id) ? 'selected' : ''}`}
-                      onClick={() => toggleStudentSelection(student.id)}
-                    >
+                    <div key={student.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
                       <input
                         type="checkbox"
                         checked={selectedStudents.includes(student.id)}
                         onChange={() => toggleStudentSelection(student.id)}
-                        className="student-checkbox"
+                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                       />
-                      <div className="student-info">
-                        <span className="student-name">{student.name}</span>
-                        <span className="student-instructor">担当: {student.instructorName}</span>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-800">{student.name}</span>
+                        <span className="text-sm text-gray-500 ml-2">担当: {student.instructorName}</span>
                       </div>
                     </div>
                   ))}
@@ -1129,38 +1238,41 @@ const StudentManagement = ({ teacherId }) => {
               </div>
 
               {/* タグ選択セクション */}
-              <div className="tag-selection-section">
-                <h4>🏷️ 付与するタグ</h4>
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+                <h4 className="text-lg font-semibold text-gray-800 mb-4">🏷️ 付与するタグ</h4>
                 
                 {/* 新規タグ作成 */}
-                <div className="new-tag-section">
-                  <h5>新規タグ作成</h5>
-                  <div className="new-tag-input">
+                <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200">
+                  <h5 className="font-semibold text-gray-800 mb-3">新規タグ作成</h5>
+                  <div className="flex gap-3">
                     <input
                       type="text"
                       value={newTagName}
                       onChange={(e) => setNewTagName(e.target.value)}
                       placeholder="新しいタグ名を入力"
-                      onKeyPress={(e) => e.key === 'Enter' && createNewTag()}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                     />
                     <button 
-                      className="create-tag-btn"
+                      className="px-6 py-2 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-600 transition-all duration-200"
                       onClick={createNewTag}
-                      disabled={!newTagName.trim()}
                     >
                       作成
                     </button>
                   </div>
                 </div>
-
+                
                 {/* 既存タグ選択 */}
-                <div className="existing-tags-section">
-                  <h5>既存タグから選択</h5>
-                  <div className="tags-grid">
+                <div className="space-y-3">
+                  <h5 className="font-semibold text-gray-800">既存タグ選択</h5>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {customTags.map(tag => (
                       <button
                         key={tag}
-                        className={`tag-option ${tagsToAdd.includes(tag) ? 'selected' : ''}`}
+                        className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
+                          tagsToAdd.includes(tag)
+                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                            : 'bg-white text-gray-700 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
+                        }`}
                         onClick={() => toggleTagToAdd(tag)}
                       >
                         {tag}
@@ -1168,50 +1280,27 @@ const StudentManagement = ({ teacherId }) => {
                     ))}
                   </div>
                 </div>
-
-                {/* 選択されたタグ表示 */}
-                {tagsToAdd.length > 0 && (
-                  <div className="selected-tags-display">
-                    <h5>選択中のタグ</h5>
-                    <div className="selected-tags-list">
-                      {tagsToAdd.map(tag => (
-                        <span key={tag} className="selected-tag">
-                          {tag}
-                          <button 
-                            className="remove-tag-btn"
-                            onClick={() => toggleTagToAdd(tag)}
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
 
-            <div className="modal-actions">
-              <button 
-                className="cancel-btn"
-                onClick={() => {
-                  setShowTagModal(false);
-                  setSelectedStudents([]);
-                  setTagsToAdd([]);
-                }}
-              >
-                キャンセル
-              </button>
-              <button 
-                className="apply-tags-btn"
-                onClick={applyTagsToStudents}
-                disabled={selectedStudents.length === 0 || tagsToAdd.length === 0}
-              >
-                {selectedStudents.length > 0 && tagsToAdd.length > 0 
-                  ? `${selectedStudents.length}名に${tagsToAdd.length}個のタグを付与`
-                  : 'タグを付与'
-                }
-              </button>
+              {/* アクションボタン */}
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button 
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                  onClick={() => {
+                    setShowTagModal(false);
+                    setSelectedStudents([]);
+                    setTagsToAdd([]);
+                  }}
+                >
+                  キャンセル
+                </button>
+                <button 
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                  onClick={applyTagsToStudents}
+                >
+                  タグを適用
+                </button>
+              </div>
             </div>
           </div>
         </div>

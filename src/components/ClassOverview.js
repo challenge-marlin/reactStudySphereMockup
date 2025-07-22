@@ -1,5 +1,4 @@
 import React from 'react';
-import './ClassOverview.css';
 
 const ClassOverview = ({ teacherId }) => {
   // モックデータ
@@ -25,66 +24,66 @@ const ClassOverview = ({ teacherId }) => {
   ];
 
   return (
-    <div className="class-overview">
-      <div className="overview-header">
-        <h2>指導員概要</h2>
-        <p>担当生徒の個別学習状況を確認できます</p>
+    <div className="bg-white rounded-xl p-8 shadow-lg">
+      <div className="mb-8">
+        <h2 className="text-3xl text-gray-800 mb-2">指導員概要</h2>
+        <p className="text-gray-600 text-base">担当生徒の個別学習状況を確認できます</p>
       </div>
 
       {/* 統計カード */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">👥</div>
-          <div className="stat-content">
-            <h3>総生徒数</h3>
-            <p className="stat-number">{classStats.totalStudents}</p>
-            <small>アクティブ: {classStats.activeStudents}名</small>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 flex items-center gap-4 border border-green-200 transition-transform duration-200 hover:-translate-y-1">
+          <div className="text-4xl">👥</div>
+          <div>
+            <h3 className="text-2xl text-green-800 font-bold">総生徒数</h3>
+            <p className="text-green-700 text-lg font-medium">{classStats.totalStudents}</p>
+            <small className="text-green-600 text-sm">アクティブ: {classStats.activeStudents}名</small>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">📈</div>
-          <div className="stat-content">
-            <h3>平均進捗</h3>
-            <p className="stat-number">{classStats.averageProgress}%</p>
-            <small>全体平均</small>
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 flex items-center gap-4 border border-blue-200 transition-transform duration-200 hover:-translate-y-1">
+          <div className="text-4xl">📈</div>
+          <div>
+            <h3 className="text-2xl text-blue-800 font-bold">平均進捗</h3>
+            <p className="text-blue-700 text-lg font-medium">{classStats.averageProgress}%</p>
+            <small className="text-blue-600 text-sm">全体平均</small>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">✅</div>
-          <div className="stat-content">
-            <h3>完了コース</h3>
-            <p className="stat-number">{classStats.completedCourses}</p>
-            <small>累計完了数</small>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 flex items-center gap-4 border border-purple-200 transition-transform duration-200 hover:-translate-y-1">
+          <div className="text-4xl">✅</div>
+          <div>
+            <h3 className="text-2xl text-purple-800 font-bold">完了コース</h3>
+            <p className="text-purple-700 text-lg font-medium">{classStats.completedCourses}</p>
+            <small className="text-purple-600 text-sm">累計完了数</small>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">📝</div>
-          <div className="stat-content">
-            <h3>課題待ち</h3>
-            <p className="stat-number">{classStats.pendingAssignments}</p>
-            <small>提出待ち課題</small>
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 flex items-center gap-4 border border-orange-200 transition-transform duration-200 hover:-translate-y-1">
+          <div className="text-4xl">📝</div>
+          <div>
+            <h3 className="text-2xl text-orange-800 font-bold">課題待ち</h3>
+            <p className="text-orange-700 text-lg font-medium">{classStats.pendingAssignments}</p>
+            <small className="text-orange-600 text-sm">提出待ち課題</small>
           </div>
         </div>
       </div>
 
       {/* 最近の活動 */}
-      <div className="recent-activity-section">
-        <h3>最近の活動</h3>
-        <div className="activity-list">
+      <div className="bg-gray-50 rounded-xl p-6 mb-6">
+        <h3 className="text-2xl text-gray-800 mb-4">最近の活動</h3>
+        <div className="space-y-4">
           {recentStudentActivity.map((activity, index) => (
-            <div key={index} className="activity-item">
-              <div className="activity-avatar">
+            <div key={index} className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+              <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold">
                 {activity.name.charAt(0)}
               </div>
-              <div className="activity-content">
-                <div className="activity-name">{activity.name}</div>
-                <div className="activity-action">{activity.action}</div>
-                <div className="activity-meta">
-                  <span className="activity-time">{activity.time}</span>
-                  <span className="activity-progress">進捗: {activity.progress}%</span>
+              <div className="flex-1">
+                <div className="font-semibold text-green-700">{activity.name}</div>
+                <div className="text-gray-800">{activity.action}</div>
+                <div className="flex gap-4 text-sm text-gray-600 mt-1">
+                  <span>{activity.time}</span>
+                  <span>進捗: {activity.progress}%</span>
                 </div>
               </div>
             </div>
@@ -93,17 +92,19 @@ const ClassOverview = ({ teacherId }) => {
       </div>
 
       {/* 期限が近い課題 */}
-      <div className="deadlines-section">
-        <h3>期限が近い課題</h3>
-        <div className="deadlines-list">
+      <div className="bg-gray-50 rounded-xl p-6">
+        <h3 className="text-2xl text-gray-800 mb-4">期限が近い課題</h3>
+        <div className="space-y-4">
           {upcomingDeadlines.map((deadline, index) => (
-            <div key={index} className="deadline-item">
-              <div className="deadline-info">
-                <h4>{deadline.title}</h4>
-                <p>期限: {deadline.dueDate}</p>
-                <span className="student-count">{deadline.studentsCount}名対象</span>
+            <div key={index} className="flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-1">{deadline.title}</h4>
+                <p className="text-gray-600 text-sm mb-1">期限: {deadline.dueDate}</p>
+                <span className="text-blue-600 text-sm font-medium">{deadline.studentsCount}名対象</span>
               </div>
-              <button className="view-details-btn">詳細を見る</button>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-200">
+                詳細を見る
+              </button>
             </div>
           ))}
         </div>

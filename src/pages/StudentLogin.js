@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './StudentLogin.css';
 
 const StudentLogin = () => {
   const { token } = useParams();
@@ -67,16 +66,21 @@ const StudentLogin = () => {
   ];
 
   const SampleStudentLinks = () => (
-    <div className="sample-student-links" style={{ marginTop: 32, padding: 16, background: '#f8f8f8', borderRadius: 8 }}>
-      <h3 style={{ marginBottom: 8 }}>サンプル生徒ログインURL</h3>
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+    <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">サンプル生徒ログインURL</h3>
+      <ul className="space-y-1">
         {sampleStudentLinks.map(link => (
-          <li key={link.url} style={{ marginBottom: 4 }}>
-            <a href={link.url}>{link.label} ({link.url})</a>
+          <li key={link.url}>
+            <a 
+              href={link.url}
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              {link.label} ({link.url})
+            </a>
           </li>
         ))}
       </ul>
-      <div style={{ fontSize: '0.9em', color: '#888', marginTop: 8 }}>
+      <div className="text-sm text-gray-600 mt-2">
         ※上記URLをクリックすると該当生徒としてログインできます（モック動作）
       </div>
     </div>
@@ -84,12 +88,10 @@ const StudentLogin = () => {
 
   if (isValidating) {
     return (
-      <div className="student-login">
-        <div className="login-container">
-          <div className="student-loading-spinner">
-            <div className="student-spinner"></div>
-            <p>ログイン中...</p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 via-cyan-400 to-blue-500 flex items-center justify-center p-5">
+        <div className="bg-white rounded-xl shadow-xl p-8 text-center max-w-sm w-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-700 text-lg">ログイン中...</p>
         </div>
       </div>
     );
@@ -97,12 +99,15 @@ const StudentLogin = () => {
 
   if (error) {
     return (
-      <div className="student-login">
-        <div className="login-container">
-          <div className="error-message">
-            <h2>ログインエラー</h2>
-            <p>{error}</p>
-            <button onClick={() => navigate('/')} className="back-button">
+      <div className="min-h-screen bg-gradient-to-br from-blue-400 via-cyan-400 to-blue-500 flex items-center justify-center p-5">
+        <div className="bg-white rounded-xl shadow-xl p-8 text-center max-w-md w-full">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">ログインエラー</h2>
+            <p className="text-gray-700 text-lg mb-6">{error}</p>
+            <button 
+              onClick={() => navigate('/')} 
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 px-6 rounded-lg font-medium transition-all duration-200 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg hover:-translate-y-0.5"
+            >
               ログイン画面に戻る
             </button>
           </div>
@@ -114,8 +119,8 @@ const StudentLogin = () => {
 
   // ログイン成功時は即リダイレクトされるため何も表示しない
   return (
-    <div className="student-login">
-      <div className="login-container">
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-cyan-400 to-blue-500 flex items-center justify-center p-5">
+      <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full">
         <SampleStudentLinks />
       </div>
     </div>

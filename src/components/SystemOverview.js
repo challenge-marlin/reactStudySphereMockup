@@ -1,5 +1,4 @@
 import React from 'react';
-import './SystemOverview.css';
 
 const SystemOverview = () => {
   // カリキュラムデータ（コース管理から移動）
@@ -197,38 +196,47 @@ const SystemOverview = () => {
     }
   };
 
-  const getAlertClass = (type) => {
+  const getAlertBgColor = (type) => {
     switch (type) {
-      case 'warning': return 'alert-warning';
-      case 'info': return 'alert-info';
-      case 'success': return 'alert-success';
-      case 'error': return 'alert-error';
-      default: return 'alert-info';
+      case 'warning': return 'bg-yellow-50 border-l-yellow-400';
+      case 'info': return 'bg-blue-50 border-l-blue-400';
+      case 'success': return 'bg-green-50 border-l-green-400';
+      case 'error': return 'bg-red-50 border-l-red-400';
+      default: return 'bg-blue-50 border-l-blue-400';
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high': return 'bg-red-500 text-white';
+      case 'medium': return 'bg-yellow-500 text-gray-800';
+      case 'low': return 'bg-green-500 text-white';
+      default: return 'bg-gray-500 text-white';
     }
   };
 
   return (
-    <div className="system-overview">
-      <div className="overview-header">
-        <h2>システム概要</h2>
-        <p>Study Sphereの全体的な利用状況とアラート情報をご確認いただけます</p>
+    <div className="bg-white rounded-xl p-8 shadow-lg">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">システム概要</h2>
+        <p className="text-gray-600">Study Sphereの全体的な利用状況とアラート情報をご確認いただけます</p>
       </div>
 
       {/* アラートセクション */}
-      <div className="alerts-section">
-        <h3>📢 システムアラート</h3>
-        <div className="alerts-list">
+      <div className="bg-gray-50 rounded-xl p-6 mb-8">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">📢 システムアラート</h3>
+        <div className="space-y-4">
           {alerts.map((alert, index) => (
-            <div key={index} className={`alert-item ${getAlertClass(alert.type)}`}>
-              <div className="alert-icon">{getAlertIcon(alert.type)}</div>
-              <div className="alert-content">
-                <div className="alert-header">
-                  <h4>{alert.title}</h4>
-                  <span className="alert-time">{alert.time}</span>
+            <div key={index} className={`flex items-center p-4 rounded-lg border-l-4 ${getAlertBgColor(alert.type)} shadow-sm hover:translate-x-1 transition-transform duration-200`}>
+              <div className="text-2xl mr-4">{getAlertIcon(alert.type)}</div>
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-2">
+                  <h4 className="font-semibold text-gray-800">{alert.title}</h4>
+                  <span className="text-sm text-gray-500">{alert.time}</span>
                 </div>
-                <p>{alert.message}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{alert.message}</p>
               </div>
-              <div className={`alert-priority ${alert.priority}`}>
+              <div className={`px-3 py-1 rounded-full text-xs font-semibold min-w-[30px] text-center ${getPriorityColor(alert.priority)}`}>
                 {alert.priority === 'high' ? '高' : alert.priority === 'medium' ? '中' : '低'}
               </div>
             </div>
@@ -237,79 +245,79 @@ const SystemOverview = () => {
       </div>
 
       {/* システム統計 */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">👨‍🏫</div>
-          <div className="stat-content">
-            <h3>{systemStats.totalInstructors}</h3>
-            <p>登録指導員数</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 flex items-center gap-4 border border-green-200 hover:-translate-y-1 transition-transform duration-200">
+          <div className="text-4xl">👨‍🏫</div>
+          <div>
+            <h3 className="text-3xl font-bold text-green-600">{systemStats.totalInstructors}</h3>
+            <p className="text-green-700 font-medium text-sm">登録指導員数</p>
           </div>
         </div>
         
-        <div className="stat-card">
-          <div className="stat-icon">👥</div>
-          <div className="stat-content">
-            <h3>{systemStats.totalStudents}</h3>
-            <p>登録生徒数</p>
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 flex items-center gap-4 border border-blue-200 hover:-translate-y-1 transition-transform duration-200">
+          <div className="text-4xl">👥</div>
+          <div>
+            <h3 className="text-3xl font-bold text-blue-600">{systemStats.totalStudents}</h3>
+            <p className="text-blue-700 font-medium text-sm">登録生徒数</p>
           </div>
         </div>
         
-        <div className="stat-card">
-          <div className="stat-icon">📚</div>
-          <div className="stat-content">
-            <h3>{systemStats.activeCourses}/{systemStats.totalCourses}</h3>
-            <p>アクティブコース</p>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 flex items-center gap-4 border border-purple-200 hover:-translate-y-1 transition-transform duration-200">
+          <div className="text-4xl">📚</div>
+          <div>
+            <h3 className="text-3xl font-bold text-purple-600">{systemStats.activeCourses}/{systemStats.totalCourses}</h3>
+            <p className="text-purple-700 font-medium text-sm">アクティブコース</p>
           </div>
         </div>
         
-        <div className="stat-card">
-          <div className="stat-icon">🏢</div>
-          <div className="stat-content">
-            <h3>{systemStats.totalFacilities}</h3>
-            <p>事業所数</p>
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 flex items-center gap-4 border border-orange-200 hover:-translate-y-1 transition-transform duration-200">
+          <div className="text-4xl">🏢</div>
+          <div>
+            <h3 className="text-3xl font-bold text-orange-600">{systemStats.totalFacilities}</h3>
+            <p className="text-orange-700 font-medium text-sm">事業所数</p>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">📍</div>
-          <div className="stat-content">
-            <h3>{systemStats.totalLocations}</h3>
-            <p>拠点数</p>
+        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 flex items-center gap-4 border border-indigo-200 hover:-translate-y-1 transition-transform duration-200">
+          <div className="text-4xl">📍</div>
+          <div>
+            <h3 className="text-3xl font-bold text-indigo-600">{systemStats.totalLocations}</h3>
+            <p className="text-indigo-700 font-medium text-sm">拠点数</p>
           </div>
         </div>
         
-        <div className="stat-card">
-          <div className="stat-icon">📈</div>
-          <div className="stat-content">
-            <h3>{systemStats.monthlyActiveUsers}</h3>
-            <p>月間アクティブユーザー</p>
+        <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 flex items-center gap-4 border border-pink-200 hover:-translate-y-1 transition-transform duration-200">
+          <div className="text-4xl">📈</div>
+          <div>
+            <h3 className="text-3xl font-bold text-pink-600">{systemStats.monthlyActiveUsers}</h3>
+            <p className="text-pink-700 font-medium text-sm">月間アクティブユーザー</p>
           </div>
         </div>
       </div>
 
-      <div className="overview-content">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* 生徒サマリー */}
-        <section className="student-summary-section">
-          <h3>📊 生徒サマリー</h3>
+        <section className="bg-gray-50 rounded-xl p-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6">📊 生徒サマリー</h3>
           
-          <div className="summary-tabs">
-            <div className="facility-summary">
-              <h4>事業所・拠点別</h4>
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-lg font-medium text-gray-700 mb-4 pb-2 border-b-2 border-gray-200">事業所・拠点別</h4>
               {studentSummary.byFacility.map((facility, index) => (
-                <div key={index} className="facility-item">
-                  <h5>{facility.facilityName}</h5>
+                <div key={index} className="mb-4">
+                  <h5 className="font-semibold text-gray-800 mb-2">{facility.facilityName}</h5>
                   {facility.locations.map((location, locIndex) => (
-                    <div key={locIndex} className="location-item">
-                      <div className="location-info">
-                        <span className="location-name">{location.locationName}</span>
-                        <span className="student-count">
+                    <div key={locIndex} className="flex justify-between items-center p-3 bg-white rounded-lg mb-2 shadow-sm">
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-800 block">{location.locationName}</span>
+                        <span className="text-gray-600 text-sm">
                           {location.studentCount}名 
-                          <small>（アクティブ: {location.activeStudents}名）</small>
+                          <span className="text-green-600 font-semibold">（アクティブ: {location.activeStudents}名）</span>
                         </span>
                       </div>
-                      <div className="activity-bar">
+                      <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div 
-                          className="activity-fill"
+                          className="h-full bg-green-500 transition-all duration-300"
                           style={{ width: `${(location.activeStudents / location.studentCount) * 100}%` }}
                         />
                       </div>
@@ -319,19 +327,19 @@ const SystemOverview = () => {
               ))}
             </div>
 
-            <div className="course-summary">
-              <h4>コース別受講状況</h4>
+            <div>
+              <h4 className="text-lg font-medium text-gray-700 mb-4 pb-2 border-b-2 border-gray-200">コース別受講状況</h4>
               {studentSummary.byCourse.map((course, index) => (
-                <div key={index} className="course-item">
-                  <div className="course-info">
-                    <span className="course-name">{course.courseName}</span>
-                    <span className="enrollment-info">
+                <div key={index} className="mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium text-gray-800">{course.courseName}</span>
+                    <span className="text-gray-600 text-sm">
                       {course.enrolledStudents}名受講 | 完了率 {course.completionRate}%
                     </span>
                   </div>
-                  <div className="completion-bar">
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                      className="completion-fill"
+                      className="h-full bg-blue-500 transition-all duration-300"
                       style={{ width: `${course.completionRate}%` }}
                     />
                   </div>
@@ -342,24 +350,26 @@ const SystemOverview = () => {
         </section>
 
         {/* カリキュラムパス表示 */}
-        <section className="curriculum-path-section">
-          <h3>📚 カリキュラムパス</h3>
+        <section className="bg-gray-50 rounded-xl p-6">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6">📚 カリキュラムパス</h3>
           
-          <div className="curriculum-display">
+          <div className="space-y-6">
             {/* 必修科目の受講順序 */}
-            <div className="required-courses">
-              <h4>必修科目（受講順序）</h4>
-              <div className="course-flow">
+            <div>
+              <h4 className="text-lg font-medium text-gray-700 mb-4">必修科目（受講順序）</h4>
+              <div className="flex flex-wrap items-center gap-4">
                 {getCurriculumPath().required.map((course, index) => (
-                  <div key={course.id} className="course-flow-item">
-                    <div className={`course-node ${course.status}`}>
-                      <div className="course-order">{course.order}</div>
-                      <div className="course-title">{course.title}</div>
-                      <div className="course-duration">{course.duration}</div>
-                      <div className="course-students">{course.enrolledStudents}名受講中</div>
+                  <div key={course.id} className="flex items-center">
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                      <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold mb-2">
+                        {course.order}
+                      </div>
+                      <div className="font-medium text-gray-800 text-sm mb-1">{course.title}</div>
+                      <div className="text-gray-600 text-xs mb-1">{course.duration}</div>
+                      <div className="text-blue-600 text-xs font-medium">{course.enrolledStudents}名受講中</div>
                     </div>
                     {index < getCurriculumPath().required.length - 1 && (
-                      <div className="flow-arrow">→</div>
+                      <div className="text-2xl text-gray-400">→</div>
                     )}
                   </div>
                 ))}
@@ -367,14 +377,14 @@ const SystemOverview = () => {
             </div>
 
             {/* 選択科目 */}
-            <div className="elective-courses">
-              <h4>選択科目（いつでも受講可能）</h4>
-              <div className="elective-list">
+            <div>
+              <h4 className="text-lg font-medium text-gray-700 mb-4">選択科目（いつでも受講可能）</h4>
+              <div className="grid grid-cols-1 gap-3">
                 {getCurriculumPath().elective.map(course => (
-                  <div key={course.id} className={`elective-node ${course.status}`}>
-                    <div className="course-title">{course.title}</div>
-                    <div className="course-duration">{course.duration}</div>
-                    <div className="course-students">{course.enrolledStudents}名受講中</div>
+                  <div key={course.id} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                    <div className="font-medium text-gray-800 text-sm mb-1">{course.title}</div>
+                    <div className="text-gray-600 text-xs mb-1">{course.duration}</div>
+                    <div className="text-blue-600 text-xs font-medium">{course.enrolledStudents}名受講中</div>
                   </div>
                 ))}
               </div>
@@ -383,19 +393,19 @@ const SystemOverview = () => {
         </section>
 
         {/* 最近のアクティビティ */}
-        <section className="recent-activity-section">
-          <h3>🕒 最近のアクティビティ</h3>
-          <div className="activity-list">
+        <section className="bg-gray-50 rounded-xl p-6 lg:col-span-2">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6">🕒 最近のアクティビティ</h3>
+          <div className="space-y-4">
             {recentActivity.map((activity, index) => (
-              <div key={index} className="activity-item">
-                <div className="activity-icon">
+              <div key={index} className="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div className="text-2xl mr-4">
                   {getActivityIcon(activity.type)}
                 </div>
-                <div className="activity-details">
-                  <p className="activity-text">
-                    <strong>{activity.user}</strong> - {activity.action}
+                <div className="flex-1">
+                  <p className="text-gray-800">
+                    <span className="font-semibold">{activity.user}</span> - {activity.action}
                   </p>
-                  <small className="activity-time">{activity.time}</small>
+                  <small className="text-gray-500">{activity.time}</small>
                 </div>
               </div>
             ))}

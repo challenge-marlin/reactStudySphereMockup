@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 // import { Document, Page, pdfjs } from 'react-pdf';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import './LearningPage.css';
+import LessonVideoPlayer from '../components/LessonVideoPlayer';
+import LessonPdfViewer from '../components/LessonPdfViewer';
 
 // eslint-disable-next-line no-unused-vars
 
@@ -142,229 +143,193 @@ const LearningPage = () => {
   };
 
   return (
-    <div className="learning-page">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
       {/* ヘッダー */}
-      <div className="learning-header">
-        <div className="header-left">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/student/dashboard')}
-          >
-            ← ダッシュボードに戻る
-          </button>
-          <h1>学習画面 - {currentLessonData.title}</h1>
-        </div>
-        <div className="lesson-selector">
-          <label>レッスン選択: </label>
-          <select 
-            value={currentLesson} 
-            onChange={(e) => changeLesson(parseInt(e.target.value))}
-          >
-            {Object.keys(lessonData).map(lessonNum => (
-              <option key={lessonNum} value={lessonNum}>
-                {lessonData[lessonNum].title}
-              </option>
-            ))}
-          </select>
-          <button 
-            className="upload-button"
-            onClick={() => setShowUploadModal(true)}
-          >
-            📁 成果物アップロード
-          </button>
-          <button 
-            className="test-button"
-            onClick={() => navigate(`/student/test?lesson=${currentLesson}`)}
-          >
-            📝 学習効果テスト
-          </button>
+      <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button 
+                className="px-4 py-2 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg hover:bg-opacity-20 transition-all duration-200 font-medium"
+                onClick={() => navigate('/student/dashboard')}
+              >
+                ← ダッシュボードに戻る
+              </button>
+              <h1 className="text-2xl font-bold">学習画面 - {currentLessonData.title}</h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">レッスン選択: </label>
+                <select 
+                  value={currentLesson} 
+                  onChange={(e) => changeLesson(parseInt(e.target.value))}
+                  className="px-3 py-1 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                >
+                  {Object.keys(lessonData).map(lessonNum => (
+                    <option key={lessonNum} value={lessonNum} className="text-gray-800">
+                      {lessonData[lessonNum].title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button 
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => setShowUploadModal(true)}
+              >
+                📁 成果物アップロード
+              </button>
+              <button 
+                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => navigate(`/student/test?lesson=${currentLesson}`)}
+              >
+                📝 学習効果テスト
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 2カラムレイアウト */}
-      <div className="learning-content">
-        {/* 左カラム: 動画 + PDF */}
-        <div className="left-column">
-          {/* 上: 動画 */}
-          <div className="video-section">
-            <div className="video-container">
-              <div className="section-header">
-                <h3>動画学習</h3>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左カラム: 動画 + PDF */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* 上: 動画 */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">🎥</span>
+                <h3 className="text-xl font-bold text-gray-800">動画学習</h3>
               </div>
               {currentLessonData.videoUrl ? (
                 <>
-                  <div className="video-info">
-                    <p className="video-title">{currentLessonData.title}</p>
-                    <p className="video-url">URL: {currentLessonData.videoUrl}</p>
+                  <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                    <p className="font-semibold text-blue-800 mb-1">{currentLessonData.title}</p>
+                    <p className="text-sm text-blue-600">URL: {currentLessonData.videoUrl}</p>
                   </div>
-                  <div className="learning-video-player-container">
-                    {videoLoading && !videoError && (
-                      <div className="video-loading">
-                        <p>動画を読み込み中...</p>
-                        <div className="loading-spinner"></div>
-                      </div>
-                    )}
-                    {videoError && (
-                      <div className="video-fallback">
-                        <p>動画の読み込みに失敗しました。以下のリンクをクリックしてください：</p>
-                        <a 
-                          href={currentLessonData.videoUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="video-link"
-                        >
-                          YouTubeで開く
-                        </a>
-                      </div>
-                    )}
-                    {!videoError && (
-                      <div className="learning-video-iframe-container">
-                        <iframe
-                          src={`https://www.youtube.com/embed/${getYouTubeVideoId(currentLessonData.videoUrl)}?modestbranding=1&rel=0&enablejsapi=1`}
-                          width="100%"
-                          height="100%"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title="YouTube video player"
-                          onLoad={() => {
-                            console.log('iframe動画が読み込まれました');
-                            setVideoLoading(false);
-                            setVideoError(false);
-                          }}
-                          onError={() => {
-                            console.error('iframe動画読み込みエラー');
-                            setVideoError(true);
-                            setVideoLoading(false);
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <LessonVideoPlayer videoUrl={currentLessonData.videoUrl} title={currentLessonData.title} />
                 </>
               ) : (
-                <div className="no-video">
-                  <p>このレッスンには動画がありません</p>
+                <div className="text-center py-8 text-gray-600">
+                  <p>このレッスンには動画がありません。</p>
                 </div>
               )}
             </div>
+
+            {/* 下: PDF */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">📄</span>
+                <h3 className="text-xl font-bold text-gray-800">教材PDF</h3>
+              </div>
+              <LessonPdfViewer pdfUrl={currentLessonData.pdfFile} title={currentLessonData.title} />
+            </div>
           </div>
 
-          {/* 下: PDF */}
-          <div className="pdf-section">
-            <div className="pdf-container">
-              <div className="section-header">
-                <h3>教材PDF</h3>
+          {/* 右カラム: チャット + アップロード */}
+          <div className="space-y-6">
+            {/* チャット */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">💬</span>
+                <h3 className="text-xl font-bold text-gray-800">AIアシスタント</h3>
               </div>
-              <div className="pdf-viewer">
-                <iframe
-                  src={currentLessonData.pdfFile}
-                  width="100%"
-                  height="500px"
-                  title="PDF教材"
-                  style={{ border: '1px solid #ddd', borderRadius: '4px' }}
-                  onError={(error) => {
-                    console.error('PDF読み込みエラー:', error);
-                  }}
+              <div className="h-64 overflow-y-auto mb-4 space-y-3">
+                {chatMessages.map(message => (
+                  <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs px-4 py-2 rounded-lg ${
+                      message.sender === 'user' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="text-sm">{message.text}</p>
+                      <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="質問を入力..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                <button 
+                  onClick={handleSendMessage}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200"
+                >
+                  送信
+                </button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* 右カラム: チャット */}
-        <div className="chat-column">
-          <div className="chat-container">
-            <h3>AI学習アシスタント</h3>
-            <div className="chat-messages">
-              {chatMessages.map(message => (
-                <div 
-                  key={message.id} 
-                  className={`chat-message ${message.sender}`}
-                >
-                  <div className="message-content">
-                    {message.text}
+            {/* アップロード済みファイル */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">📁</span>
+                <h3 className="text-xl font-bold text-gray-800">アップロード済みファイル</h3>
+              </div>
+              <div className="space-y-3">
+                {uploadedFiles.map(file => (
+                  <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">{file.uploadDate}</p>
+                    </div>
+                    <button 
+                      onClick={() => handleFileDelete(file.id)}
+                      className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
+                    >
+                      ×
+                    </button>
                   </div>
-                  <div className="message-time">
-                    {message.timestamp}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="chat-input-container">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="質問を入力してください..."
-                className="chat-input"
-              />
-              <button 
-                onClick={handleSendMessage}
-                className="send-button"
-              >
-                送信
-              </button>
+                ))}
+                {uploadedFiles.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">アップロードされたファイルはありません</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 成果物アップロードモーダル */}
+      {/* アップロードモーダル */}
       {showUploadModal && (
-        <div className="upload-modal-overlay">
-          <div className="upload-modal">
-            <div className="upload-modal-header">
-              <h3>成果物アップロード</h3>
-              <button 
-                className="close-button"
-                onClick={() => setShowUploadModal(false)}
-              >
-                ×
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-800">成果物アップロード</h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-200"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
-            <div className="upload-modal-content">
-              <div className="upload-area">
+            <div className="p-6">
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ファイルを選択してください
+                </label>
                 <input
                   type="file"
                   multiple
                   onChange={handleFileUpload}
-                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mov,.avi"
-                  id="file-upload"
-                  style={{ display: 'none' }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
-                <label htmlFor="file-upload" className="upload-label">
-                  <div className="upload-icon">📁</div>
-                  <p>ファイルを選択またはドラッグ&ドロップ</p>
-                  <span className="upload-hint">
-                    対応形式: PDF, Word, テキスト, 画像, 動画
-                  </span>
-                </label>
               </div>
-              
-              {uploadedFiles.length > 0 && (
-                <div className="uploaded-files">
-                  <h4>アップロード済みファイル</h4>
-                  {uploadedFiles.map(file => (
-                    <div key={file.id} className="uploaded-file-item">
-                      <div className="file-info">
-                        <span className="file-name">{file.name}</span>
-                        <span className="file-size">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </span>
-                        <span className="file-date">{file.uploadDate}</span>
-                      </div>
-                      <button 
-                        className="delete-button"
-                        onClick={() => handleFileDelete(file.id)}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button 
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  キャンセル
+                </button>
+              </div>
             </div>
           </div>
         </div>

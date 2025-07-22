@@ -9,7 +9,6 @@ import LessonManagement from '../components/LessonManagement';
 import CurriculumPathManagement from '../components/CurriculumPathManagement';
 import AdminManagement from '../components/AdminManagement';
 import { logAdminAccountOperation } from '../utils/adminLogger';
-import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -42,69 +41,48 @@ const AdminDashboard = () => {
   };
 
   if (!currentUser) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600 text-lg">Loading...</div>
+      </div>
+    );
   }
 
+  const navItems = [
+    { id: 'overview', label: '📊 システム概要', component: <SystemOverview /> },
+    { id: 'locations', label: '🏢 拠点・事業所管理', component: <LocationManagement /> },
+    { id: 'instructors', label: '👨‍🏫 指導員管理', component: <InstructorManagement /> },
+    { id: 'courses', label: '📚 コース管理', component: <CourseManagement /> },
+    { id: 'lessons', label: '📖 レッスン管理', component: <LessonManagement /> },
+    { id: 'paths', label: '🎯 カリキュラムパス管理', component: <CurriculumPathManagement /> },
+    { id: 'admins', label: '👥 管理者管理', component: <AdminManagement /> },
+  ];
+
   return (
-    <div className="admin-dashboard">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <AdminHeader user={currentUser} onLogout={handleLogout} />
       
-      <div className="admin-content">
-        <aside className="admin-sidebar">
-          <nav className="admin-nav">
-            <button 
-              className={`nav-button ${activeTab === 'overview' ? 'active' : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              📊 システム概要
-            </button>
-            <button 
-              className={`nav-button ${activeTab === 'locations' ? 'active' : ''}`}
-              onClick={() => setActiveTab('locations')}
-            >
-              🏢 拠点・事業所管理
-            </button>
-            <button 
-              className={`nav-button ${activeTab === 'instructors' ? 'active' : ''}`}
-              onClick={() => setActiveTab('instructors')}
-            >
-              👨‍🏫 指導員管理
-            </button>
-            <button 
-              className={`nav-button ${activeTab === 'courses' ? 'active' : ''}`}
-              onClick={() => setActiveTab('courses')}
-            >
-              📚 コース管理
-            </button>
-            <button 
-              className={`nav-button ${activeTab === 'lessons' ? 'active' : ''}`}
-              onClick={() => setActiveTab('lessons')}
-            >
-              📖 レッスン管理
-            </button>
-            <button 
-              className={`nav-button ${activeTab === 'paths' ? 'active' : ''}`}
-              onClick={() => setActiveTab('paths')}
-            >
-              🎯 カリキュラムパス管理
-            </button>
-            <button 
-              className={`nav-button ${activeTab === 'admins' ? 'active' : ''}`}
-              onClick={() => setActiveTab('admins')}
-            >
-              👥 管理者管理
-            </button>
+      <div className="flex flex-col flex-1 h-[calc(100vh-80px)] overflow-hidden">
+        <aside className="w-full bg-white border-b border-gray-200 flex-shrink-0">
+          <nav className="p-4 flex flex-row gap-2 overflow-x-auto">
+            {navItems.map((item) => (
+              <button 
+                key={item.id}
+                className={`flex items-center gap-3 px-6 py-4 bg-transparent border-none text-gray-700 cursor-pointer transition-all duration-300 text-center text-sm min-w-[150px] flex-shrink-0 rounded-lg hover:bg-red-50 hover:-translate-y-0.5 ${
+                  activeTab === item.id 
+                    ? 'bg-gradient-to-r from-red-500 to-red-400 text-white shadow-lg' 
+                    : ''
+                }`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
         </aside>
 
-        <main className="admin-main">
-          {activeTab === 'overview' && <SystemOverview />}
-          {activeTab === 'locations' && <LocationManagement />}
-          {activeTab === 'instructors' && <InstructorManagement />}
-          {activeTab === 'courses' && <CourseManagement />}
-          {activeTab === 'lessons' && <LessonManagement />}
-          {activeTab === 'paths' && <CurriculumPathManagement />}
-          {activeTab === 'admins' && <AdminManagement />}
+        <main className="flex-1 p-8 overflow-y-auto bg-white">
+          {navItems.find(item => item.id === activeTab)?.component}
         </main>
       </div>
     </div>

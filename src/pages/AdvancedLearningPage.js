@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import mermaid from 'mermaid';
-import './AdvancedLearningPage.css';
 
 const AdvancedLearningPage = () => {
   const navigate = useNavigate();
@@ -206,11 +205,11 @@ graph TD
       setChatMessages([...chatMessages, newMessage]);
       setChatInput('');
 
-      // AIの応答をシミュレート（ノート内容を参照）
+      // AIの応答をシミュレート
       setTimeout(() => {
         const aiResponse = {
           id: Date.now() + 1,
-          text: `「${currentLessonData.title}」についてのご質問ですね。${noteContent ? 'ノートの内容も参考にして回答いたします。' : ''}どのような点でお困りでしょうか？`,
+          text: `「${currentLessonData.title}」についてのご質問ですね。どのような点でお困りでしょうか？`,
           sender: 'ai',
           timestamp: new Date().toLocaleTimeString()
         };
@@ -226,49 +225,35 @@ graph TD
     setVideoLoading(true);
     setVideoError(false);
     setTextLoading(true);
-    setNoteContent('');
   };
 
   // ノート保存
   const saveNote = () => {
-    localStorage.setItem(`note-lesson-${currentLesson}`, noteContent);
+    localStorage.setItem(`note_lesson_${currentLesson}`, noteContent);
     alert('ノートを保存しました！');
   };
 
   // ノートダウンロード
   const downloadNote = () => {
-    if (!noteContent.trim()) {
-      alert('ノートが空です。ダウンロードする内容を入力してください。');
-      return;
-    }
-
-    const fileName = `note-lesson-${currentLesson}-${new Date().toISOString().slice(0, 10)}.${noteMode === 'md' ? 'md' : 'txt'}`;
-    const blob = new Blob([noteContent], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    alert('ノートをダウンロードしました！');
+    const element = document.createElement('a');
+    const file = new Blob([noteContent], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `${currentLessonData.title}_ノート.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   // ノート読み込み
   const loadNote = () => {
-    const savedNote = localStorage.getItem(`note-lesson-${currentLesson}`);
+    const savedNote = localStorage.getItem(`note_lesson_${currentLesson}`);
     if (savedNote) {
       setNoteContent(savedNote);
+      alert('保存されたノートを読み込みました！');
+    } else {
+      alert('保存されたノートが見つかりません。');
     }
   };
-
-  // 初期ノート読み込み
-  useEffect(() => {
-    loadNote();
-  }, [currentLesson]);
 
   // 成果物アップロード処理
   const handleFileUpload = (event) => {
@@ -295,367 +280,353 @@ graph TD
   };
 
   return (
-    <div className="advanced-learning-page">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50">
       {/* ヘッダー */}
-      <div className="advanced-learning-header">
-        <div className="header-left">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/student/dashboard')}
-          >
-            ← ダッシュボードに戻る
-          </button>
-          <h1>学習ページ第3案 - {currentLessonData.title}</h1>
-          <span className="lesson-description">{currentLessonData.description}</span>
-        </div>
-        <div className="lesson-selector">
-          <label>レッスン選択: </label>
-          <select 
-            value={currentLesson} 
-            onChange={(e) => changeLesson(parseInt(e.target.value))}
-          >
-            {Object.keys(lessonData).map(lessonNum => (
-              <option key={lessonNum} value={lessonNum}>
-                {lessonData[lessonNum].title}
-              </option>
-            ))}
-          </select>
-          <button 
-            className="upload-button"
-            onClick={() => setShowUploadModal(true)}
-          >
-            📁 成果物アップロード
-          </button>
-          <button 
-            className="test-button"
-            onClick={() => navigate(`/student/test?lesson=${currentLesson}`)}
-          >
-            📝 学習効果テスト
-          </button>
-        </div>
-      </div>
-
-      {/* 2x2グリッドレイアウト */}
-      <div className="learning-grid">
-        {/* 左上: 動画 */}
-        <div className="grid-item video-section">
-          <div className="section-header">
-            <h3>🎥 動画学習</h3>
-          </div>
-          <div className="video-container">
-            {currentLessonData.videoUrl ? (
-              <>
-                <div className="video-info">
-                  <p className="video-title">{currentLessonData.title}</p>
-                  <p className="video-url">URL: {currentLessonData.videoUrl}</p>
-                </div>
-                <div className="advanced-video-player-container">
-                  {videoLoading && !videoError && (
-                    <div className="video-loading">
-                      <p>動画を読み込み中...</p>
-                      <div className="loading-spinner"></div>
-                    </div>
-                  )}
-                  {videoError && (
-                    <div className="video-fallback">
-                      <p>動画の読み込みに失敗しました。以下のリンクをクリックしてください：</p>
-                      <a 
-                        href={currentLessonData.videoUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="video-link"
-                      >
-                        YouTubeで開く
-                      </a>
-                    </div>
-                  )}
-                  {!videoError && (
-                    <div className="advanced-video-iframe-container">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(currentLessonData.videoUrl)}?modestbranding=1&rel=0`}
-                        width="100%"
-                        height="100%"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title="YouTube video player"
-                        onLoad={() => {
-                          console.log('iframe動画が読み込まれました');
-                          setVideoLoading(false);
-                          setVideoError(false);
-                        }}
-                        onError={() => {
-                          console.error('iframe動画読み込みエラー');
-                          setVideoError(true);
-                          setVideoLoading(false);
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="no-video">
-                <p>このレッスンには動画がありません</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 右上: AIチャット */}
-        <div className="grid-item chat-section">
-          <div className="section-header">
-            <h3>💬 AI学習アシスタント</h3>
-          </div>
-          <div className="chat-container">
-            <div className="chat-messages">
-              {chatMessages.map(message => (
-                <div 
-                  key={message.id} 
-                  className={`chat-message ${message.sender}`}
-                >
-                  <div className="message-content">
-                    {message.text}
-                  </div>
-                  <div className="message-time">
-                    {message.timestamp}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="chat-input-container">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="質問を入力してください..."
-                className="chat-input"
-              />
+      <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
               <button 
-                onClick={handleSendMessage}
-                className="send-button"
+                className="px-4 py-2 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg hover:bg-opacity-20 transition-all duration-200 font-medium"
+                onClick={() => navigate('/student/dashboard')}
               >
-                送信
+                ← ダッシュボードに戻る
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold">高度な学習画面 - {currentLessonData.title}</h1>
+                <span className="text-blue-100 text-sm">{currentLessonData.description}</span>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">レッスン選択: </label>
+                <select 
+                  value={currentLesson} 
+                  onChange={(e) => changeLesson(parseInt(e.target.value))}
+                  className="px-3 py-1 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+                >
+                  {Object.keys(lessonData).map(lessonNum => (
+                    <option key={lessonNum} value={lessonNum} className="text-gray-800">
+                      {lessonData[lessonNum].title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button 
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => setShowUploadModal(true)}
+              >
+                📁 成果物アップロード
+              </button>
+              <button 
+                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
+                onClick={() => navigate(`/student/test?lesson=${currentLesson}`)}
+              >
+                📝 学習効果テスト
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* 左下: テキスト */}
-        <div className="grid-item text-section">
-          <div className="section-header">
-            <h3>📚 教材テキスト</h3>
-            <div className="text-controls">
-              <a
-                className="pdf-download-button"
-                href="/doc/pdf-samples/ITリテラシー・AIの基本_第1回.pdf"
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                📄 PDFダウンロード
-              </a>
-              <button
-                className="scroll-to-top-button"
-                onClick={() => {
-                  if (textContainerRef.current) {
-                    textContainerRef.current.scrollTo({
-                      top: 0,
-                      behavior: 'smooth'
-                    });
-                  }
-                }}
-              >
-                ⬆️ 最上部に戻る
-              </button>
-            </div>
-          </div>
-          <div className="text-viewer" ref={textContainerRef}>
-            {textLoading ? (
-              <div className="text-loading">
-                <p>テキストを読み込み中...</p>
-                <div className="loading-spinner"></div>
-              </div>
-            ) : (
-              <div className="markdown-content">
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    h1: ({node, ...props}) => <h1 id={props.children?.toString().toLowerCase().replace(/\s+/g, '-')} style={{color: '#2c3e50', fontSize: '24px', fontWeight: '700', margin: '25px 0 15px 0', paddingBottom: '8px', borderBottom: '2px solid #667eea'}} {...props} />,
-                    h2: ({node, ...props}) => <h2 id={props.children?.toString().toLowerCase().replace(/\s+/g, '-')} style={{color: '#2c3e50', fontSize: '20px', fontWeight: '700', margin: '25px 0 15px 0', paddingBottom: '8px', borderBottom: '2px solid #667eea'}} {...props} />,
-                    h3: ({node, ...props}) => <h3 id={props.children?.toString().toLowerCase().replace(/\s+/g, '-')} style={{color: '#34495e', fontSize: '16px', fontWeight: '600', margin: '20px 0 10px 0'}} {...props} />,
-                    h4: ({node, ...props}) => <h4 id={props.children?.toString().toLowerCase().replace(/\s+/g, '-')} style={{color: '#34495e', fontSize: '14px', fontWeight: '600', margin: '15px 0 8px 0'}} {...props} />,
-                    p: ({node, ...props}) => <p style={{margin: '10px 0', lineHeight: '1.6'}} {...props} />,
-                    ul: ({node, ...props}) => <ul style={{margin: '15px 0', paddingLeft: '20px'}} {...props} />,
-                    ol: ({node, ...props}) => <ol style={{margin: '15px 0', paddingLeft: '20px'}} {...props} />,
-                    li: ({node, ...props}) => <li style={{margin: '8px 0', lineHeight: '1.6'}} {...props} />,
-                    blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #667eea', margin: '15px 0', padding: '10px 20px', backgroundColor: '#f8f9fa', fontStyle: 'italic'}} {...props} />,
-                    code: ({node, inline, ...props}) => inline ? 
-                      <code style={{backgroundColor: '#f1f3f4', padding: '2px 4px', borderRadius: '3px', fontFamily: 'monospace', fontSize: '0.9em'}} {...props} /> :
-                      <code style={{display: 'block', backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px', fontFamily: 'monospace', fontSize: '0.9em', overflow: 'auto'}} {...props} />,
-                    pre: ({node, ...props}) => <pre style={{backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px', overflow: 'auto', margin: '15px 0'}} {...props} />,
-                    a: ({node, href, ...props}) => {
-                      if (href && href.startsWith('#')) {
-                        return (
-                          <a 
-                            style={{color: '#667eea', textDecoration: 'none', cursor: 'pointer'}} 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              const targetId = href.substring(1);
-                              const targetElement = document.getElementById(targetId);
-                              if (targetElement && textContainerRef.current) {
-                                const containerTop = textContainerRef.current.offsetTop;
-                                const elementTop = targetElement.offsetTop;
-                                const scrollTop = elementTop - containerTop - 20;
-                                
-                                textContainerRef.current.scrollTo({
-                                  top: Math.max(0, scrollTop),
-                                  behavior: 'smooth'
-                                });
-                              }
-                            }}
-                            {...props}
-                          />
-                        );
-                      }
-                      return <a style={{color: '#667eea', textDecoration: 'none'}} target="_blank" rel="noopener noreferrer" href={href} {...props} />;
-                    },
-                    strong: ({node, ...props}) => <strong style={{fontWeight: '700', color: '#2c3e50'}} {...props} />,
-                    em: ({node, ...props}) => <em style={{fontStyle: 'italic', color: '#34495e'}} {...props} />,
-                    hr: ({node, ...props}) => <hr style={{border: 'none', borderTop: '2px solid #e9ecef', margin: '20px 0'}} {...props} />,
-                    table: ({node, ...props}) => <table style={{width: '100%', borderCollapse: 'collapse', margin: '15px 0'}} {...props} />,
-                    th: ({node, ...props}) => <th style={{border: '1px solid #dee2e6', padding: '8px 12px', backgroundColor: '#f8f9fa', fontWeight: '600'}} {...props} />,
-                    td: ({node, ...props}) => <td style={{border: '1px solid #dee2e6', padding: '8px 12px'}} {...props} />,
-                  }}
-                >
-                  {textContent}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 右下: マイノート */}
-        <div className="grid-item note-section">
-          <div className="section-header">
-            <h3>📝 マイノート</h3>
-            <div className="note-controls">
-              <div className="mode-selector">
-                <button 
-                  className={`mode-button ${noteMode === 'txt' ? 'active' : ''}`}
-                  onClick={() => setNoteMode('txt')}
-                >
-                  📄 編集モード
-                </button>
-                <button 
-                  className={`mode-button ${noteMode === 'md' ? 'active' : ''}`}
-                  onClick={() => setNoteMode('md')}
-                >
-                  📝 表示モード
-                </button>
-              </div>
-              <button className="save-note-button" onClick={downloadNote}>
-                📥 ダウンロード
-              </button>
-            </div>
-          </div>
-          <div className="note-content" ref={noteContainerRef}>
-            {noteMode === 'txt' ? (
-              <textarea
-                value={noteContent}
-                onChange={(e) => setNoteContent(e.target.value)}
-                placeholder={getPlaceholder(noteMode)}
-                className="note-textarea"
-              />
-            ) : (
-              <div className="note-markdown-display">
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    h1: ({node, ...props}) => <h1 style={{color: '#2c3e50', fontSize: '18px', fontWeight: '700', margin: '15px 0 10px 0', paddingBottom: '6px', borderBottom: '2px solid #667eea'}} {...props} />,
-                    h2: ({node, ...props}) => <h2 style={{color: '#2c3e50', fontSize: '16px', fontWeight: '700', margin: '12px 0 8px 0', paddingBottom: '4px', borderBottom: '1px solid #667eea'}} {...props} />,
-                    h3: ({node, ...props}) => <h3 style={{color: '#34495e', fontSize: '14px', fontWeight: '600', margin: '10px 0 6px 0'}} {...props} />,
-                    p: ({node, ...props}) => <p style={{margin: '6px 0', lineHeight: '1.5', fontSize: '13px'}} {...props} />,
-                    ul: ({node, ...props}) => <ul style={{margin: '8px 0', paddingLeft: '15px', fontSize: '13px'}} {...props} />,
-                    ol: ({node, ...props}) => <ol style={{margin: '8px 0', paddingLeft: '15px', fontSize: '13px'}} {...props} />,
-                    li: ({node, ...props}) => <li style={{margin: '4px 0', lineHeight: '1.5'}} {...props} />,
-                    blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '3px solid #667eea', margin: '8px 0', padding: '6px 12px', backgroundColor: '#f8f9fa', fontStyle: 'italic', fontSize: '12px'}} {...props} />,
-                    code: ({node, inline, className, ...props}) => {
-                      if (className && className.includes('language-mermaid')) {
-                        return <code className={className} {...props} />;
-                      }
-                      return inline ? 
-                        <code style={{backgroundColor: '#f1f3f4', padding: '1px 3px', borderRadius: '2px', fontFamily: 'monospace', fontSize: '11px'}} {...props} /> :
-                        <code style={{display: 'block', backgroundColor: '#f8f9fa', padding: '8px', borderRadius: '3px', fontFamily: 'monospace', fontSize: '11px', overflow: 'auto'}} {...props} />;
-                    },
-                    pre: ({node, ...props}) => <pre style={{backgroundColor: '#f8f9fa', padding: '8px', borderRadius: '3px', overflow: 'auto', margin: '8px 0'}} {...props} />,
-                    strong: ({node, ...props}) => <strong style={{fontWeight: '700', color: '#2c3e50'}} {...props} />,
-                    em: ({node, ...props}) => <em style={{fontStyle: 'italic', color: '#34495e'}} {...props} />,
-                  }}
-                >
-                  {noteContent}
-                </ReactMarkdown>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* 成果物アップロードモーダル */}
+      {/* メインコンテンツ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左カラム: 動画 + テキスト */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* 動画セクション */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">🎥</span>
+                <h3 className="text-xl font-bold text-gray-800">動画学習</h3>
+              </div>
+              {currentLessonData.videoUrl ? (
+                <>
+                  <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                    <p className="font-semibold text-blue-800 mb-1">{currentLessonData.title}</p>
+                    <p className="text-sm text-blue-600">URL: {currentLessonData.videoUrl}</p>
+                  </div>
+                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+                    {videoLoading && (
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">動画を読み込み中...</p>
+                      </div>
+                    )}
+                    {videoError && (
+                      <div className="text-center text-red-600">
+                        <p>動画の読み込みに失敗しました。</p>
+                        <p className="text-sm mt-2">URL: {currentLessonData.videoUrl}</p>
+                      </div>
+                    )}
+                    {!videoLoading && !videoError && (
+                      <div className="text-center text-gray-600">
+                        <p>動画プレイヤーがここに表示されます</p>
+                        <p className="text-sm mt-2">YouTube動画: {currentLessonData.videoUrl}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8 text-gray-600">
+                  <p>このレッスンには動画がありません。</p>
+                </div>
+              )}
+            </div>
+
+            {/* テキストセクション */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">📄</span>
+                <h3 className="text-xl font-bold text-gray-800">教材テキスト</h3>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4 min-h-[400px] overflow-y-auto">
+                {textLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">テキストを読み込み中...</p>
+                  </div>
+                ) : (
+                  <div 
+                    ref={textContainerRef}
+                    className="prose prose-blue max-w-none"
+                  >
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        pre: ({ children }) => (
+                          <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
+                            {children}
+                          </pre>
+                        ),
+                        code: ({ children, className }) => {
+                          if (className && className.startsWith('language-mermaid')) {
+                            return (
+                              <div className="mermaid bg-white p-4 rounded-lg border">
+                                {children}
+                              </div>
+                            );
+                          }
+                          return (
+                            <code className="bg-gray-200 px-1 py-0.5 rounded text-sm">
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}
+                    >
+                      {textContent}
+                    </ReactMarkdown>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 右カラム: チャット + ノート + アップロード */}
+          <div className="space-y-6">
+            {/* チャット */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">💬</span>
+                <h3 className="text-xl font-bold text-gray-800">AIアシスタント</h3>
+              </div>
+              <div className="h-64 overflow-y-auto mb-4 space-y-3">
+                {chatMessages.map(message => (
+                  <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs px-4 py-2 rounded-lg ${
+                      message.sender === 'user' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <p className="text-sm">{message.text}</p>
+                      <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="質問を入力..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button 
+                  onClick={handleSendMessage}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200"
+                >
+                  送信
+                </button>
+              </div>
+            </div>
+
+            {/* ノート */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📝</span>
+                  <h3 className="text-xl font-bold text-gray-800">学習ノート</h3>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      noteMode === 'txt'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                    onClick={() => setNoteMode('txt')}
+                  >
+                    テキスト
+                  </button>
+                  <button
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      noteMode === 'md'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                    onClick={() => setNoteMode('md')}
+                  >
+                    Markdown
+                  </button>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <textarea
+                  value={noteContent}
+                  onChange={(e) => setNoteContent(e.target.value)}
+                  placeholder={getPlaceholder(noteMode)}
+                  className="w-full h-48 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200"
+                  onClick={saveNote}
+                >
+                  💾 保存
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200"
+                  onClick={loadNote}
+                >
+                  📂 読み込み
+                </button>
+                <button
+                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200"
+                  onClick={downloadNote}
+                >
+                  📥 ダウンロード
+                </button>
+              </div>
+
+              {noteMode === 'md' && noteContent && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                  <h4 className="font-semibold text-gray-800 mb-2">プレビュー:</h4>
+                  <div 
+                    ref={noteContainerRef}
+                    className="prose prose-sm max-w-none"
+                  >
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        pre: ({ children }) => (
+                          <pre className="bg-white p-2 rounded border text-xs">
+                            {children}
+                          </pre>
+                        ),
+                        code: ({ children, className }) => {
+                          if (className && className.startsWith('language-mermaid')) {
+                            return (
+                              <div className="mermaid bg-white p-2 rounded border">
+                                {children}
+                              </div>
+                            );
+                          }
+                          return (
+                            <code className="bg-gray-200 px-1 py-0.5 rounded text-xs">
+                              {children}
+                            </code>
+                          );
+                        }
+                      }}
+                    >
+                      {noteContent}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* アップロード済みファイル */}
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">📁</span>
+                <h3 className="text-xl font-bold text-gray-800">アップロード済みファイル</h3>
+              </div>
+              <div className="space-y-3">
+                {uploadedFiles.map(file => (
+                  <div key={file.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">{file.uploadDate}</p>
+                    </div>
+                    <button 
+                      onClick={() => handleFileDelete(file.id)}
+                      className="ml-2 px-2 py-1 text-red-600 hover:bg-red-50 rounded text-sm"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {uploadedFiles.length === 0 && (
+                  <p className="text-gray-500 text-center py-4">アップロードされたファイルはありません</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* アップロードモーダル */}
       {showUploadModal && (
-        <div className="upload-modal-overlay">
-          <div className="upload-modal">
-            <div className="upload-modal-header">
-              <h3>成果物アップロード</h3>
-              <button 
-                className="close-button"
-                onClick={() => setShowUploadModal(false)}
-              >
-                ×
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-gray-800">成果物アップロード</h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-all duration-200"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  ×
+                </button>
+              </div>
             </div>
-            <div className="upload-modal-content">
-              <div className="upload-area">
+            <div className="p-6">
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  ファイルを選択してください
+                </label>
                 <input
                   type="file"
                   multiple
                   onChange={handleFileUpload}
-                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mov,.avi"
-                  id="file-upload"
-                  style={{ display: 'none' }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
-                <label htmlFor="file-upload" className="upload-label">
-                  <div className="upload-icon">📁</div>
-                  <p>ファイルを選択またはドラッグ&ドロップ</p>
-                  <span className="upload-hint">
-                    対応形式: PDF, Word, テキスト, 画像, 動画
-                  </span>
-                </label>
               </div>
-              
-              {uploadedFiles.length > 0 && (
-                <div className="uploaded-files">
-                  <h4>アップロード済みファイル</h4>
-                  {uploadedFiles.map(file => (
-                    <div key={file.id} className="uploaded-file-item">
-                      <div className="file-info">
-                        <span className="file-name">{file.name}</span>
-                        <span className="file-size">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </span>
-                        <span className="file-date">{file.uploadDate}</span>
-                      </div>
-                      <button 
-                        className="delete-button"
-                        onClick={() => handleFileDelete(file.id)}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button 
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200"
+                  onClick={() => setShowUploadModal(false)}
+                >
+                  キャンセル
+                </button>
+              </div>
             </div>
           </div>
         </div>

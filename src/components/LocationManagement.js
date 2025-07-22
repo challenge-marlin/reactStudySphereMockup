@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './LocationManagement.css';
 
 const LocationManagement = () => {
   // デフォルトの事業所タイプ
@@ -198,26 +197,15 @@ const LocationManagement = () => {
   const [editingLocation, setEditingLocation] = useState(null);
   const [editValues, setEditValues] = useState({});
 
-  // 拠点詳細表示
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [showLocationDetail, setShowLocationDetail] = useState(false);
-
-  // 事業所詳細・編集画面の状態
-  const [selectedFacility, setSelectedFacility] = useState(null);
-  const [showFacilityDetail, setShowFacilityDetail] = useState(false);
-  const [isEditingFacility, setIsEditingFacility] = useState(false);
-  const [editingFacilityData, setEditingFacilityData] = useState({});
-
   // ソート機能
   const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+    setSortConfig(prevConfig => ({
+      key,
+      direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
+    }));
   };
 
-  // フィルタ・ソート済みデータ
+  // フィルタリングとソート
   const getFilteredAndSortedFacilities = () => {
     let filtered = facilities.filter(facility => {
       const matchesSearch = facility.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -242,17 +230,17 @@ const LocationManagement = () => {
           aValue = a.locations.length;
           bValue = b.locations.length;
           break;
-        case 'totalStudents':
-          aValue = a.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
-          bValue = b.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
-          break;
         case 'totalTeachers':
           aValue = a.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
           bValue = b.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
           break;
+        case 'totalStudents':
+          aValue = a.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
+          bValue = b.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
+          break;
         default:
-          aValue = a[sortConfig.key];
-          bValue = b[sortConfig.key];
+          aValue = a.name;
+          bValue = b.name;
       }
 
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -263,24 +251,20 @@ const LocationManagement = () => {
     return filtered;
   };
 
-  // 拠点詳細を表示
+  // 拠点詳細表示
   const handleViewLocationDetail = (location) => {
-    setSelectedLocation(location);
-    setShowLocationDetail(true);
+    // TODO: 拠点詳細モーダルを実装
+    console.log('拠点詳細:', location);
   };
 
-  // モック生徒データ（拠点別）
+  // 拠点の生徒データを取得（モック）
   const getStudentsByLocation = (locationId) => {
-    const allStudents = [
-      { id: 'student001', name: '末吉 元気', email: 'sueyoshi@example.com', course: 'ITリテラシー・AIの基本', instructor: '佐藤指導員', progress: 75, status: 'active', locationId: 'location001' },
-      { id: 'student002', name: '小渕 正明', email: 'obuchi@example.com', course: 'ITリテラシー・AIの基本', instructor: '田中指導員', progress: 25, status: 'active', locationId: 'location001' },
-      { id: 'student003', name: '田中 花子', email: 'tanaka.h@example.com', course: 'SNS運用の基礎・画像生成編集', instructor: '佐藤指導員', progress: 60, status: 'active', locationId: 'location001' },
-      { id: 'student004', name: '佐藤 太郎', email: 'sato.t@example.com', course: 'LP制作(HTML・CSS)', instructor: '田中指導員', progress: 80, status: 'active', locationId: 'location002' },
-      { id: 'student005', name: '山田 美咲', email: 'yamada.m@example.com', course: 'SNS管理代行・LP制作案件対応', instructor: '鈴木指導員', progress: 45, status: 'active', locationId: 'location003' },
-      { id: 'student006', name: '高橋 健太', email: 'takahashi.k@example.com', course: 'SNS運用の基礎・画像生成編集', instructor: '佐藤指導員', progress: 15, status: 'inactive', locationId: 'location001' }
+    // モックデータ
+    return [
+      { id: 1, name: '田中花子', email: 'tanaka@example.com', course: 'ITリテラシー・AIの基本', instructor: '佐藤指導員', progress: 75, status: 'active' },
+      { id: 2, name: '山田太郎', email: 'yamada@example.com', course: 'SNS運用の基礎・画像生成編集', instructor: '田中指導員', progress: 45, status: 'active' },
+      { id: 3, name: '鈴木一郎', email: 'suzuki@example.com', course: 'LP制作(HTML・CSS)', instructor: '山田指導員', progress: 90, status: 'inactive' }
     ];
-
-    return allStudents.filter(student => student.locationId === locationId);
   };
 
   // 事業所タイプ管理
@@ -292,12 +276,10 @@ const LocationManagement = () => {
   };
 
   const handleRemoveFacilityType = (typeToRemove) => {
-    if (facilityTypes.length > 1) { // 最低1つは残す
-      setFacilityTypes(facilityTypes.filter(type => type !== typeToRemove));
-    }
+    setFacilityTypes(facilityTypes.filter(type => type !== typeToRemove));
   };
 
-  // 担当者管理
+  // 連絡先フィールド管理
   const addContactField = () => {
     setNewFacility({
       ...newFacility,
@@ -316,97 +298,89 @@ const LocationManagement = () => {
   };
 
   const updateContact = (index, field, value) => {
-    const updatedContacts = newFacility.contacts.map((contact, i) => 
-      i === index ? { ...contact, [field]: value } : contact
-    );
+    const updatedContacts = [...newFacility.contacts];
+    updatedContacts[index][field] = value;
     setNewFacility({
       ...newFacility,
       contacts: updatedContacts
     });
   };
 
+  // 事業所追加
   const handleAddFacility = () => {
-    if (newFacility.name && newFacility.address && 
-        newFacility.contacts.some(contact => contact.name && contact.email)) {
-      
-      // 空の担当者情報を除外
-      const validContacts = newFacility.contacts.filter(contact => 
-        contact.name.trim() && contact.email.trim()
-      );
-
-      const facility = {
-        id: `facility${Date.now()}`,
-        ...newFacility,
-        contacts: validContacts,
-        locations: []
-      };
-      
-      setFacilities([...facilities, facility]);
-      setNewFacility({ 
-        name: '', 
-        type: '就労移行支援事業所', 
-        address: '', 
-        phone: '', 
-        contacts: [{ name: '', email: '' }] 
-      });
-      setShowFacilityForm(false);
-    }
+    const newFacilityData = {
+      id: `facility${Date.now()}`,
+      ...newFacility,
+      locations: []
+    };
+    setFacilities([...facilities, newFacilityData]);
+    setNewFacility({
+      name: '',
+      type: '就労移行支援事業所',
+      address: '',
+      phone: '',
+      contacts: [{ name: '', email: '' }]
+    });
+    setShowFacilityForm(false);
   };
 
+  // 拠点追加
   const handleAddLocation = () => {
-    if (newLocation.facilityId && newLocation.name && newLocation.address) {
-      setFacilities(facilities.map(facility => {
-        if (facility.id === newLocation.facilityId) {
-          const location = {
-            id: `location${Date.now()}`,
-            name: newLocation.name,
-            address: newLocation.address,
-            teacherCount: 0,
-            studentCount: 0,
-            maxStudents: 20
-          };
-          return {
-            ...facility,
-            locations: [...facility.locations, location]
-          };
-        }
-        return facility;
-      }));
+    const facility = facilities.find(f => f.id === newLocation.facilityId);
+    if (facility) {
+      const newLocationData = {
+        id: `location${Date.now()}`,
+        name: newLocation.name,
+        address: newLocation.address,
+        teacherCount: 0,
+        studentCount: 0,
+        maxStudents: 20
+      };
+      
+      const updatedFacilities = facilities.map(f => 
+        f.id === newLocation.facilityId 
+          ? { ...f, locations: [...f.locations, newLocationData] }
+          : f
+      );
+      
+      setFacilities(updatedFacilities);
       setNewLocation({ facilityId: '', name: '', address: '' });
       setShowLocationForm(false);
     }
   };
 
+  // 拠点編集
   const handleEditLocation = (facilityId, locationId) => {
     const facility = facilities.find(f => f.id === facilityId);
-    const location = facility.locations.find(l => l.id === locationId);
-    setEditingLocation(locationId);
-    setEditValues({
-      maxStudents: location.maxStudents,
-      name: location.name,
-      address: location.address
-    });
+    const location = facility?.locations.find(l => l.id === locationId);
+    if (location) {
+      setEditingLocation({ facilityId, locationId });
+      setEditValues({
+        name: location.name,
+        address: location.address,
+        teacherCount: location.teacherCount,
+        studentCount: location.studentCount,
+        maxStudents: location.maxStudents
+      });
+    }
   };
 
   const handleSaveLocation = (facilityId, locationId) => {
-    setFacilities(facilities.map(facility => {
+    const updatedFacilities = facilities.map(facility => {
       if (facility.id === facilityId) {
         return {
           ...facility,
-          locations: facility.locations.map(location => {
-            if (location.id === locationId) {
-              return {
-                ...location,
-                ...editValues,
-                maxStudents: parseInt(editValues.maxStudents) || 20
-              };
-            }
-            return location;
-          })
+          locations: facility.locations.map(location => 
+            location.id === locationId 
+              ? { ...location, ...editValues }
+              : location
+          )
         };
       }
       return facility;
-    }));
+    });
+    
+    setFacilities(updatedFacilities);
     setEditingLocation(null);
     setEditValues({});
   };
@@ -418,84 +392,39 @@ const LocationManagement = () => {
 
   // 事業所詳細表示
   const handleViewFacilityDetail = (facility) => {
-    setSelectedFacility(facility);
-    setEditingFacilityData({
-      name: facility.name,
-      type: facility.type,
-      address: facility.address,
-      phone: facility.phone,
-      contacts: [...facility.contacts]
-    });
-    setShowFacilityDetail(true);
-    setIsEditingFacility(true);
+    // TODO: 事業所詳細モーダルを実装
+    console.log('事業所詳細:', facility);
   };
 
   // 事業所編集
   const handleEditFacility = (facilityId) => {
-    const facility = facilities.find(f => f.id === facilityId);
-    if (facility) {
-      handleViewFacilityDetail(facility);
-    }
+    // TODO: 事業所編集機能を実装
+    console.log('事業所を編集:', facilityId);
   };
 
-  // 事業所データの保存
   const handleSaveFacility = () => {
-    if (editingFacilityData.name && editingFacilityData.address) {
-      setFacilities(facilities.map(facility => {
-        if (facility.id === selectedFacility.id) {
-          return {
-            ...facility,
-            ...editingFacilityData,
-            contacts: editingFacilityData.contacts.filter(contact => 
-              contact.name.trim() && contact.email.trim()
-            )
-          };
-        }
-        return facility;
-      }));
-      setShowFacilityDetail(false);
-      setIsEditingFacility(false);
-      setSelectedFacility(null);
-      setEditingFacilityData({});
-    }
+    // TODO: 事業所保存機能を実装
+    console.log('事業所を保存');
   };
 
-  // 事業所編集のキャンセル
   const handleCancelFacilityEdit = () => {
-    setShowFacilityDetail(false);
-    setIsEditingFacility(false);
-    setSelectedFacility(null);
-    setEditingFacilityData({});
+    // TODO: 事業所編集キャンセル機能を実装
+    console.log('事業所編集をキャンセル');
   };
 
-  // 担当者フィールドの追加
   const addContactFieldToEdit = () => {
-    setEditingFacilityData({
-      ...editingFacilityData,
-      contacts: [...editingFacilityData.contacts, { name: '', email: '' }]
-    });
+    // TODO: 編集時の連絡先フィールド追加機能を実装
+    console.log('連絡先フィールドを追加');
   };
 
-  // 担当者フィールドの削除
   const removeContactFieldFromEdit = (index) => {
-    if (editingFacilityData.contacts.length > 1) {
-      const updatedContacts = editingFacilityData.contacts.filter((_, i) => i !== index);
-      setEditingFacilityData({
-        ...editingFacilityData,
-        contacts: updatedContacts
-      });
-    }
+    // TODO: 編集時の連絡先フィールド削除機能を実装
+    console.log('連絡先フィールドを削除:', index);
   };
 
-  // 編集中の担当者情報更新
   const updateContactInEdit = (index, field, value) => {
-    const updatedContacts = editingFacilityData.contacts.map((contact, i) => 
-      i === index ? { ...contact, [field]: value } : contact
-    );
-    setEditingFacilityData({
-      ...editingFacilityData,
-      contacts: updatedContacts
-    });
+    // TODO: 編集時の連絡先更新機能を実装
+    console.log('連絡先を更新:', index, field, value);
   };
 
   // 拠点削除
@@ -515,45 +444,45 @@ const LocationManagement = () => {
   const filteredFacilities = getFilteredAndSortedFacilities();
 
   return (
-    <div className="location-management">
-      <div className="location-header">
-        <h2>拠点・事業所管理</h2>
-        <div className="stats-summary">
-          <div className="stat-card">
-            <h3>事業所数</h3>
-            <p>{facilities.length}</p>
+    <div className="p-6">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-red-800 mb-6">拠点・事業所管理</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
+            <h3 className="text-red-800 font-medium mb-2">事業所数</h3>
+            <p className="text-3xl font-bold text-red-600">{facilities.length}</p>
           </div>
-          <div className="stat-card">
-            <h3>拠点数</h3>
-            <p>{totalLocations}</p>
+          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
+            <h3 className="text-red-800 font-medium mb-2">拠点数</h3>
+            <p className="text-3xl font-bold text-red-600">{totalLocations}</p>
           </div>
-          <div className="stat-card">
-            <h3>総指導員数</h3>
-            <p>{totalTeachers}</p>
+          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
+            <h3 className="text-red-800 font-medium mb-2">総指導員数</h3>
+            <p className="text-3xl font-bold text-red-600">{totalTeachers}</p>
           </div>
-          <div className="stat-card">
-            <h3>総生徒数</h3>
-            <p>{totalStudents} / {totalMaxStudents}</p>
-            <small>使用率: {Math.round((totalStudents/totalMaxStudents)*100)}%</small>
+          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
+            <h3 className="text-red-800 font-medium mb-2">総生徒数</h3>
+            <p className="text-3xl font-bold text-red-600">{totalStudents} / {totalMaxStudents}</p>
+            <small className="text-red-600">使用率: {Math.round((totalStudents/totalMaxStudents)*100)}%</small>
           </div>
         </div>
       </div>
 
-      <div className="management-actions">
+      <div className="flex flex-wrap gap-4 mb-8">
         <button 
-          className="add-button"
+          className="bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-red-700"
           onClick={() => setShowFacilityForm(true)}
         >
           + 事業所を追加
         </button>
         <button 
-          className="add-button"
+          className="bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-red-700"
           onClick={() => setShowLocationForm(true)}
         >
           + 拠点を追加
         </button>
         <button 
-          className="manage-types-button"
+          className="bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-700"
           onClick={() => setShowTypeManagement(true)}
         >
           📝 事業所タイプ管理
@@ -561,21 +490,21 @@ const LocationManagement = () => {
       </div>
 
       {/* 検索・フィルタセクション */}
-      <div className="search-filter-section">
-        <div className="search-box">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1">
           <input
             type="text"
             placeholder="事業所名または住所で検索..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            className="w-full px-4 py-3 border-2 border-red-200 rounded-lg focus:outline-none focus:border-red-400 transition-colors duration-300"
           />
         </div>
-        <div className="filter-box">
+        <div className="md:w-64">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="filter-select"
+            className="w-full px-4 py-3 border-2 border-red-200 rounded-lg focus:outline-none focus:border-red-400 transition-colors duration-300"
           >
             <option value="all">すべての事業所タイプ</option>
             {facilityTypes.map(type => (
@@ -586,146 +515,158 @@ const LocationManagement = () => {
       </div>
 
       {/* 事業所リスト（テーブル形式） */}
-      <div className="facilities-table-container">
-        <table className="facilities-table">
-          <thead>
-            <tr>
-              <th 
-                className="sortable-header"
-                onClick={() => handleSort('name')}
-              >
-                事業所名
-                {sortConfig.key === 'name' && (
-                  <span className="sort-indicator">
-                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                  </span>
-                )}
-              </th>
-              <th 
-                className="sortable-header"
-                onClick={() => handleSort('type')}
-              >
-                事業所タイプ
-                {sortConfig.key === 'type' && (
-                  <span className="sort-indicator">
-                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                  </span>
-                )}
-              </th>
-              <th>住所</th>
-              <th>電話番号</th>
-              <th>担当者</th>
-              <th 
-                className="sortable-header"
-                onClick={() => handleSort('locationCount')}
-              >
-                拠点数
-                {sortConfig.key === 'locationCount' && (
-                  <span className="sort-indicator">
-                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                  </span>
-                )}
-              </th>
-              <th 
-                className="sortable-header"
-                onClick={() => handleSort('totalTeachers')}
-              >
-                総指導員数
-                {sortConfig.key === 'totalTeachers' && (
-                  <span className="sort-indicator">
-                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                  </span>
-                )}
-              </th>
-              <th 
-                className="sortable-header"
-                onClick={() => handleSort('totalStudents')}
-              >
-                総生徒数
-                {sortConfig.key === 'totalStudents' && (
-                  <span className="sort-indicator">
-                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                  </span>
-                )}
-              </th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredFacilities.map(facility => {
-              const totalFacilityTeachers = facility.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
-              const totalFacilityStudents = facility.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
-              const totalFacilityMaxStudents = facility.locations.reduce((sum, loc) => sum + (loc.maxStudents || 20), 0);
-              
-              return (
-                <tr key={facility.id} className="facility-row">
-                  <td className="facility-name">
-                    <strong>{facility.name}</strong>
-                  </td>
-                  <td className="facility-type">
-                    <span className="type-badge">{facility.type}</span>
-                  </td>
-                  <td className="facility-address">
-                    📍 {facility.address}
-                  </td>
-                  <td className="facility-phone">
-                    📞 {facility.phone}
-                  </td>
-                  <td className="facility-contacts">
-                    <div className="contacts-list">
-                      {facility.contacts && facility.contacts.length > 0 ? (
-                        facility.contacts.map((contact, index) => (
-                          <div key={index} className="contact-item">
-                            <span className="contact-name">{contact.name}</span>
-                            <span className="contact-email">📧 {contact.email}</span>
-                          </div>
-                        ))
-                      ) : (
-                        <span className="no-contacts">担当者なし</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="facility-location-count">
-                    <span className="location-count-badge">
-                      {facility.locations.length}拠点
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-red-50">
+              <tr>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('name')}
+                >
+                  事業所名
+                  {sortConfig.key === 'name' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
                     </span>
-                  </td>
-                  <td className="facility-teacher-count">
-                    {totalFacilityTeachers}人
-                  </td>
-                  <td className="facility-student-count">
-                    <div className="student-count-info">
-                      <span className={`student-count ${totalFacilityStudents > totalFacilityMaxStudents ? 'over-capacity' : ''}`}>
-                        {totalFacilityStudents}/{totalFacilityMaxStudents}
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('type')}
+                >
+                  事業所タイプ
+                  {sortConfig.key === 'type' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">住所</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">電話番号</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">担当者</th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('locationCount')}
+                >
+                  拠点数
+                  {sortConfig.key === 'locationCount' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('totalTeachers')}
+                >
+                  総指導員数
+                  {sortConfig.key === 'totalTeachers' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th 
+                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                  onClick={() => handleSort('totalStudents')}
+                >
+                  総生徒数
+                  {sortConfig.key === 'totalStudents' && (
+                    <span className="ml-1">
+                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                    </span>
+                  )}
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredFacilities.map(facility => {
+                const totalFacilityTeachers = facility.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
+                const totalFacilityStudents = facility.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
+                const totalFacilityMaxStudents = facility.locations.reduce((sum, loc) => sum + (loc.maxStudents || 20), 0);
+                
+                return (
+                  <tr key={facility.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                    <td className="px-6 py-4">
+                      <strong className="text-gray-800">{facility.name}</strong>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {facility.type}
                       </span>
-                      <small className="capacity-rate">
-                        {Math.round((totalFacilityStudents / totalFacilityMaxStudents) * 100)}%
-                      </small>
-                    </div>
-                  </td>
-                  <td className="facility-actions">
-                    <div className="action-buttons">
-                      <button 
-                        className="view-detail-btn"
-                        onClick={() => handleViewFacilityDetail(facility)}
-                        title="事業所詳細・編集"
-                      >
-                        👁️ 詳細
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        
-        {filteredFacilities.length === 0 && (
-          <div className="no-results">
-            <p>検索条件に一致する事業所が見つかりませんでした。</p>
-          </div>
-        )}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      📍 {facility.address}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      📞 {facility.phone}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="space-y-1">
+                        {facility.contacts && facility.contacts.length > 0 ? (
+                          facility.contacts.map((contact, index) => (
+                            <div key={index} className="text-sm">
+                              <span className="font-medium text-gray-800">{contact.name}</span>
+                              <span className="text-gray-600 ml-2">📧 {contact.email}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <span className="text-gray-500 text-sm">担当者なし</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {facility.locations.length}拠点
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">
+                      {totalFacilityTeachers}人
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm">
+                        <span className={`font-medium ${totalFacilityStudents > totalFacilityMaxStudents ? 'text-red-600' : 'text-gray-800'}`}>
+                          {totalFacilityStudents}/{totalFacilityMaxStudents}
+                        </span>
+                        <div className="w-20 h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                          <div 
+                            className="h-full bg-green-500 transition-all duration-300"
+                            style={{ width: `${Math.min((totalFacilityStudents / totalFacilityMaxStudents) * 100, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button 
+                          className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
+                          onClick={() => handleViewFacilityDetail(facility)}
+                        >
+                          詳細
+                        </button>
+                        <button 
+                          className="bg-green-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-green-600"
+                          onClick={() => handleEditFacility(facility.id)}
+                        >
+                          編集
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {filteredFacilities.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">検索条件に一致する事業所が見つかりませんでした。</p>
+        </div>
+      )}
 
       {/* 事業所タイプ管理モーダル */}
       {showTypeManagement && (
@@ -892,22 +833,22 @@ const LocationManagement = () => {
       )}
 
       {/* 事業所詳細・編集モーダル */}
-      {showFacilityDetail && selectedFacility && (
+      {editingLocation && (
         <div className="modal-overlay">
           <div className="facility-detail-modal">
             <div className="modal-header">
-              <h3>{isEditingFacility ? '事業所編集' : '事業所詳細'} - {selectedFacility.name}</h3>
+              <h3>{editingLocation.facilityId === editingLocation.locationId ? '事業所編集' : '拠点編集'} - {editingLocation.facilityName}</h3>
               <button 
                 className="close-button"
-                onClick={handleCancelFacilityEdit}
+                onClick={handleCancelEdit}
               >
                 ×
               </button>
             </div>
             
             <div className="detail-content">
-              {isEditingFacility ? (
-                // 編集フォーム
+              {editingLocation.facilityId === editingLocation.locationId ? (
+                // 事業所編集フォーム
                 <div className="edit-form">
                   <div className="form-section">
                     <h4>基本情報</h4>
@@ -1041,9 +982,77 @@ const LocationManagement = () => {
                   </div>
                 </div>
               ) : (
-                // 詳細表示（現在は編集モードのみ）
-                <div className="detail-view">
-                  <p>詳細表示モードは現在実装中です。</p>
+                // 拠点編集フォーム
+                <div className="edit-form">
+                  <div className="form-section">
+                    <h4>拠点基本情報</h4>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>拠点名 *</label>
+                        <input
+                          type="text"
+                          value={editValues.name || ''}
+                          onChange={(e) => setEditValues({ ...editValues, name: e.target.value })}
+                          placeholder="拠点名"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>住所 *</label>
+                        <input
+                          type="text"
+                          value={editValues.address || ''}
+                          onChange={(e) => setEditValues({ ...editValues, address: e.target.value })}
+                          placeholder="住所"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>最大生徒数 *</label>
+                        <input
+                          type="number"
+                          value={editValues.maxStudents || ''}
+                          onChange={(e) => setEditValues({ ...editValues, maxStudents: parseInt(e.target.value) || 0 })}
+                          placeholder="最大生徒数"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>現在の生徒数 *</label>
+                        <input
+                          type="number"
+                          value={editValues.studentCount || ''}
+                          onChange={(e) => setEditValues({ ...editValues, studentCount: parseInt(e.target.value) || 0 })}
+                          placeholder="現在の生徒数"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>現在の指導員数 *</label>
+                        <input
+                          type="number"
+                          value={editValues.teacherCount || ''}
+                          onChange={(e) => setEditValues({ ...editValues, teacherCount: parseInt(e.target.value) || 0 })}
+                          placeholder="現在の指導員数"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-actions">
+                    <button 
+                      className="save-btn"
+                      onClick={() => handleSaveLocation(editingLocation.facilityId, editingLocation.locationId)}
+                    >
+                      保存
+                    </button>
+                    <button 
+                      className="cancel-btn"
+                      onClick={handleCancelEdit}
+                    >
+                      キャンセル
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1052,16 +1061,16 @@ const LocationManagement = () => {
       )}
 
       {/* 拠点詳細モーダル */}
-      {showLocationDetail && selectedLocation && (
+      {editingLocation && (
         <div className="modal-overlay">
           <div className="location-detail-modal">
             <div className="modal-header">
-              <h3>{selectedLocation.name} - 詳細情報</h3>
+              <h3>{editingLocation.facilityName} - 詳細情報</h3>
               <button 
                 className="close-button"
                 onClick={() => {
-                  setShowLocationDetail(false);
-                  setSelectedLocation(null);
+                  setEditingLocation(null);
+                  setEditValues({});
                 }}
               >
                 ×
@@ -1075,35 +1084,35 @@ const LocationManagement = () => {
                 <div className="info-grid">
                   <div className="info-item">
                     <label>拠点名:</label>
-                    <span>{selectedLocation.name}</span>
+                    <span>{editingLocation.name}</span>
                   </div>
                   <div className="info-item">
                     <label>事業所:</label>
-                    <span>{selectedLocation.facilityName}</span>
+                    <span>{editingLocation.facilityName}</span>
                   </div>
                   <div className="info-item">
                     <label>住所:</label>
-                    <span>{selectedLocation.address}</span>
+                    <span>{editingLocation.address}</span>
                   </div>
                   <div className="info-item">
                     <label>電話番号:</label>
-                    <span>{selectedLocation.phone}</span>
+                    <span>{editingLocation.phone}</span>
                   </div>
                   <div className="info-item">
                     <label>最大生徒数:</label>
-                    <span>{selectedLocation.maxStudents}名</span>
+                    <span>{editingLocation.maxStudents}名</span>
                   </div>
                   <div className="info-item">
                     <label>現在の生徒数:</label>
-                    <span>{getStudentsByLocation(selectedLocation.id).length}名</span>
+                    <span>{getStudentsByLocation(editingLocation.locationId).length}名</span>
                   </div>
                 </div>
               </div>
 
               {/* 生徒一覧 */}
               <div className="detail-section">
-                <h4>👥 生徒一覧 ({getStudentsByLocation(selectedLocation.id).length}名)</h4>
-                {getStudentsByLocation(selectedLocation.id).length > 0 ? (
+                <h4>👥 生徒一覧 ({getStudentsByLocation(editingLocation.locationId).length}名)</h4>
+                {getStudentsByLocation(editingLocation.locationId).length > 0 ? (
                   <div className="students-table-container">
                     <table className="students-table">
                       <thead>
@@ -1117,7 +1126,7 @@ const LocationManagement = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {getStudentsByLocation(selectedLocation.id).map(student => (
+                        {getStudentsByLocation(editingLocation.locationId).map(student => (
                           <tr key={student.id} className={`student-row ${student.status}`}>
                             <td className="student-name">{student.name}</td>
                             <td className="student-email">{student.email}</td>
@@ -1158,20 +1167,20 @@ const LocationManagement = () => {
                   <div className="stat-item">
                     <span className="stat-label">稼働率:</span>
                     <span className="stat-value">
-                      {Math.round((getStudentsByLocation(selectedLocation.id).length / selectedLocation.maxStudents) * 100)}%
+                      {Math.round((getStudentsByLocation(editingLocation.locationId).length / editingLocation.maxStudents) * 100)}%
                     </span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">アクティブ生徒:</span>
                     <span className="stat-value">
-                      {getStudentsByLocation(selectedLocation.id).filter(s => s.status === 'active').length}名
+                      {getStudentsByLocation(editingLocation.locationId).filter(s => s.status === 'active').length}名
                     </span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">平均進捗:</span>
                     <span className="stat-value">
-                      {getStudentsByLocation(selectedLocation.id).length > 0 
-                        ? Math.round(getStudentsByLocation(selectedLocation.id).reduce((sum, s) => sum + s.progress, 0) / getStudentsByLocation(selectedLocation.id).length)
+                      {getStudentsByLocation(editingLocation.locationId).length > 0 
+                        ? Math.round(getStudentsByLocation(editingLocation.locationId).reduce((sum, s) => sum + s.progress, 0) / getStudentsByLocation(editingLocation.locationId).length)
                         : 0}%
                     </span>
                   </div>

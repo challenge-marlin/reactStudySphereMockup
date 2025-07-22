@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logAdminAccountOperation } from '../utils/adminLogger';
-import './LoginPage.css';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ id: '', password: '' });
@@ -116,17 +115,19 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-header">
-          <h1>Study Sphere</h1>
-          <h2>ログイン</h2>
-          <p>管理者・指導員用ログインページ</p>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-purple-600 flex items-center justify-center p-5">
+      <div className="bg-white rounded-2xl p-8 shadow-2xl w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-indigo-600 mb-2">Study Sphere</h1>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">ログイン</h2>
+          <p className="text-gray-600">管理者・指導員用ログインページ</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="id">ユーザーID</label>
+        <form onSubmit={handleSubmit} className="mb-8">
+          <div className="mb-4">
+            <label htmlFor="id" className="block text-sm font-medium text-gray-700 mb-2">
+              ユーザーID
+            </label>
             <input
               type="text"
               id="id"
@@ -135,11 +136,14 @@ const LoginPage = () => {
               onChange={handleInputChange}
               required
               placeholder="ユーザーIDを入力"
+              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-indigo-500"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">パスワード</label>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              パスワード
+            </label>
             <input
               type="password"
               id="password"
@@ -148,41 +152,54 @@ const LoginPage = () => {
               onChange={handleInputChange}
               required
               placeholder="パスワードを入力"
+              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg text-base transition-colors focus:outline-none focus:border-indigo-500"
             />
           </div>
 
-          {error && <div className="error-message">{error}</div>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+              {error}
+            </div>
+          )}
 
-          <button type="submit" className="login-button" disabled={isLoading}>
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium text-base transition-all duration-200 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+          >
             {isLoading ? 'ログイン中...' : 'ログイン'}
           </button>
         </form>
 
-        <div className="demo-info">
-          <h3>デモ用アカウント</h3>
-          <div className="demo-accounts">
-            <div className="demo-account">
-              <h4>管理者</h4>
-              <p>ID: admin001</p>
-              <p>パスワード: admin123</p>
+        <div className="mb-8 p-4 bg-gray-50 rounded-lg">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">デモ用アカウント</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-3 bg-white rounded-lg shadow-sm">
+              <h4 className="text-indigo-600 font-medium mb-2">管理者</h4>
+              <p className="text-sm text-gray-600 mb-1">ID: admin001</p>
+              <p className="text-sm text-gray-600">パスワード: admin123</p>
             </div>
-            <div className="demo-account">
-              <h4>指導員</h4>
-                              <p>ID: instructor001</p>
-                <p>パスワード: instructor123</p>
+            <div className="p-3 bg-white rounded-lg shadow-sm">
+              <h4 className="text-indigo-600 font-medium mb-2">指導員</h4>
+              <p className="text-sm text-gray-600 mb-1">ID: instructor001</p>
+              <p className="text-sm text-gray-600">パスワード: instructor123</p>
             </div>
           </div>
         </div>
 
-        <div className="student-info">
-          <h3>生徒用ログイン</h3>
-          <p>生徒は指導員から送られたログインURLでアクセスします</p>
-          <div className="student-urls">
-            <p><strong>サンプルURL:</strong></p>
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">生徒用ログイン</h3>
+          <p className="text-blue-700 mb-4">生徒は指導員から送られたログインURLでアクセスします</p>
+          <div className="space-y-2">
+            <p className="font-medium text-blue-800">サンプルURL:</p>
             {['token123', 'token456'].map(token => {
               const url = `${window.location.origin}${process.env.PUBLIC_URL}/#/student/login/${token}`;
               return (
-                <a key={token} href={url} className="student-url">
+                <a 
+                  key={token} 
+                  href={url} 
+                  className="block text-blue-600 p-2 bg-white border border-blue-200 rounded text-sm transition-colors hover:bg-blue-50"
+                >
                   {url}
                 </a>
               );

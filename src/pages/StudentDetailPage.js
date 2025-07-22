@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import './HomeSupportStudentDetailPage.css';
 import { generateDailyReportPDF, generateWeeklyReportPDF, generateMonthlyReportPDF } from '../utils/pdfGenerator';
 import DailyReportTab from '../components/DailyReportTab';
 import UnifiedReportsList from '../components/UnifiedReportsList';
@@ -96,11 +95,15 @@ const StudentDetailPage = () => {
   }, [studentId]);
 
   if (!student) {
-    return <div className="loading">生徒情報を読み込み中...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-indigo-600 text-xl font-semibold">生徒情報を読み込み中...</div>
+      </div>
+    );
   }
 
   const handleBack = () => {
-    navigate('/instructor/home-support-evaluations');
+    navigate('/instructor/dashboard?tab=home-support');
   };
 
   // 報告書の保存
@@ -201,7 +204,7 @@ const StudentDetailPage = () => {
           generateMonthlyReportPDF(report, student);
           break;
         default:
-          console.log(`未知の報告書タイプ: ${report.type}`);
+          console.log('未知の報告書タイプ:', report.type);
       }
     } catch (error) {
       console.error('PDF生成エラー:', error);
@@ -210,91 +213,144 @@ const StudentDetailPage = () => {
   };
 
   return (
-    <div className="home-support-student-detail">
-      <div className="hs-page-header">
-        <button className="hs-back-btn" onClick={handleBack}>
-          ← 在宅支援管理に戻る
-        </button>
-        <h1>📋 {student.name} の詳細管理</h1>
-      </div>
-
-      {/* 生徒基本情報 */}
-      <div className="hs-student-info-card">
-        <div className="hs-info-header">
-          <h2>👤 基本情報</h2>
-        </div>
-        <div className="hs-info-grid">
-          <div className="hs-info-item">
-            <label>氏名:</label>
-            <span>{student.name}</span>
-          </div>
-          <div className="hs-info-item">
-            <label>メール:</label>
-            <span>{student.email}</span>
-          </div>
-          <div className="hs-info-item">
-            <label>担当指導員:</label>
-            <span>{student.instructorName}</span>
-          </div>
-          <div className="hs-info-item">
-            <label>拠点:</label>
-            <span>{student.locationName}</span>
-          </div>
-          <div className="hs-info-item">
-            <label>利用開始日:</label>
-            <span>{student.joinDate}</span>
-          </div>
-          <div className="hs-info-item">
-            <label>受給者証番号:</label>
-            <span className="hs-recipient-number">{student.recipientNumber}</span>
-          </div>
-          <div className="hs-info-item">
-            <label>最終ログイン:</label>
-            <span>{student.lastLogin}</span>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
+      {/* ヘッダー */}
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button 
+                className="px-4 py-2 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg hover:bg-opacity-20 transition-all duration-200 font-medium"
+                onClick={handleBack}
+              >
+                ← 在宅支援評価一覧に戻る
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold">生徒詳細</h1>
+                <span className="text-indigo-100 text-sm">{student.name}さんの詳細情報</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm font-semibold">
+                {student.status === 'active' ? 'アクティブ' : '非アクティブ'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* メインコンテンツ */}
-      <div className="hs-main-content">
-        {!selectedReport ? (
-          <div className="hs-unified-reports-container">
-            <UnifiedReportsList 
-              student={student}
-              reports={reports}
-              onNavigateToReport={handleNavigateToReport}
-              onDownloadPDF={handleDownloadPDFFromList}
-            />
-          </div>
-        ) : (
-          <div className="hs-report-detail">
-            <div className="hs-report-detail-header">
-              <button 
-                className="hs-back-to-list-btn"
-                onClick={handleBackToReports}
-              >
-                ← 報告書一覧に戻る
-              </button>
-              <h3>
-                {selectedReport.type === 'daily' && '📝 日次報告書'}
-                {selectedReport.type === 'weekly' && '📅 週次報告書'}
-                {selectedReport.type === 'monthly' && '📈 月次報告書'}
-                {' - '}{selectedReport.date}
-              </h3>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左カラム: 生徒情報 */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="text-center mb-6">
+                <div className="w-24 h-24 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                  {student.name.charAt(0)}
+                </div>
+                <h2 className="text-xl font-bold text-gray-800 mb-2">{student.name}</h2>
+                <p className="text-gray-600">{student.email}</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-gray-800 mb-3">基本情報</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">指導員:</span>
+                      <span className="text-gray-800">{student.instructorName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">拠点:</span>
+                      <span className="text-gray-800">{student.locationName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">加入日:</span>
+                      <span className="text-gray-800">{student.joinDate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">最終ログイン:</span>
+                      <span className="text-gray-800">{student.lastLogin}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="font-semibold text-gray-800 mb-3">在宅学習</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">在宅学習:</span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        student.canStudyAtHome 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {student.canStudyAtHome ? '可能' : '不可'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">ログイントークン:</span>
+                      <span className="text-gray-800 font-mono text-xs">{student.loginToken}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3">タグ</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {student.tags.map((tag, index) => (
+                      <span 
+                        key={index}
+                        className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            {selectedReport.type === 'daily' && (
-              <DailyReportTab 
-                student={student}
-                reports={reports.daily || []}
-                onSave={handleSaveDailyReport}
-                onEdit={handleEditDailyReport}
-                onDelete={handleDeleteDailyReport}
-                onDownloadPDF={(report) => handleDownloadPDF('daily', report.id)}
-              />
-            )}
           </div>
-        )}
+
+          {/* 右カラム: 報告書一覧 */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-800">報告書一覧</h2>
+                <div className="flex gap-2">
+                  <button
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200"
+                    onClick={() => handleCreateReport('daily')}
+                  >
+                    📝 日次報告書作成
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-200"
+                    onClick={() => handleCreateReport('weekly')}
+                  >
+                    📊 週次報告書作成
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-all duration-200"
+                    onClick={() => handleCreateReport('monthly')}
+                  >
+                    📈 月次報告書作成
+                  </button>
+                </div>
+              </div>
+
+              <UnifiedReportsList
+                reports={reports}
+                onNavigateToReport={handleNavigateToReport}
+                onEditReport={handleEditReport}
+                onDeleteReport={handleDeleteReport}
+                onDownloadPDF={handleDownloadPDFFromList}
+                student={student}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
