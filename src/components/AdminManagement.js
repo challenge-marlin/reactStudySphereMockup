@@ -11,12 +11,11 @@ const AdminManagement = () => {
     name: '',
     email: '',
     password: '',
-    startDate: '',
-    endDate: '',
-    status: 'active'
+    status: 'active',
+    isDeleted: false
   });
-
-  // ソート機能を追加
+  // 削除済みも表示のチェックボックス用
+  const [showDeleted, setShowDeleted] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
 
   const handleSort = (key) => {
@@ -33,8 +32,8 @@ const AdminManagement = () => {
       let bValue = b[sortConfig.key];
       
       if (sortConfig.key === 'status') {
-        aValue = getStatusLabel(a.status, a.endDate);
-        bValue = getStatusLabel(b.status, b.endDate);
+        aValue = getStatusLabel(a.status, a.isDeleted);
+        bValue = getStatusLabel(b.status, b.isDeleted);
       }
       
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -44,9 +43,8 @@ const AdminManagement = () => {
   };
 
   // ステータスラベルを取得する関数
-  const getStatusLabel = (status, endDate) => {
-    if (status === 'inactive') return '無効';
-    if (new Date(endDate) < new Date()) return '期限切れ';
+  const getStatusLabel = (status, isDeleted) => {
+    if (isDeleted) return '削除済み';
     return '有効';
   };
 
@@ -58,17 +56,61 @@ const AdminManagement = () => {
     if (savedAdmins) {
       setAdmins(JSON.parse(savedAdmins));
     } else {
-      // デフォルトの管理者データ
+      // デフォルトの管理者データ（3人分、isDeleted追加、startDate/endDate削除）
       const defaultAdmins = [
         {
           id: 'admin001',
           name: '山田管理者',
           email: 'yamada@studysphere.com',
           password: 'admin123',
-          startDate: '2024-01-01',
-          endDate: '2025-12-31',
           status: 'active',
+          isDeleted: false,
           createdAt: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: 'admin002',
+          name: '佐藤管理者',
+          email: 'sato@studysphere.com',
+          password: 'admin456',
+          status: 'active',
+          isDeleted: false,
+          createdAt: '2024-02-01T00:00:00Z'
+        },
+        {
+          id: 'admin003',
+          name: '鈴木管理者',
+          email: 'suzuki@studysphere.com',
+          password: 'admin789',
+          status: 'inactive',
+          isDeleted: false,
+          createdAt: '2024-03-01T00:00:00Z'
+        },
+        {
+          id: 'admin004',
+          name: '田中管理者',
+          email: 'tanaka@studysphere.com',
+          password: 'admin234',
+          status: 'active',
+          isDeleted: false,
+          createdAt: '2024-04-01T00:00:00Z'
+        },
+        {
+          id: 'admin005',
+          name: '高橋管理者',
+          email: 'takahashi@studysphere.com',
+          password: 'admin567',
+          status: 'inactive',
+          isDeleted: false,
+          createdAt: '2024-05-01T00:00:00Z'
+        },
+        {
+          id: 'admin006',
+          name: '渡辺管理者',
+          email: 'watanabe@studysphere.com',
+          password: 'admin890',
+          status: 'active',
+          isDeleted: false,
+          createdAt: '2024-06-01T00:00:00Z'
         }
       ];
       setAdmins(defaultAdmins);
@@ -101,10 +143,10 @@ const AdminManagement = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -125,6 +167,7 @@ const AdminManagement = () => {
       // 新規追加モード
       const newAdmin = {
         ...formData,
+        isDeleted: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -140,9 +183,8 @@ const AdminManagement = () => {
       name: '',
       email: '',
       password: '',
-      startDate: '',
-      endDate: '',
-      status: 'active'
+      status: 'active',
+      isDeleted: false
     });
     setShowAddForm(false);
     setEditingAdmin(null);
@@ -155,9 +197,8 @@ const AdminManagement = () => {
       name: admin.name,
       email: admin.email,
       password: admin.password,
-      startDate: admin.startDate,
-      endDate: admin.endDate,
-      status: admin.status
+      status: admin.status,
+      isDeleted: admin.isDeleted
     });
     setShowAddForm(true);
   };
@@ -170,18 +211,26 @@ const AdminManagement = () => {
       name: '',
       email: '',
       password: '',
-      startDate: '',
-      endDate: '',
-      status: 'active'
+      status: 'active',
+      isDeleted: false
     });
   };
 
-  const getStatusBadge = (status, endDate) => {
-    if (status === 'inactive') {
-      return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">無効</span>;
+  // 論理削除処理
+  const handleDelete = (admin) => {
+    if (window.confirm(`${admin.name} を削除しますか？`)) {
+      const updatedAdmins = admins.map(a =>
+        a.id === admin.id ? { ...a, isDeleted: true } : a
+      );
+      setAdmins(updatedAdmins);
+      localStorage.setItem('adminUsers', JSON.stringify(updatedAdmins));
+      logAdminAccountOperation('delete', admin);
     }
-    if (new Date(endDate) < new Date()) {
-      return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">期限切れ</span>;
+  };
+
+  const getStatusBadge = (status, isDeleted) => {
+    if (isDeleted) {
+      return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-500">削除済み</span>;
     }
     return <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">有効</span>;
   };
@@ -204,6 +253,18 @@ const AdminManagement = () => {
         >
           ＋ 管理者追加
         </button>
+      </div>
+
+      {/* 削除済みも表示チェックボックス */}
+      <div className="mb-4 flex items-center">
+        <input
+          type="checkbox"
+          id="showDeleted"
+          checked={showDeleted}
+          onChange={e => setShowDeleted(e.target.checked)}
+          className="mr-2"
+        />
+        <label htmlFor="showDeleted" className="text-gray-700">削除済みも表示</label>
       </div>
 
       {/* 管理者追加・編集フォーム */}
@@ -270,40 +331,27 @@ const AdminManagement = () => {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">利用開始日 *</label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate}
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">ステータス</label>
+                  <select
+                    name="status"
+                    value={formData.status}
                     onChange={handleInputChange}
-                    required
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
-                  />
+                  >
+                    <option value="active">有効</option>
+                    <option value="inactive">無効</option>
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">利用終了日 *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">削除済み（チェックを外すと復活）</label>
                   <input
-                    type="date"
-                    name="endDate"
-                    value={formData.endDate}
+                    type="checkbox"
+                    name="isDeleted"
+                    checked={formData.isDeleted}
                     onChange={handleInputChange}
-                    required
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">ステータス</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
-                >
-                  <option value="active">有効</option>
-                  <option value="inactive">無効</option>
-                </select>
               </div>
 
               <div className="flex gap-4 pt-6 border-t border-gray-200">
@@ -336,10 +384,10 @@ const AdminManagement = () => {
                 <tr>
                   <th 
                     className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                    onClick={() => handleSort('id')}
+                    onClick={() => handleSort('name')}
                   >
-                    🆔 管理者ID
-                    {sortConfig.key === 'id' && (
+                    👤 氏名
+                    {sortConfig.key === 'name' && (
                       <span className="ml-1">
                         {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
                       </span>
@@ -347,10 +395,10 @@ const AdminManagement = () => {
                   </th>
                   <th 
                     className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                    onClick={() => handleSort('name')}
+                    onClick={() => handleSort('id')}
                   >
-                    👤 氏名
-                    {sortConfig.key === 'name' && (
+                    🆔 管理者ID
+                    {sortConfig.key === 'id' && (
                       <span className="ml-1">
                         {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
                       </span>
@@ -369,17 +417,6 @@ const AdminManagement = () => {
                   </th>
                   <th 
                     className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                    onClick={() => handleSort('startDate')}
-                  >
-                    📅 利用期間
-                    {sortConfig.key === 'startDate' && (
-                      <span className="ml-1">
-                        {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                      </span>
-                    )}
-                  </th>
-                  <th 
-                    className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
                     onClick={() => handleSort('status')}
                   >
                     📊 ステータス
@@ -389,54 +426,25 @@ const AdminManagement = () => {
                       </span>
                     )}
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 作成日</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
                 </tr>
               </thead>
               <tbody>
-                {getSortedAdmins().map(admin => (
+                {getSortedAdmins()
+                  .filter(admin => showDeleted || !admin.isDeleted)
+                  .map(admin => (
                   <tr key={admin.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
                     <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                          <span className="text-red-600 font-bold text-sm">
-                            {admin.name.charAt(0)}
-                          </span>
-                        </div>
-                        <div>
-                          <strong className="text-gray-800">{admin.id}</strong>
-                        </div>
-                      </div>
+                      <strong className="text-gray-800">{admin.name}</strong>
                     </td>
                     <td className="px-6 py-4">
-                      <strong className="text-gray-800">{admin.name}</strong>
+                      <strong className="text-gray-800">{admin.id}</strong>
                     </td>
                     <td className="px-6 py-4 text-gray-600">
                       📧 {admin.email}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <span className="text-gray-700 font-medium">
-                          {formatDate(admin.startDate)} ～ {formatDate(admin.endDate)}
-                        </span>
-                        <div className="ml-2 w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-green-500 transition-all duration-300"
-                            style={{ 
-                              width: `${Math.min(
-                                ((new Date() - new Date(admin.startDate)) / (new Date(admin.endDate) - new Date(admin.startDate))) * 100, 
-                                100
-                              )}%` 
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {getStatusBadge(admin.status, admin.endDate)}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 text-sm">
-                      📅 {formatDate(admin.createdAt)}
+                      {getStatusBadge(admin.status, admin.isDeleted)}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
@@ -447,6 +455,15 @@ const AdminManagement = () => {
                         >
                           ✏️ 編集
                         </button>
+                        {!admin.isDeleted && (
+                          <button
+                            className="bg-red-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-red-600"
+                            onClick={() => handleDelete(admin)}
+                            title="削除"
+                          >
+                            🗑️ 削除
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

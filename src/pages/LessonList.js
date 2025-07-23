@@ -14,7 +14,7 @@ const LessonList = () => {
       const userData = JSON.parse(user);
       setCurrentUser(userData);
       
-      // 生徒の受講コースを取得（モックデータ）
+      // カリキュラム全体像.txtに基づくコース・レッスンデータ
       const mockEnrolledCourses = [
         {
           id: 'course001',
@@ -28,7 +28,7 @@ const LessonList = () => {
               description: '基本操作、文書の作成、保存方法。フォーマット設定、スタイルの適用、図形や画像の挿入',
               duration: '120分',
               order: 1,
-              status: 'completed', // completed, in-progress, not-started
+              status: 'completed',
               testScore: 85,
               hasAssignment: false
             },
@@ -93,7 +93,7 @@ const LessonList = () => {
             {
               id: 'lesson002-1',
               title: 'Windows11の基本操作',
-              description: 'ファイル操作、ショートカットキーの利用、ソフトウェアの使用方法',
+              description: 'ファイル操作、ショートカットキーの利用、ソフトウェアの使用方法（ブラウザ、Word、Excelの簡単操作）',
               duration: '120分',
               order: 1,
               status: 'completed',
@@ -103,7 +103,7 @@ const LessonList = () => {
             {
               id: 'lesson002-2',
               title: 'インターネットの基礎',
-              description: 'インターネットの仕組みと安全な利用、情報検索と信頼性の高い情報の見分け方',
+              description: 'インターネットの仕組みと安全な利用（セキュリティ、パスワード管理）、情報検索と信頼性の高い情報の見分け方',
               duration: '120分',
               order: 2,
               status: 'completed',
@@ -152,6 +152,7 @@ const LessonList = () => {
             }
           ]
         }
+        // 今後、他コース（SNS運用、LP制作等）もここに追加可能
       ];
       
       setEnrolledCourses(mockEnrolledCourses);
@@ -226,116 +227,74 @@ const LessonList = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
-      {/* ヘッダー */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-gray-100">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex-1">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-              📚 レッスン一覧
-            </h2>
-            <p className="text-lg text-gray-600">{currentUser.name}さんの受講コース</p>
-          </div>
+      {/* コース名大見出し */}
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col gap-2 mb-6">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            {selectedCourse?.title || 'コース名不明'}
+          </h1>
           <div className="flex items-center gap-3">
-            <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-              {enrolledCourses.length}コース受講中
+            <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+              selectedCourse?.category === '必修科目'
+                ? 'bg-red-100 text-red-800'
+                : 'bg-blue-100 text-blue-800'
+            }`}>
+              {selectedCourse?.category || 'カテゴリ不明'}
             </span>
+            <span className="text-gray-500 text-sm">{selectedCourse?.lessons?.length || 0}レッスン</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* コース選択サイドバー */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">受講コース</h3>
-            <div className="space-y-3">
-              {enrolledCourses.map(course => (
-                <button
-                  key={course.id}
-                  className={`w-full text-left p-4 rounded-xl transition-all duration-200 ${
-                    selectedCourse?.id === course.id
-                      ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                  }`}
-                  onClick={() => setSelectedCourse(course)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-sm">{course.title}</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      selectedCourse?.id === course.id
-                        ? 'bg-white bg-opacity-20'
-                        : course.category === '必修科目'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {course.category}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        selectedCourse?.id === course.id
-                          ? 'bg-white'
-                          : 'bg-gradient-to-r from-blue-400 to-cyan-500'
-                      }`}
-                      style={{ width: `${course.progress}%` }}
-                    />
-                  </div>
-                  <div className="text-xs mt-1 opacity-75">
-                    進捗: {course.progress}%
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* コース切り替えタブ */}
+      <div className="mb-6">
+        <div className="flex flex-wrap gap-4">
+          {enrolledCourses.map(course => (
+            <button
+              key={course.id}
+              className={`px-6 py-3 rounded-t-lg font-semibold text-lg border-b-4 transition-all duration-200 focus:outline-none ${
+                selectedCourse?.id === course.id
+                  ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white border-blue-600 shadow-lg'
+                  : 'bg-gray-100 text-gray-700 border-transparent hover:bg-blue-50'
+              }`}
+              onClick={() => setSelectedCourse(course)}
+            >
+              {course.title}
+              <span className="ml-2 text-xs font-normal px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                {course.category}
+              </span>
+            </button>
+          ))}
         </div>
+      </div>
 
-        {/* レッスン一覧 */}
-        <div className="lg:col-span-3">
-          {selectedCourse && (
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedCourse.title}</h3>
-                  <p className="text-gray-600">{selectedCourse.lessons.length}レッスン</p>
-                </div>
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                  selectedCourse.category === '必修科目'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-blue-100 text-blue-800'
-                }`}>
-                  {selectedCourse.category}
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                {selectedCourse.lessons.map((lesson, index) => {
-                  const status = getLessonStatus(lesson);
-                  return (
-                    <div key={lesson.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                            lesson.status === 'completed'
-                              ? 'bg-green-500'
-                              : lesson.status === 'in-progress'
-                                ? 'bg-blue-500'
-                                : 'bg-gray-400'
-                          }`}>
-                            {lesson.order}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-800 mb-2">{lesson.title}</h4>
-                            <p className="text-gray-600 text-sm mb-3">{lesson.description}</p>
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                              <span>⏱️ {lesson.duration}</span>
-                              {lesson.testScore && (
-                                <span className="text-green-600 font-medium">📊 テスト: {lesson.testScore}点</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
+      {/* レッスン一覧テーブル */}
+      <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 w-full overflow-x-auto">
+        {selectedCourse && (
+          <>
+            {/* ここでコース名は大見出しに移動したので、テーブル上部のコース名表示は省略 */}
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-blue-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">レッスン名</th>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">説明</th>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">所要時間</th>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">進捗</th>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">テスト</th>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">課題</th>
+                    <th className="px-4 py-3 text-left font-semibold text-blue-800">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedCourse.lessons && selectedCourse.lessons.map((lesson, index) => {
+                    const status = getLessonStatus(lesson);
+                    return (
+                      <tr key={lesson.id} className="border-b border-gray-100 hover:bg-blue-50 transition-colors duration-200">
+                        <td className="px-4 py-3 font-semibold text-gray-800">{lesson.title}</td>
+                        <td className="px-4 py-3 text-gray-600">{lesson.description}</td>
+                        <td className="px-4 py-3 text-gray-500">{lesson.duration}</td>
+                        <td className="px-4 py-3">
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                             lesson.status === 'completed'
                               ? 'bg-green-100 text-green-800'
@@ -345,52 +304,67 @@ const LessonList = () => {
                           }`}>
                             {status.icon} {status.label}
                           </span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                          onClick={() => handleStartLesson(lesson)}
-                        >
-                          🎓 学習開始
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                          onClick={() => handleStartEnhancedLesson(lesson)}
-                        >
-                          🚀 改善版学習
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                          onClick={() => handleStartAdvancedLesson(lesson)}
-                        >
-                          ⭐ 高度な学習
-                        </button>
-                        {lesson.status === 'completed' && (
-                          <button
-                            className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                            onClick={() => handleTakeTest(lesson)}
-                          >
-                            📝 テスト受験
-                          </button>
-                        )}
-                        {lesson.hasAssignment && (
-                          <button
-                            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
-                            onClick={() => handleSubmitAssignment(lesson)}
-                          >
-                            📋 課題提出
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {lesson.testScore !== null ? (
+                            <span className="text-green-600 font-medium">{lesson.testScore}点</span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {lesson.hasAssignment ? (
+                            <span className="text-yellow-600 font-medium">あり</span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              className="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                              onClick={() => handleStartLesson(lesson)}
+                            >
+                              🎓 学習
+                            </button>
+                            <button
+                              className="px-3 py-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                              onClick={() => handleStartEnhancedLesson(lesson)}
+                            >
+                              🚀 改善
+                            </button>
+                            <button
+                              className="px-3 py-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                              onClick={() => handleStartAdvancedLesson(lesson)}
+                            >
+                              ⭐ 高度
+                            </button>
+                            {lesson.status === 'completed' && (
+                              <button
+                                className="px-3 py-1 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                                onClick={() => handleTakeTest(lesson)}
+                              >
+                                📝 テスト
+                              </button>
+                            )}
+                            {lesson.hasAssignment && (
+                              <button
+                                className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                                onClick={() => handleSubmitAssignment(lesson)}
+                              >
+                                📋 課題
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

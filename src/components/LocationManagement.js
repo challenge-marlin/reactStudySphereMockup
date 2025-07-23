@@ -12,160 +12,190 @@ const LocationManagement = () => {
   // モック事業所・拠点データ
   const [facilities, setFacilities] = useState([
     {
-      id: 'facility001',
-      name: 'スタディスフィア東京校',
-      type: '就労移行支援事業所',
+      id: 'org001',
+      name: 'スタディスフィア株式会社',
+      type: '株式会社',
       address: '東京都渋谷区神南1-2-3',
       phone: '03-1234-5678',
-      contacts: [
-        { name: '田中太郎', email: 'tanaka@example.com' },
-        { name: '佐藤花子', email: 'sato@example.com' },
-        { name: '鈴木一郎', email: 'suzuki@example.com' }
-      ],
-      locations: [
+      offices: [
         {
-          id: 'location001',
-          name: '東京本校',
-          address: '東京都渋谷区神南1-2-3',
-          teacherCount: 3,
-          studentCount: 18,
-          maxStudents: 25
+          id: 'office001',
+          name: '東京教育渋谷校',
+          type: '就労移行支援事業所',
+          address: '東京都渋谷区渋谷1-1-1',
+          phone: '03-1234-5678',
+          students: 15,
+          maxStudents: 20,
+          managers: [
+            { name: '田中太郎', email: 'tanaka@tokyo-edu.com', department: 'IT学科' },
+            { name: '佐々木美咲', email: 'sasaki@tokyo-edu.com', department: 'IT学科' }
+          ],
+          availableCourses: []
         },
         {
-          id: 'location003',
-          name: '新宿サテライト',
-          address: '東京都新宿区西新宿2-3-4',
-          teacherCount: 2,
-          studentCount: 12,
-          maxStudents: 20
+          id: 'office002',
+          name: '東京教育新宿校',
+          type: '就労継続支援A型事業所',
+          address: '東京都新宿区新宿2-2-2',
+          phone: '03-2345-6789',
+          students: 12,
+          maxStudents: 15,
+          managers: [
+            { name: '佐藤花子', email: 'sato@tokyo-edu.com', department: 'デザイン学科' }
+          ],
+          availableCourses: []
         },
         {
-          id: 'location004',
-          name: '池袋教室',
-          address: '東京都豊島区池袋1-1-1',
-          teacherCount: 1,
-          studentCount: 8,
-          maxStudents: 15
+          id: 'office003',
+          name: '東京教育池袋校',
+          type: '学習塾',
+          address: '東京都豊島区池袋3-3-3',
+          phone: '03-3456-7890',
+          students: 8,
+          maxStudents: 10,
+          managers: [
+            { name: '鈴木一郎', email: 'suzuki@tokyo-edu.com', department: 'ビジネス学科' }
+          ],
+          availableCourses: []
         }
       ]
     },
     {
-      id: 'facility002',
-      name: 'スタディスフィア大阪校',
-      type: '就労移行支援事業所',
+      id: 'org002',
+      name: '関西教育グループ',
+      type: '学校法人',
       address: '大阪府大阪市北区梅田3-4-5',
       phone: '06-5678-9012',
-      contacts: [
-        { name: '山田次郎', email: 'yamada@example.com' },
-        { name: '高橋美咲', email: 'takahashi@example.com' }
-      ],
-      locations: [
+      offices: [
         {
-          id: 'location002',
-          name: '大阪支校',
+          id: 'office004',
+          name: '関西教育大阪校',
+          type: '就労継続支援A型事業所',
           address: '大阪府大阪市北区梅田3-4-5',
-          teacherCount: 2,
-          studentCount: 15,
-          maxStudents: 30
+          phone: '06-5678-9012',
+          students: 18,
+          maxStudents: 25,
+          managers: [
+            { name: '山田次郎', email: 'yamada@kansai-edu.com', department: 'IT学科' },
+            { name: '高橋一郎', email: 'takahashi@kansai-edu.com', department: 'IT学科' },
+            { name: '中村花子', email: 'nakamura@kansai-edu.com', department: 'デザイン学科' }
+          ],
+          availableCourses: []
         },
         {
-          id: 'location005',
-          name: '難波教室',
+          id: 'office005',
+          name: '関西教育難波校',
+          type: '就労継続支援B型事業所',
           address: '大阪府大阪市中央区難波5-6-7',
-          teacherCount: 1,
-          studentCount: 10,
-          maxStudents: 20
+          phone: '06-9012-3456',
+          students: 10,
+          maxStudents: 12,
+          managers: [
+            { name: '高橋美咲', email: 'takahashi@kansai-edu.com', department: 'デザイン学科' }
+          ],
+          availableCourses: []
+        },
+        {
+          id: 'office008',
+          name: '関西教育新規校',
+          type: '就労移行支援事業所',
+          address: '大阪府大阪市天王寺区上本町6-7-8',
+          phone: '06-3456-7890',
+          students: 0,
+          maxStudents: 0,
+          managers: [],
+          availableCourses: []
         }
       ]
     },
     {
-      id: 'facility003',
-      name: 'スタディスフィア名古屋校',
-      type: '就労継続支援A型事業所',
+      id: 'org003',
+      name: '中部学習センター',
+      type: 'NPO法人',
       address: '愛知県名古屋市中区栄1-1-1',
       phone: '052-1234-5678',
-      contacts: [
-        { name: '伊藤健太', email: 'ito@example.com' },
-        { name: '渡辺真理', email: 'watanabe@example.com' }
-      ],
-      locations: [
+      offices: [
         {
-          id: 'location006',
-          name: '名古屋本校',
+          id: 'office006',
+          name: '中部学習名古屋校',
+          type: '就労移行支援事業所',
           address: '愛知県名古屋市中区栄1-1-1',
-          teacherCount: 2,
-          studentCount: 14,
-          maxStudents: 25
-        }
-      ]
-    },
-    {
-      id: 'facility004',
-      name: 'スタディスフィア福岡校',
-      type: '就労継続支援B型事業所',
-      address: '福岡県福岡市博多区博多駅前2-2-2',
-      phone: '092-1234-5678',
-      contacts: [
-        { name: '中村雅子', email: 'nakamura@example.com' }
-      ],
-      locations: [
-        {
-          id: 'location007',
-          name: '福岡本校',
-          address: '福岡県福岡市博多区博多駅前2-2-2',
-          teacherCount: 1,
-          studentCount: 6,
-          maxStudents: 15
+          phone: '052-1234-5678',
+          students: 20,
+          maxStudents: 30,
+          managers: [
+            { name: '伊藤健太', email: 'ito@chubu-learning.com', department: 'ビジネス学科' },
+            { name: '松本恵子', email: 'matsumoto@chubu-learning.com', department: 'ビジネス学科' }
+          ],
+          availableCourses: []
         },
         {
-          id: 'location008',
-          name: '天神教室',
-          address: '福岡県福岡市中央区天神3-3-3',
-          teacherCount: 1,
-          studentCount: 4,
-          maxStudents: 12
+          id: 'office007',
+          name: '中部学習岡崎校',
+          type: '学習塾',
+          address: '愛知県岡崎市本町2-2-2',
+          phone: '0564-1234-5678',
+          students: 6,
+          maxStudents: 8,
+          managers: [
+            { name: '渡辺真理', email: 'watanabe@chubu-learning.com', department: 'IT学科' }
+          ],
+          availableCourses: []
         }
       ]
     },
     {
-      id: 'facility005',
-      name: 'スタディスフィア札幌校',
-      type: '学習塾',
-      address: '北海道札幌市中央区南1条西5-5-5',
-      phone: '011-1234-5678',
-      contacts: [
-        { name: '佐々木隆', email: 'sasaki@example.com' },
-        { name: '小林恵子', email: 'kobayashi@example.com' },
-        { name: '加藤正義', email: 'kato@example.com' }
-      ],
-      locations: [
+      id: 'org004',
+      name: '',
+      type: '個人事業主',
+      address: '',
+      phone: '',
+      offices: [
         {
-          id: 'location009',
-          name: '札幌本校',
-          address: '北海道札幌市中央区南1条西5-5-5',
-          teacherCount: 2,
-          studentCount: 20,
-          maxStudents: 30
+          id: 'office009',
+          name: 'フリーランス学習塾',
+          type: '学習塾',
+          address: '東京都中野区中野4-4-4',
+          phone: '03-4567-8901',
+          students: 5,
+          maxStudents: 8,
+          managers: [
+            { name: '小林直子', email: 'kobayashi@freelance.com', department: '個人指導' }
+          ],
+          availableCourses: []
+        },
+        {
+          id: 'office010',
+          name: '個人指導センター',
+          type: '就労移行支援事業所',
+          address: '東京都杉並区阿佐ヶ谷5-5-5',
+          phone: '03-5678-9012',
+          students: 0,
+          maxStudents: 0,
+          managers: [],
+          availableCourses: []
         }
       ]
     },
     {
-      id: 'facility006',
-      name: 'スタディスフィア仙台校',
-      type: '就労移行支援事業所',
-      address: '宮城県仙台市青葉区一番町4-4-4',
-      phone: '022-1234-5678',
-      contacts: [
-        { name: '斎藤和也', email: 'saito@example.com' }
-      ],
-      locations: [
+      id: 'org005',
+      name: '',
+      type: '未分類',
+      address: '',
+      phone: '',
+      offices: [
         {
-          id: 'location010',
-          name: '仙台本校',
-          address: '宮城県仙台市青葉区一番町4-4-4',
-          teacherCount: 1,
-          studentCount: 9,
-          maxStudents: 18
+          id: 'office011',
+          name: '独立系教育施設',
+          type: 'その他',
+          address: '東京都世田谷区三軒茶屋6-6-6',
+          phone: '03-6789-0123',
+          students: 3,
+          maxStudents: 5,
+          managers: [
+            { name: '中村誠', email: 'nakamura@independent.com', department: '総合教育' }
+          ],
+          availableCourses: []
         }
       ]
     }
@@ -175,6 +205,7 @@ const LocationManagement = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [showOnlyNoManager, setShowOnlyNoManager] = useState(false);
 
   const [newFacility, setNewFacility] = useState({
     name: '',
@@ -199,6 +230,96 @@ const LocationManagement = () => {
   const [editingFacilityData, setEditingFacilityData] = useState(null);
   const [selectedFacility, setSelectedFacility] = useState(null);
 
+  // 事業所追加用
+  const [newOffice, setNewOffice] = useState({
+    orgId: '',
+    name: '',
+    type: facilityTypes[0] || '',
+    address: '',
+    phone: ''
+  });
+
+  // 事業所追加モーダル表示制御
+  const [showOfficeForm, setShowOfficeForm] = useState(false);
+
+  // 責任者選択モーダル表示制御
+  const [showManagerSelect, setShowManagerSelect] = useState(false);
+  const [selectedOfficeForManager, setSelectedOfficeForManager] = useState(null);
+
+  // 編集モーダル表示制御
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedOfficeForEdit, setSelectedOfficeForEdit] = useState(null);
+
+  // サンプルユーザーリスト
+  const sampleUsers = [
+    { id: 1, name: '田中太郎', email: 'tanaka@example.com', department: 'IT学科' },
+    { id: 2, name: '佐藤花子', email: 'sato@example.com', department: 'デザイン学科' },
+    { id: 3, name: '鈴木一郎', email: 'suzuki@example.com', department: 'ビジネス学科' },
+    { id: 4, name: '高橋美咲', email: 'takahashi@example.com', department: 'IT学科' },
+    { id: 5, name: '伊藤健太', email: 'ito@example.com', department: 'ビジネス学科' },
+    { id: 6, name: '渡辺真理', email: 'watanabe@example.com', department: 'IT学科' },
+    { id: 7, name: '小林直子', email: 'kobayashi@example.com', department: '個人指導' },
+    { id: 8, name: '中村誠', email: 'nakamura@example.com', department: '総合教育' }
+  ];
+
+  // コースモックデータ（本来は共通管理が望ましいが、ここではローカル定義）
+  const mockCourses = [
+    { id: 'course001', title: 'オフィスソフトの操作・文書作成' },
+    { id: 'course002', title: 'ITリテラシー・AIの基本' },
+    { id: 'course003', title: 'SNS運用の基礎・画像生成編集' },
+    { id: 'course004', title: 'LP制作(HTML・CSS)' },
+    { id: 'course005', title: 'SNS管理代行・LP制作案件対応' },
+  ];
+
+  const [showCourseModal, setShowCourseModal] = useState(false);
+  const [targetOffice, setTargetOffice] = useState(null);
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
+  // 責任者選択ハンドラー
+  const handleSelectManager = (office) => {
+    setSelectedOfficeForManager(office);
+    setShowManagerSelect(true);
+  };
+
+  // 編集ハンドラー
+  const handleEditOffice = (office) => {
+    setSelectedOfficeForEdit(office);
+    setShowEditModal(true);
+  };
+
+  // 削除ハンドラー
+  const handleDeleteOffice = (office) => {
+    if (window.confirm(`「${office.name}」を削除しますか？\nこの操作は取り消せません。`)) {
+      alert(`「${office.name}」を削除しました。`);
+    }
+  };
+
+  // 責任者選択確定ハンドラー
+  const handleConfirmManagerSelection = (selectedUsers) => {
+    alert(`選択された責任者: ${selectedUsers.map(u => u.name).join(', ')}\n「${selectedOfficeForManager.name}」に設定しました。`);
+    setShowManagerSelect(false);
+    setSelectedOfficeForManager(null);
+  };
+
+  // 編集確定ハンドラー
+  const handleConfirmEdit = (updatedData) => {
+    alert(`「${selectedOfficeForEdit.name}」の情報を更新しました。`);
+    setShowEditModal(false);
+    setSelectedOfficeForEdit(null);
+  };
+
+  // 事業所追加モーダル
+  const handleAddOffice = () => {
+    if (!newOffice.orgId || !newOffice.name || !newOffice.type) return;
+    setFacilities(prev => prev.map(org =>
+      org.id === newOffice.orgId
+        ? { ...org, offices: [...(org.offices || []), { ...newOffice, id: `office${Date.now()}` }] }
+        : org
+    ));
+    setShowOfficeForm(false);
+    setNewOffice({ orgId: '', name: '', type: facilityTypes[0] || '', address: '', phone: '' });
+  };
+
   // ソート機能
   const handleSort = (key) => {
     setSortConfig(prevConfig => ({
@@ -209,11 +330,33 @@ const LocationManagement = () => {
 
   // フィルタリングとソート
   const getFilteredAndSortedFacilities = () => {
-    let filtered = facilities.filter(facility => {
-      const matchesSearch = facility.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           facility.address.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = filterType === 'all' || facility.type === filterType;
-      return matchesSearch && matchesType;
+    // 事業所をフラットな配列に変換
+    let allOffices = [];
+    facilities.forEach(org => {
+      if (org.offices && org.offices.length > 0) {
+        org.offices.forEach(office => {
+          allOffices.push({
+            ...office,
+            organizationName: org.name,
+            organizationId: org.id
+          });
+        });
+      }
+    });
+
+    // 事業所レベルでフィルタリング
+    let filtered = allOffices.filter(office => {
+      const matchesSearch = 
+        office.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        office.organizationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        office.address.toLowerCase().includes(searchTerm.toLowerCase());
+     
+      const matchesType = filterType === 'all' || office.type === filterType;
+     
+      const matchesManager = showOnlyNoManager ? 
+        (!office.managers || office.managers.length === 0) : true;
+     
+      return matchesSearch && matchesType && matchesManager;
     });
 
     filtered.sort((a, b) => {
@@ -221,28 +364,28 @@ const LocationManagement = () => {
       
       switch (sortConfig.key) {
         case 'name':
-          aValue = a.name;
-          bValue = b.name;
+          aValue = a.name || '';
+          bValue = b.name || '';
           break;
         case 'type':
-          aValue = a.type;
-          bValue = b.type;
+          aValue = a.type || '';
+          bValue = b.type || '';
           break;
-        case 'locationCount':
-          aValue = a.locations.length;
-          bValue = b.locations.length;
+        case 'organization':
+          aValue = a.organizationName || '';
+          bValue = b.organizationName || '';
           break;
-        case 'totalTeachers':
-          aValue = a.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
-          bValue = b.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
+        case 'students':
+          aValue = a.students || 0;
+          bValue = b.students || 0;
           break;
-        case 'totalStudents':
-          aValue = a.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
-          bValue = b.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
+        case 'address':
+          aValue = a.address || '';
+          bValue = b.address || '';
           break;
         default:
-          aValue = a.name;
-          bValue = b.name;
+          aValue = a.name || '';
+          bValue = b.name || '';
       }
 
       if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
@@ -313,7 +456,7 @@ const LocationManagement = () => {
     const newFacilityData = {
       id: `facility${Date.now()}`,
       ...newFacility,
-      locations: []
+      offices: [] // 新しいデータ構造に合わせて初期化
     };
     setFacilities([...facilities, newFacilityData]);
     setNewFacility({
@@ -341,7 +484,7 @@ const LocationManagement = () => {
       
       const updatedFacilities = facilities.map(f => 
         f.id === newLocation.facilityId 
-          ? { ...f, locations: [...f.locations, newLocationData] }
+          ? { ...f, offices: [...f.offices, newLocationData] }
           : f
       );
       
@@ -354,7 +497,7 @@ const LocationManagement = () => {
   // 拠点編集
   const handleEditLocation = (facilityId, locationId) => {
     const facility = facilities.find(f => f.id === facilityId);
-    const location = facility?.locations.find(l => l.id === locationId);
+    const location = facility?.offices.find(l => l.id === locationId);
     if (location) {
       setEditingLocation({ facilityId, locationId });
       setEditValues({
@@ -372,7 +515,7 @@ const LocationManagement = () => {
       if (facility.id === facilityId) {
         return {
           ...facility,
-          locations: facility.locations.map(location => 
+          offices: facility.offices.map(location => 
             location.id === locationId 
               ? { ...location, ...editValues }
               : location
@@ -456,38 +599,63 @@ const LocationManagement = () => {
     if (window.confirm('この拠点を削除しますか？')) {
       setFacilities(prev => prev.map(facility => ({
         ...facility,
-        locations: facility.locations.filter(location => location.id !== locationId)
+        offices: facility.offices.filter(office => office.id !== locationId)
       })));
     }
   };
 
-  const totalLocations = facilities.reduce((sum, facility) => sum + facility.locations.length, 0);
+  const totalLocations = facilities.reduce((sum, facility) => sum + (facility.offices ? facility.offices.length : 0), 0);
   const totalTeachers = facilities.reduce((sum, facility) => 
-    sum + facility.locations.reduce((locSum, location) => locSum + location.teacherCount, 0), 0);
+    sum + (facility.offices ? facility.offices.reduce((officeSum, office) => officeSum + (office.managers ? office.managers.length : 0), 0) : 0), 0);
   const totalStudents = facilities.reduce((sum, facility) => 
-    sum + facility.locations.reduce((locSum, location) => locSum + location.studentCount, 0), 0);
+    sum + (facility.offices ? facility.offices.reduce((officeSum, office) => officeSum + (office.students || 0), 0) : 0), 0);
   const totalMaxStudents = facilities.reduce((sum, facility) => 
-    sum + facility.locations.reduce((locSum, location) => locSum + (location.maxStudents || 20), 0), 0);
+    sum + (facility.offices ? facility.offices.reduce((officeSum, office) => officeSum + (office.maxStudents || 0), 0) : 0), 0);
 
   const filteredFacilities = getFilteredAndSortedFacilities();
+
+  const handleManageCourses = (office) => {
+    setTargetOffice(office);
+    setSelectedCourses(office.availableCourses || []);
+    setShowCourseModal(true);
+  };
+
+  const handleCourseCheck = (courseId) => {
+    setSelectedCourses(prev =>
+      prev.includes(courseId)
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId]
+    );
+  };
+
+  const handleSaveCourses = () => {
+    if (!targetOffice) return;
+    setFacilities(prevFacilities =>
+      prevFacilities.map(org => ({
+        ...org,
+        offices: org.offices.map(office =>
+          office.id === targetOffice.id
+            ? { ...office, availableCourses: selectedCourses }
+            : office
+        )
+      }))
+    );
+    setShowCourseModal(false);
+    setTargetOffice(null);
+    setSelectedCourses([]);
+  };
+
+  const handleCancelCourses = () => {
+    setShowCourseModal(false);
+    setTargetOffice(null);
+    setSelectedCourses([]);
+  };
 
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-red-800 mb-6">拠点・事業所管理</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
-            <h3 className="text-red-800 font-medium mb-2">事業所数</h3>
-            <p className="text-3xl font-bold text-red-600">{facilities.length}</p>
-          </div>
-          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
-            <h3 className="text-red-800 font-medium mb-2">拠点数</h3>
-            <p className="text-3xl font-bold text-red-600">{totalLocations}</p>
-          </div>
-          <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
-            <h3 className="text-red-800 font-medium mb-2">総指導員数</h3>
-            <p className="text-3xl font-bold text-red-600">{totalTeachers}</p>
-          </div>
+        <h2 className="text-3xl font-bold text-red-800 mb-6">事業所(拠点)管理</h2>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
           <div className="bg-white border-2 border-red-200 rounded-xl p-6 text-center transition-all duration-300 hover:border-red-400 hover:shadow-lg">
             <h3 className="text-red-800 font-medium mb-2">総生徒数</h3>
             <p className="text-3xl font-bold text-red-600">{totalStudents} / {totalMaxStudents}</p>
@@ -499,15 +667,10 @@ const LocationManagement = () => {
       <div className="flex flex-wrap gap-4 mb-8">
         <button 
           className="bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-red-700"
-          onClick={() => setShowFacilityForm(true)}
+          onClick={() => setShowOfficeForm(true)}
+          disabled={facilities.length === 0}
         >
           + 事業所を追加
-        </button>
-        <button 
-          className="bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-red-700"
-          onClick={() => setShowLocationForm(true)}
-        >
-          + 拠点を追加
         </button>
         <button 
           className="bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-700"
@@ -518,173 +681,156 @@ const LocationManagement = () => {
       </div>
 
       {/* 検索・フィルタセクション */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="事業所名または住所で検索..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-red-200 rounded-lg focus:outline-none focus:border-red-400 transition-colors duration-300"
-          />
+      <div className="space-y-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="事業所名、組織名、または住所で検索..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-red-200 rounded-lg focus:outline-none focus:border-red-400 transition-colors duration-300"
+            />
+          </div>
+          <div className="md:w-64">
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-red-200 rounded-lg focus:outline-none focus:border-red-400 transition-colors duration-300"
+            >
+              <option value="all">すべての事業所タイプ</option>
+              {facilityTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="md:w-64">
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-red-200 rounded-lg focus:outline-none focus:border-red-400 transition-colors duration-300"
-          >
-            <option value="all">すべての事業所タイプ</option>
-            {facilityTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <input
+              type="checkbox"
+              checked={showOnlyNoManager}
+              onChange={(e) => setShowOnlyNoManager(e.target.checked)}
+              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+            />
+            <span>責任者不在の事業所のみ表示</span>
+          </label>
+          {(searchTerm || filterType !== 'all' || showOnlyNoManager) && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setFilterType('all');
+                setShowOnlyNoManager(false);
+              }}
+              className="text-sm text-red-600 hover:text-red-800 underline"
+            >
+              フィルターをクリア
+            </button>
+          )}
         </div>
       </div>
 
+      {/* 検索結果件数表示 */}
+      {(searchTerm || filterType !== 'all' || showOnlyNoManager) && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-blue-800">
+            検索結果: <span className="font-semibold">{filteredFacilities.reduce((sum, org) => sum + (org.offices ? org.offices.length : 0), 0)}</span>件
+            {searchTerm && <span> (検索語: "{searchTerm}")</span>}
+            {filterType !== 'all' && <span> (タイプ: "{filterType}")</span>}
+            {showOnlyNoManager && <span> (責任者不在: "はい")</span>}
+          </p>
+        </div>
+      )}
+
       {/* 事業所リスト（テーブル形式） */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-red-50">
               <tr>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('name')}
-                >
-                  事業所名
-                  {sortConfig.key === 'name' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('type')}
-                >
-                  事業所タイプ
-                  {sortConfig.key === 'type' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">事業所名</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">事業所タイプ</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">組織名</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">住所</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">電話番号</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">担当者</th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('locationCount')}
-                >
-                  拠点数
-                  {sortConfig.key === 'locationCount' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('totalTeachers')}
-                >
-                  総指導員数
-                  {sortConfig.key === 'totalTeachers' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('totalStudents')}
-                >
-                  総生徒数
-                  {sortConfig.key === 'totalStudents' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">生徒数</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">責任者</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">操作</th>
               </tr>
             </thead>
             <tbody>
-              {filteredFacilities.map(facility => {
-                const totalFacilityTeachers = facility.locations.reduce((sum, loc) => sum + loc.teacherCount, 0);
-                const totalFacilityStudents = facility.locations.reduce((sum, loc) => sum + loc.studentCount, 0);
-                const totalFacilityMaxStudents = facility.locations.reduce((sum, loc) => sum + (loc.maxStudents || 20), 0);
-                
-                return (
-                  <tr key={facility.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
-                    <td className="px-6 py-4">
-                      <strong className="text-gray-800">{facility.name}</strong>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {facility.type}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      📍 {facility.address}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      📞 {facility.phone}
-                    </td>
-                    <td className="px-6 py-4">
+              {/* フィルターされた事業所を直接表示 */}
+              {filteredFacilities.map((office) => (
+                <tr key={office.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200 ${
+                  !office.managers || office.managers.length === 0 ? 'bg-yellow-50 hover:bg-yellow-100' : ''
+                }`}>
+                  <td className="px-6 py-4">{office.name}</td>
+                  <td className="px-6 py-4">{office.type}</td>
+                  <td className="px-6 py-4">
+                    <strong className="text-gray-800">{office.organizationName || <span className="text-gray-500 italic">組織名なし</span>}</strong>
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">{office.address}</td>
+                  <td className="px-6 py-4 text-gray-600">{office.phone}</td>
+                  <td className="px-6 py-4 text-gray-600">
+                    {office.students || 0} / {office.maxStudents || 0}
+                  </td>
+                  <td className="px-6 py-4">
+                    {office.managers && office.managers.length > 0 ? (
                       <div className="space-y-1">
-                        {facility.contacts && facility.contacts.length > 0 ? (
-                          facility.contacts.map((contact, index) => (
-                            <div key={index} className="text-sm">
-                              <span className="font-medium text-gray-800">{contact.name}</span>
-                              <span className="text-gray-600 ml-2">📧 {contact.email}</span>
-                            </div>
-                          ))
-                        ) : (
-                          <span className="text-gray-500 text-sm">担当者なし</span>
-                        )}
+                        {office.managers.map((manager, index) => (
+                          <div key={index} className="text-sm">
+                            <span className="font-medium text-gray-800">{manager.name}</span>
+                            <span className="text-gray-500">（{manager.email}）</span>
+                            {manager.department && (
+                              <span className="text-xs text-gray-400 ml-1">- {manager.department}</span>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {facility.locations.length}拠点
+                    ) : (
+                      <span className="text-red-600 font-medium flex items-center gap-1">
+                        ⚠️ 責任者未設定
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      {totalFacilityTeachers}人
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm">
-                        <span className={`font-medium ${totalFacilityStudents > totalFacilityMaxStudents ? 'text-red-600' : 'text-gray-800'}`}>
-                          {totalFacilityStudents}/{totalFacilityMaxStudents}
-                        </span>
-                        <div className="w-20 h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
-                          <div 
-                            className="h-full bg-green-500 transition-all duration-300"
-                            style={{ width: `${Math.min((totalFacilityStudents / totalFacilityMaxStudents) * 100, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        <button 
-                          className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
-                          onClick={() => handleViewFacilityDetail(facility)}
-                        >
-                          詳細
-                        </button>
-                        <button 
-                          className="bg-green-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-green-600"
-                          onClick={() => handleEditFacility(facility.id)}
-                        >
-                          編集
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleSelectManager(office)}
+                        className="bg-indigo-500 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-indigo-600 hover:shadow-md flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                        </svg>
+                        責任者選択
+                      </button>
+                      <button 
+                        onClick={() => handleManageCourses(office)}
+                        className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:shadow-md flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a4 4 0 014-4h4" />
+                        </svg>
+                        コース管理
+                      </button>
+                      <button 
+                        onClick={() => handleEditOffice(office)}
+                        className="bg-emerald-500 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-emerald-600 hover:shadow-md flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        編集
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteOffice(office)}
+                        className="bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-red-600 hover:shadow-md flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        削除
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -698,18 +844,18 @@ const LocationManagement = () => {
 
       {/* 事業所タイプ管理モーダル */}
       {showTypeManagement && (
-        <div className="form-modal">
-          <div className="form-content type-management">
-            <h3>事業所タイプ管理</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">事業所タイプ管理</h3>
             
-            <div className="current-types">
-              <h4>現在の事業所タイプ</h4>
-              <div className="types-list">
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold text-gray-700 mb-4">現在の事業所タイプ</h4>
+              <div className="space-y-2">
                 {facilityTypes.map(type => (
-                  <div key={type} className="type-item">
-                    <span>{type}</span>
+                  <div key={type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-800">{type}</span>
                     <button 
-                      className="remove-type-btn"
+                      className="px-3 py-1 bg-red-500 text-white rounded text-sm font-medium transition-colors duration-300 hover:bg-red-600"
                       onClick={() => handleRemoveFacilityType(type)}
                       disabled={facilityTypes.length <= 1}
                     >
@@ -720,21 +866,32 @@ const LocationManagement = () => {
               </div>
             </div>
 
-            <div className="add-type-section">
-              <h4>新しい事業所タイプを追加</h4>
-              <div className="add-type-form">
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold text-gray-700 mb-4">新しい事業所タイプを追加</h4>
+              <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder="新しい事業所タイプ名"
                   value={newFacilityType}
                   onChange={(e) => setNewFacilityType(e.target.value)}
+                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
                 />
-                <button onClick={handleAddFacilityType}>追加</button>
+                <button 
+                  onClick={handleAddFacilityType}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-semibold transition-colors duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
+                >
+                  追加
+                </button>
               </div>
             </div>
 
-            <div className="form-actions">
-              <button onClick={() => setShowTypeManagement(false)}>閉じる</button>
+            <div className="flex gap-4 pt-4 border-t border-gray-200">
+              <button 
+                onClick={() => setShowTypeManagement(false)} 
+                className="flex-1 bg-gray-100 text-gray-700 border-2 border-gray-200 px-6 py-3 rounded-lg font-semibold transition-colors duration-300 hover:bg-gray-200"
+              >
+                閉じる
+              </button>
             </div>
           </div>
         </div>
@@ -980,9 +1137,9 @@ const LocationManagement = () => {
                   <div className="form-section">
                     <h4>拠点情報</h4>
                     <div className="locations-summary">
-                      <p>拠点数: {selectedFacility.locations.length}拠点</p>
+                      <p>拠点数: {selectedFacility.offices.length}拠点</p>
                       <div className="locations-list">
-                        {selectedFacility.locations.map(location => (
+                        {selectedFacility.offices.map(location => (
                           <div key={location.id} className="location-summary-item">
                             <span className="location-name">{location.name}</span>
                             <span className="location-stats">
@@ -1214,6 +1371,203 @@ const LocationManagement = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showOfficeForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">事業所追加</h3>
+            <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleAddOffice(); }}>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">組織 *</label>
+                <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg" value={newOffice.orgId} onChange={e => setNewOffice({ ...newOffice, orgId: e.target.value })} required>
+                  <option value="">選択してください</option>
+                  {facilities.map(org => <option key={org.id} value={org.id}>{org.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">事業所名 *</label>
+                <input type="text" className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg" value={newOffice.name} onChange={e => setNewOffice({ ...newOffice, name: e.target.value })} required />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">事業所タイプ *</label>
+                <select className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg" value={newOffice.type} onChange={e => setNewOffice({ ...newOffice, type: e.target.value })} required>
+                  {facilityTypes.map(type => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">住所</label>
+                <input type="text" className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg" value={newOffice.address} onChange={e => setNewOffice({ ...newOffice, address: e.target.value })} />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">電話番号</label>
+                <input type="text" className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg" value={newOffice.phone} onChange={e => setNewOffice({ ...newOffice, phone: e.target.value })} />
+              </div>
+              <div className="flex gap-4 pt-4 border-t border-gray-200">
+                <button type="button" onClick={() => setShowOfficeForm(false)} className="flex-1 bg-gray-100 text-gray-700 border-2 border-gray-200 px-6 py-3 rounded-lg font-semibold">キャンセル</button>
+                <button type="submit" className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold">追加</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 責任者選択モーダル */}
+      {showManagerSelect && selectedOfficeForManager && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div className="bg-white rounded-xl p-8 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-800">責任者選択</h3>
+              <button 
+                onClick={() => setShowManagerSelect(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <p className="text-gray-600 mb-2">事業所: <span className="font-semibold text-gray-800">{selectedOfficeForManager.name}</span></p>
+              <p className="text-sm text-gray-500">複数の責任者を選択できます</p>
+            </div>
+
+            <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
+              {sampleUsers.map(user => (
+                <label key={user.id} className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-3"
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800">{user.name}</div>
+                    <div className="text-sm text-gray-500">{user.email}</div>
+                    <div className="text-xs text-gray-400">{user.department}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowManagerSelect(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => handleConfirmManagerSelection([sampleUsers[0], sampleUsers[1]])}
+                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors duration-300"
+              >
+                選択確定
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 編集モーダル */}
+      {showEditModal && selectedOfficeForEdit && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-800">事業所編集</h3>
+              <button 
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">事業所名</label>
+                <input
+                  type="text"
+                  defaultValue={selectedOfficeForEdit.name}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-400"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">事業所タイプ</label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-400">
+                  {facilityTypes.map(type => (
+                    <option key={type} value={type} selected={type === selectedOfficeForEdit.type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">住所</label>
+                <input
+                  type="text"
+                  defaultValue={selectedOfficeForEdit.address}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-400"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">電話番号</label>
+                <input
+                  type="text"
+                  defaultValue={selectedOfficeForEdit.phone}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-400"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">最大生徒数</label>
+                <input
+                  type="number"
+                  defaultValue={selectedOfficeForEdit.maxStudents}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-400"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => handleConfirmEdit({})}
+                className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors duration-300"
+              >
+                更新
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* コース管理モーダル */}
+      {showCourseModal && targetOffice && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">コース管理 - {targetOffice.name}</h3>
+            <div className="mb-6 space-y-2">
+              {mockCourses.map(course => (
+                <label key={course.id} className="flex items-center gap-3 p-2 border-b border-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={selectedCourses.includes(course.id)}
+                    onChange={() => handleCourseCheck(course.id)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-gray-800">{course.title}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end gap-4 mt-6">
+              <button onClick={handleCancelCourses} className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold">キャンセル</button>
+              <button onClick={handleSaveCourses} className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold">保存</button>
             </div>
           </div>
         </div>

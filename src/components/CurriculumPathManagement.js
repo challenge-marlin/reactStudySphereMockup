@@ -234,7 +234,158 @@ const CurriculumPathManagement = () => {
         </div>
       </div>
 
-      {/* パス統計サマリー */}
+      {/* パス一覧テーブル */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-x-auto p-6 mb-8 w-full">
+        <table className="min-w-full text-sm">
+          <thead className="bg-red-50">
+            <tr>
+              <th 
+                className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                onClick={() => handleSort('name')}
+              >
+                🎯 パス名
+                {sortConfig.key === 'name' && (
+                  <span className="ml-1">
+                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                onClick={() => handleSort('targetAudience')}
+              >
+                👥 対象者
+                {sortConfig.key === 'targetAudience' && (
+                  <span className="ml-1">
+                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                onClick={() => handleSort('duration')}
+              >
+                ⏱️ 期間
+                {sortConfig.key === 'duration' && (
+                  <span className="ml-1">
+                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                onClick={() => handleSort('totalCourses')}
+              >
+                📚 コース数
+                {sortConfig.key === 'totalCourses' && (
+                  <span className="ml-1">
+                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+                onClick={() => handleSort('status')}
+              >
+                📊 ステータス
+                {sortConfig.key === 'status' && (
+                  <span className="ml-1">
+                    {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
+                  </span>
+                )}
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📖 コース構成</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 最終更新</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getSortedPaths().map(path => (
+              <tr key={path.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                <td className="px-6 py-4">
+                  <div>
+                    <strong className="text-gray-800">{path.name}</strong>
+                    <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">{path.description}</div>
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">{path.targetAudience}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-gray-700 font-medium">{path.duration}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="font-medium text-gray-800">{path.totalCourses}コース</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    path.status === 'active' 
+                      ? 'bg-green-100 text-green-800'
+                      : path.status === 'inactive'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {getStatusLabel(path.status)}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {path.courses.map((course, index) => (
+                      <div key={course.courseId} className="flex items-center gap-1">
+                        <span className="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                          {course.order}
+                        </span>
+                        <span className="text-gray-700 text-sm">{getCourseName(course.courseId)}</span>
+                        {index < path.courses.length - 1 && (
+                          <span className="text-gray-400 text-sm">→</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-gray-600 text-sm">
+                  📅 {path.updatedAt}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex gap-2">
+                    <button 
+                      className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
+                      onClick={() => handleEditPath(path)}
+                      title="編集"
+                    >
+                      ✏️ 編集
+                    </button>
+                    <button 
+                      className="bg-red-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-red-600"
+                      onClick={() => handleDeletePath(path.id)}
+                      title="削除"
+                    >
+                      🗑️ 削除
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {getSortedPaths().length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">条件に合致するカリキュラムパスが見つかりません。</p>
+        </div>
+      )}
+
+      <div className="text-center mb-8">
+        <button 
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-xl font-medium transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
+          onClick={() => setShowAddModal(true)}
+        >
+          + 新しいカリキュラムパスを作成
+        </button>
+      </div>
+
+      {/* パス統計サマリー（下部に移動） */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 text-center transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg">
           <h3 className="text-gray-700 font-semibold mb-4">総パス数</h3>
@@ -260,189 +411,6 @@ const CurriculumPathManagement = () => {
           </p>
           <small className="text-gray-500">ヶ月</small>
         </div>
-      </div>
-
-      {/* パス一覧テーブル */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-red-50">
-              <tr>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('name')}
-                >
-                  🎯 パス名
-                  {sortConfig.key === 'name' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('targetAudience')}
-                >
-                  👥 対象者
-                  {sortConfig.key === 'targetAudience' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('duration')}
-                >
-                  ⏱️ 期間
-                  {sortConfig.key === 'duration' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('totalCourses')}
-                >
-                  📚 コース数
-                  {sortConfig.key === 'totalCourses' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('status')}
-                >
-                  📊 ステータス
-                  {sortConfig.key === 'status' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📖 コース構成</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 最終更新</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {getSortedPaths().map(path => (
-                <tr key={path.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-red-600 font-bold text-sm">
-                          {path.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <strong className="text-gray-800">{path.name}</strong>
-                        <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
-                          {path.description}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {path.targetAudience}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <span className="text-gray-700 font-medium">{path.duration}</span>
-                      <div className="ml-2 w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-green-500 transition-all duration-300"
-                          style={{ width: `${Math.min((parseInt(path.duration) / 24) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-800">
-                        {path.totalCourses}コース
-                      </span>
-                      <div className="w-20 h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
-                        <div 
-                          className="h-full bg-green-500 transition-all duration-300"
-                          style={{ width: `${Math.min((path.totalCourses / 10) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      path.status === 'active' 
-                        ? 'bg-green-100 text-green-800'
-                        : path.status === 'inactive'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {getStatusLabel(path.status)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {path.courses.map((course, index) => (
-                        <div key={course.courseId} className="flex items-center gap-1">
-                          <span className="w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                            {course.order}
-                          </span>
-                          <span className="text-gray-700 text-sm">{getCourseName(course.courseId)}</span>
-                          {index < path.courses.length - 1 && (
-                            <span className="text-gray-400 text-sm">→</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 text-sm">
-                    📅 {path.updatedAt}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button 
-                        className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
-                        onClick={() => handleEditPath(path)}
-                        title="編集"
-                      >
-                        ✏️ 編集
-                      </button>
-                      <button 
-                        className="bg-red-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-red-600"
-                        onClick={() => handleDeletePath(path.id)}
-                        title="削除"
-                      >
-                        🗑️ 削除
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {getSortedPaths().length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">条件に合致するカリキュラムパスが見つかりません。</p>
-          </div>
-        )}
-      </div>
-
-      {/* パス追加ボタン */}
-      <div className="text-center">
-        <button 
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-xl font-medium transition-all duration-300 hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
-          onClick={() => setShowAddModal(true)}
-        >
-          + 新しいカリキュラムパスを作成
-        </button>
       </div>
 
       {/* パス編集モーダル */}

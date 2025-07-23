@@ -1,21 +1,97 @@
 import React, { useState } from 'react';
 
 const InstructorManagement = () => {
+  // LocationManagement.jsと同じ拠点データを使用
+  const facilityLocations = [
+    {
+      id: 'office001',
+      name: '東京教育渋谷校',
+      organizationName: 'スタディスフィア株式会社',
+      type: '就労移行支援事業所',
+      address: '東京都渋谷区渋谷1-1-1'
+    },
+    {
+      id: 'office002',
+      name: '東京教育新宿校',
+      organizationName: 'スタディスフィア株式会社',
+      type: '就労継続支援A型事業所',
+      address: '東京都新宿区新宿2-2-2'
+    },
+    {
+      id: 'office003',
+      name: '東京教育池袋校',
+      organizationName: 'スタディスフィア株式会社',
+      type: '学習塾',
+      address: '東京都豊島区池袋3-3-3'
+    },
+    {
+      id: 'office004',
+      name: '関西教育大阪校',
+      organizationName: '関西教育グループ',
+      type: '就労継続支援A型事業所',
+      address: '大阪府大阪市北区梅田3-4-5'
+    },
+    {
+      id: 'office005',
+      name: '関西教育難波校',
+      organizationName: '関西教育グループ',
+      type: '就労継続支援B型事業所',
+      address: '大阪府大阪市中央区難波5-6-7'
+    },
+    {
+      id: 'office006',
+      name: '中部学習名古屋校',
+      organizationName: '中部学習センター',
+      type: '就労移行支援事業所',
+      address: '愛知県名古屋市中区栄1-1-1'
+    },
+    {
+      id: 'office007',
+      name: '中部学習岡崎校',
+      organizationName: '中部学習センター',
+      type: '学習塾',
+      address: '愛知県岡崎市本町2-2-2'
+    },
+    {
+      id: 'office008',
+      name: '関西教育新規校',
+      organizationName: '関西教育グループ',
+      type: '就労移行支援事業所',
+      address: '大阪府大阪市天王寺区上本町6-7-8'
+    },
+    {
+      id: 'office009',
+      name: 'フリーランス学習塾',
+      organizationName: '個人事業主',
+      type: '学習塾',
+      address: '東京都中野区中野4-4-4'
+    },
+    {
+      id: 'office010',
+      name: '個人指導センター',
+      organizationName: '個人事業主',
+      type: '就労移行支援事業所',
+      address: '東京都杉並区阿佐ヶ谷5-5-5'
+    },
+    {
+      id: 'office011',
+      name: '独立系教育施設',
+      organizationName: '未分類',
+      type: 'その他',
+      address: '東京都世田谷区三軒茶屋6-6-6'
+    }
+  ];
+
   const [instructors, setInstructors] = useState([
     { 
       id: 'instructor001', 
       name: '佐藤指導員', 
       email: 'sato@example.com', 
       department: 'IT基礎・AI学科',
-      facilityId: 'facility001',
-      facilityName: 'スタディスフィア東京校',
-      locationId: 'location001',
-      locationName: '東京本校',
-      studentsCount: 8,
-      coursesCount: 3,
+      facilityLocationIds: ['office001', 'office002'],
+      facilityLocationNames: ['東京教育渋谷校', '東京教育新宿校'],
       status: 'active',
       lastLogin: '2024-01-15',
-      joinDate: '2023-04-01',
       passwordResetRequired: false
     },
     { 
@@ -23,15 +99,10 @@ const InstructorManagement = () => {
       name: '田中指導員', 
       email: 'tanaka@example.com', 
       department: 'SNS運用・デザイン学科',
-      facilityId: 'facility001',
-      facilityName: 'スタディスフィア東京校',
-      locationId: 'location001',
-      locationName: '東京本校',
-      studentsCount: 6,
-      coursesCount: 2,
+      facilityLocationIds: ['office001'],
+      facilityLocationNames: ['東京教育渋谷校'],
       status: 'active',
       lastLogin: '2024-01-14',
-      joinDate: '2023-06-15',
       passwordResetRequired: false
     },
     { 
@@ -39,15 +110,10 @@ const InstructorManagement = () => {
       name: '鈴木指導員', 
       email: 'suzuki@example.com', 
       department: 'LP制作・案件対応学科',
-      facilityId: 'facility002',
-      facilityName: 'スタディスフィア大阪校',
-      locationId: 'location002',
-      locationName: '大阪支校',
-      studentsCount: 12,
-      coursesCount: 4,
+      facilityLocationIds: ['office004', 'office005'],
+      facilityLocationNames: ['関西教育大阪校', '関西教育難波校'],
       status: 'active',
       lastLogin: '2024-01-13',
-      joinDate: '2023-08-01',
       passwordResetRequired: false
     },
     { 
@@ -55,16 +121,99 @@ const InstructorManagement = () => {
       name: '山田指導員', 
       email: 'yamada@example.com', 
       department: 'オフィスソフト・文書作成学科',
-      facilityId: 'facility001',
-      facilityName: 'スタディスフィア東京校',
-      locationId: 'location003',
-      locationName: '新宿サテライト',
-      studentsCount: 5,
-      coursesCount: 1,
+      facilityLocationIds: ['office003'],
+      facilityLocationNames: ['東京教育池袋校'],
       status: 'active',
       lastLogin: '2024-01-12',
-      joinDate: '2023-10-01',
       passwordResetRequired: true
+    },
+    { 
+      id: 'instructor005', 
+      name: '高橋指導員', 
+      email: 'takahashi@example.com', 
+      department: 'IT基礎・AI学科',
+      facilityLocationIds: ['office006'],
+      facilityLocationNames: ['中部学習名古屋校'],
+      status: 'active',
+      lastLogin: '2024-01-11',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor006', 
+      name: '伊藤指導員', 
+      email: 'ito@example.com', 
+      department: 'ビジネス学科',
+      facilityLocationIds: ['office006', 'office007'],
+      facilityLocationNames: ['中部学習名古屋校', '中部学習岡崎校'],
+      status: 'active',
+      lastLogin: '2024-01-10',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor007', 
+      name: '渡辺指導員', 
+      email: 'watanabe@example.com', 
+      department: 'IT学科',
+      facilityLocationIds: ['office007'],
+      facilityLocationNames: ['中部学習岡崎校'],
+      status: 'active',
+      lastLogin: '2024-01-09',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor008', 
+      name: '小林指導員', 
+      email: 'kobayashi@example.com', 
+      department: '個人指導',
+      facilityLocationIds: ['office009'],
+      facilityLocationNames: ['フリーランス学習塾'],
+      status: 'active',
+      lastLogin: '2024-01-08',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor009', 
+      name: '中村指導員', 
+      email: 'nakamura@example.com', 
+      department: '総合教育',
+      facilityLocationIds: ['office011'],
+      facilityLocationNames: ['独立系教育施設'],
+      status: 'active',
+      lastLogin: '2024-01-07',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor010', 
+      name: '松本指導員', 
+      email: 'matsumoto@example.com', 
+      department: 'ビジネス学科',
+      facilityLocationIds: [],
+      facilityLocationNames: [],
+      status: 'active',
+      lastLogin: '2024-01-06',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor011', 
+      name: '佐々木指導員', 
+      email: 'sasaki@example.com', 
+      department: 'IT学科',
+      facilityLocationIds: [],
+      facilityLocationNames: [],
+      status: 'inactive',
+      lastLogin: '2023-12-20',
+      passwordResetRequired: false
+    },
+    { 
+      id: 'instructor012', 
+      name: '高橋美咲指導員', 
+      email: 'takahashi.misaki@example.com', 
+      department: 'デザイン学科',
+      facilityLocationIds: ['office005'],
+      facilityLocationNames: ['関西教育難波校'],
+      status: 'active',
+      lastLogin: '2024-01-05',
+      passwordResetRequired: false
     }
   ]);
 
@@ -74,37 +223,17 @@ const InstructorManagement = () => {
   const [showTempPasswordDialog, setShowTempPasswordDialog] = useState(false);
   const [generatedTempPassword, setGeneratedTempPassword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [facilityFilter, setFacilityFilter] = useState('all');
-  const [locationFilter, setLocationFilter] = useState('all');
+  const [facilityLocationFilter, setFacilityLocationFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showNoLocationFilter, setShowNoLocationFilter] = useState(false);
   
   const [newInstructor, setNewInstructor] = useState({
     name: '',
     email: '',
     department: '',
-    facilityId: '',
-    locationId: '',
+    facilityLocationIds: [],
     password: ''
   });
-
-  // モック拠点データ
-  const facilities = [
-    {
-      id: 'facility001',
-      name: 'スタディスフィア東京校',
-      locations: [
-        { id: 'location001', name: '東京本校' },
-        { id: 'location003', name: '新宿サテライト' }
-      ]
-    },
-    {
-      id: 'facility002',
-      name: 'スタディスフィア大阪校',
-      locations: [
-        { id: 'location002', name: '大阪支校' }
-      ]
-    }
-  ];
 
   // フィルタリング機能
   const getFilteredInstructors = () => {
@@ -115,18 +244,25 @@ const InstructorManagement = () => {
       filtered = filtered.filter(instructor =>
         instructor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         instructor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        instructor.department.toLowerCase().includes(searchTerm.toLowerCase())
+        instructor.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        instructor.facilityLocationNames.some(name => 
+          name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       );
     }
 
-    // 事業所フィルター
-    if (facilityFilter !== 'all') {
-      filtered = filtered.filter(instructor => instructor.facilityId === facilityFilter);
+    // 事業所(拠点)フィルター
+    if (facilityLocationFilter !== 'all') {
+      filtered = filtered.filter(instructor => 
+        instructor.facilityLocationIds.includes(facilityLocationFilter)
+      );
     }
 
-    // 拠点フィルター
-    if (locationFilter !== 'all') {
-      filtered = filtered.filter(instructor => instructor.locationId === locationFilter);
+    // 拠点なしフィルター
+    if (showNoLocationFilter) {
+      filtered = filtered.filter(instructor => 
+        instructor.facilityLocationIds.length === 0
+      );
     }
 
     // ステータスフィルター
@@ -137,20 +273,7 @@ const InstructorManagement = () => {
     return filtered;
   };
 
-  // 拠点選択肢を事業所フィルターに応じて変更
-  const getAvailableLocations = () => {
-    if (facilityFilter === 'all') {
-      return facilities.flatMap(facility => 
-        facility.locations.map(location => ({
-          ...location,
-          facilityName: facility.name
-        }))
-      );
-    }
-    
-    const selectedFacility = facilities.find(f => f.id === facilityFilter);
-    return selectedFacility ? selectedFacility.locations : [];
-  };
+
 
   // パスワードリセット機能
   const handlePasswordReset = (instructor) => {
@@ -206,13 +329,11 @@ const InstructorManagement = () => {
     const newInstructorData = {
       id: `instructor${Date.now()}`,
       ...newInstructor,
-      facilityName: facilities.find(f => f.id === newInstructor.facilityId)?.name || '',
-      locationName: getAvailableLocations().find(l => l.id === newInstructor.locationId)?.name || '',
-      studentsCount: 0,
-      coursesCount: 0,
+      facilityLocationNames: newInstructor.facilityLocationIds.map(id => 
+        facilityLocations.find(l => l.id === id)?.name || ''
+      ),
       status: 'active',
       lastLogin: '-',
-      joinDate: new Date().toISOString().split('T')[0],
       passwordResetRequired: false
     };
     
@@ -221,8 +342,7 @@ const InstructorManagement = () => {
       name: '',
       email: '',
       department: '',
-      facilityId: '',
-      locationId: '',
+      facilityLocationIds: [],
       password: ''
     });
     setShowAddForm(false);
@@ -291,8 +411,7 @@ const InstructorManagement = () => {
       name: instructor.name,
       email: instructor.email,
       department: instructor.department,
-      facilityId: instructor.facilityId,
-      locationId: instructor.locationId,
+      facilityLocationIds: instructor.facilityLocationIds,
       password: '' // 編集時はパスワードを空にする
     });
     setShowAddForm(true); // 編集モードでも追加フォームを表示
@@ -331,40 +450,24 @@ const InstructorManagement = () => {
 
         <div className="flex flex-wrap gap-6 items-end mb-4">
           <div className="flex flex-col min-w-[150px]">
-            <label className="font-semibold text-gray-700 mb-2 text-sm">事業所:</label>
+            <label className="font-semibold text-gray-700 mb-2 text-sm">事業所(拠点):</label>
             <select 
-              value={facilityFilter} 
+              value={facilityLocationFilter} 
               onChange={(e) => {
-                setFacilityFilter(e.target.value);
-                setLocationFilter('all'); // 事業所変更時は拠点フィルターをリセット
+                setFacilityLocationFilter(e.target.value);
               }}
               className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
             >
-              <option value="all">全ての事業所</option>
-              {facilities.map(facility => (
-                <option key={facility.id} value={facility.id}>
-                  {facility.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col min-w-[150px]">
-            <label className="font-semibold text-gray-700 mb-2 text-sm">拠点:</label>
-            <select 
-              value={locationFilter} 
-              onChange={(e) => setLocationFilter(e.target.value)}
-              disabled={facilityFilter === 'all'}
-              className="px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300 disabled:bg-gray-100 disabled:text-gray-500"
-            >
-              <option value="all">全ての拠点</option>
-              {getAvailableLocations().map(location => (
+              <option value="all">全ての事業所(拠点)</option>
+              {facilityLocations.map(location => (
                 <option key={location.id} value={location.id}>
                   {location.name}
                 </option>
               ))}
             </select>
           </div>
+
+
 
           <div className="flex flex-col min-w-[150px]">
             <label className="font-semibold text-gray-700 mb-2 text-sm">ステータス:</label>
@@ -383,13 +486,28 @@ const InstructorManagement = () => {
             className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 hover:bg-gray-700"
             onClick={() => {
               setSearchTerm('');
-              setFacilityFilter('all');
-              setLocationFilter('all');
+              setFacilityLocationFilter('all');
+              setShowNoLocationFilter(false);
               setStatusFilter('all');
             }}
           >
             フィルタークリア
           </button>
+        </div>
+
+        <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="showNoLocationFilter"
+              checked={showNoLocationFilter}
+              onChange={(e) => setShowNoLocationFilter(e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="showNoLocationFilter" className="font-semibold text-gray-700 text-sm cursor-pointer">
+              拠点未設定の指導員のみ表示
+            </label>
+          </div>
         </div>
 
         <div className="font-semibold text-gray-700 text-sm">
@@ -438,10 +556,10 @@ const InstructorManagement = () => {
                 </th>
                 <th 
                   className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('studentsCount')}
+                  onClick={() => handleSort('facilityLocationNames')}
                 >
-                  👥 生徒数
-                  {sortConfig.key === 'studentsCount' && (
+                  🏢 事業所(拠点)
+                  {sortConfig.key === 'facilityLocationNames' && (
                     <span className="ml-1">
                       {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
                     </span>
@@ -458,20 +576,16 @@ const InstructorManagement = () => {
                     </span>
                   )}
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 登録日</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
               </tr>
             </thead>
             <tbody>
               {getSortedInstructors().map(instructor => (
-                <tr key={instructor.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                <tr key={instructor.id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200 ${
+                  instructor.facilityLocationIds.length === 0 ? 'bg-yellow-50 hover:bg-yellow-100' : ''
+                }`}>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-red-600 font-bold text-sm">
-                          {instructor.name.charAt(0)}
-                        </span>
-                      </div>
                       <div>
                         <strong className="text-gray-800">{instructor.name}</strong>
                         <div className="text-xs text-gray-500">ID: {instructor.id}</div>
@@ -487,9 +601,19 @@ const InstructorManagement = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {instructor.studentsCount}名
-                    </span>
+                    {instructor.facilityLocationNames.length > 0 ? (
+                      <div className="space-y-1">
+                        {instructor.facilityLocationNames.map((name, index) => (
+                          <span key={index} className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium block">
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                        ⚠️ 拠点未設定
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -501,9 +625,6 @@ const InstructorManagement = () => {
                     }`}>
                       {getStatusLabel(instructor.status)}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 text-sm">
-                    📅 {instructor.joinDate}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
@@ -696,40 +817,34 @@ const InstructorManagement = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">事業所:</label>
-                <select
-                  name="facilityId"
-                  value={newInstructor.facilityId}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300"
-                >
-                  <option value="">事業所を選択</option>
-                  {facilities.map(facility => (
-                    <option key={facility.id} value={facility.id}>
-                      {facility.name}
-                    </option>
+                <label className="block text-sm font-medium text-gray-700 mb-2">事業所(拠点):</label>
+                <div className="max-h-40 overflow-y-auto border-2 border-gray-200 rounded-lg p-2">
+                  {facilityLocations.map(location => (
+                    <label key={location.id} className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="facilityLocationIds"
+                        value={location.id}
+                        checked={newInstructor.facilityLocationIds.includes(location.id)}
+                        onChange={(e) => {
+                          const { value, checked } = e.target;
+                          setNewInstructor(prev => ({
+                            ...prev,
+                            facilityLocationIds: checked
+                              ? [...prev.facilityLocationIds, value]
+                              : prev.facilityLocationIds.filter(id => id !== value)
+                          }));
+                        }}
+                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-3"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-800">{location.name}</div>
+                        <div className="text-xs text-gray-500">{location.organizationName} - {location.type}</div>
+                      </div>
+                    </label>
                   ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">拠点:</label>
-                <select
-                  name="locationId"
-                  value={newInstructor.locationId}
-                  onChange={handleInputChange}
-                  required
-                  disabled={!newInstructor.facilityId}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 transition-colors duration-300 disabled:bg-gray-100 disabled:text-gray-500"
-                >
-                  <option value="">拠点を選択</option>
-                  {getAvailableLocations().map(location => (
-                    <option key={location.id} value={location.id}>
-                      {location.name}
-                    </option>
-                  ))}
-                </select>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">複数の拠点を選択できます</p>
               </div>
               
               <div>

@@ -642,14 +642,8 @@ const LessonManagement = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">📚 レッスン管理</h2>
-        <p className="text-gray-600 text-lg">各コースのレッスン詳細を管理できます。PDFファイルと動画ファイルのアップロード、動画の分割設定が可能です。</p>
-      </div>
-
-      {/* コース選択フィルター */}
-      <div className="bg-white rounded-xl p-6 mb-6 shadow-sm">
+    <div className="p-6 max-w-full w-full mx-auto">
+      <div className="mb-4">
         <label className="font-semibold text-gray-700 mr-4">コースを選択:</label>
         <select 
           onChange={(e) => setSelectedCourse(courses.find(c => c.id === e.target.value) || null)}
@@ -664,182 +658,70 @@ const LessonManagement = () => {
           ))}
         </select>
       </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-blue-800">
+          {selectedCourse ? selectedCourse.title : '全てのコース'}
+        </h1>
+        {selectedCourse && (
+          <p className="text-gray-600 mt-2">{selectedCourse.description || ''}</p>
+        )}
+      </div>
 
       {/* レッスン一覧テーブル */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-red-50">
-              <tr>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('title')}
-                >
-                  📖 レッスン名
-                  {sortConfig.key === 'title' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('courseName')}
-                >
-                  📚 コース
-                  {sortConfig.key === 'courseName' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('order')}
-                >
-                  🔢 順序
-                  {sortConfig.key === 'order' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('duration')}
-                >
-                  ⏱️ 所要時間
-                  {sortConfig.key === 'duration' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('videoSegments')}
-                >
-                  🎬 動画セグメント
-                  {sortConfig.key === 'videoSegments' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th 
-                  className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200"
-                  onClick={() => handleSort('status')}
-                >
-                  📊 ステータス
-                  {sortConfig.key === 'status' && (
-                    <span className="ml-1">
-                      {sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}
-                    </span>
-                  )}
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 作成日</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
+      <div className="bg-white rounded-2xl shadow-xl overflow-x-auto p-6 mb-8 w-full">
+        <table className="min-w-full text-sm">
+          <thead className="bg-red-50">
+            <tr>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200" onClick={() => handleSort('title')}>
+                📖 レッスン名{sortConfig.key === 'title' && (<span className="ml-1">{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>)}
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200" onClick={() => handleSort('order')}>
+                🔢 順序{sortConfig.key === 'order' && (<span className="ml-1">{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>)}
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200" onClick={() => handleSort('duration')}>
+                ⏱️ 所要時間{sortConfig.key === 'duration' && (<span className="ml-1">{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>)}
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200" onClick={() => handleSort('videoSegments')}>
+                🎬 動画セグメント{sortConfig.key === 'videoSegments' && (<span className="ml-1">{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>)}
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800 cursor-pointer hover:bg-red-100 transition-colors duration-200" onClick={() => handleSort('status')}>
+                📊 ステータス{sortConfig.key === 'status' && (<span className="ml-1">{sortConfig.direction === 'asc' ? ' ↑' : ' ↓'}</span>)}
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">📅 作成日</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-red-800">⚙️ 操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getSortedLessons().map(lesson => (
+              <tr key={lesson.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                <td className="px-6 py-4">
+                  <strong className="text-gray-800">{lesson.title}</strong>
+                  <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">{lesson.description}</div>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">{lesson.order}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="text-gray-700 font-medium">{lesson.duration.toString().endsWith('分') ? lesson.duration : lesson.duration + '分'}</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className="font-medium text-gray-800">{lesson.videoSegments ? lesson.videoSegments.length : 0}セグメント</span>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${lesson.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{lesson.status === 'active' ? '公開中' : '非公開'}</span>
+                </td>
+                <td className="px-6 py-4 text-gray-600 text-sm">📅 {lesson.createdAt}</td>
+                <td className="px-6 py-4">
+                  <div className="flex gap-2">
+                    <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600" onClick={() => handleEditLesson(lesson.courseId, lesson.id)} title="編集">✏️ 編集</button>
+                    <button className="bg-green-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-green-600" onClick={() => handleManageVideoSegments(lesson.courseId, lesson.id)} title="動画セグメント管理">🎬 動画管理</button>
+                    <button className={`px-3 py-1 rounded text-sm font-medium transition-colors duration-300 ${lesson.status === 'active' ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-green-500 text-white hover:bg-green-600'}`} onClick={() => toggleLessonStatus(lesson.id)} title={lesson.status === 'active' ? '非公開にする' : '公開する'}>{lesson.status === 'active' ? '🚫 非公開' : '✅ 公開'}</button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {getSortedLessons().map(lesson => (
-                <tr key={lesson.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="text-red-600 font-bold text-sm">
-                          {lesson.title.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <strong className="text-gray-800">{lesson.title}</strong>
-                        <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">
-                          {lesson.description}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {lesson.courseName}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {lesson.order}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <span className="text-gray-700 font-medium">{lesson.duration}分</span>
-                      <div className="ml-2 w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-green-500 transition-all duration-300"
-                          style={{ width: `${Math.min((lesson.duration / 120) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm">
-                      <span className="font-medium text-gray-800">
-                        {lesson.videoSegments ? lesson.videoSegments.length : 0}セグメント
-                      </span>
-                      <div className="w-20 h-2 bg-gray-200 rounded-full mt-1 overflow-hidden">
-                        <div 
-                          className="h-full bg-green-500 transition-all duration-300"
-                          style={{ width: `${Math.min(((lesson.videoSegments ? lesson.videoSegments.length : 0) / 10) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      lesson.status === 'active' 
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {lesson.status === 'active' ? '公開中' : '非公開'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600 text-sm">
-                    📅 {lesson.createdAt}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button 
-                        className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-blue-600"
-                        onClick={() => handleEditLesson(lesson.courseId, lesson.id)}
-                        title="編集"
-                      >
-                        ✏️ 編集
-                      </button>
-                      <button 
-                        className="bg-green-500 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 hover:bg-green-600"
-                        onClick={() => handleManageVideoSegments(lesson.courseId, lesson.id)}
-                        title="動画セグメント管理"
-                      >
-                        🎬 動画管理
-                      </button>
-                      <button 
-                        className={`px-3 py-1 rounded text-sm font-medium transition-colors duration-300 ${
-                          lesson.status === 'active'
-                            ? 'bg-red-500 text-white hover:bg-red-600'
-                            : 'bg-green-500 text-white hover:bg-green-600'
-                        }`}
-                        onClick={() => toggleLessonStatus(lesson.id)}
-                        title={lesson.status === 'active' ? '非公開にする' : '公開する'}
-                      >
-                        {lesson.status === 'active' ? '🚫 非公開' : '✅ 公開'}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
+            ))}
+          </tbody>
+        </table>
         {getSortedLessons().length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">条件に合致するレッスンが見つかりません。</p>
@@ -847,7 +729,6 @@ const LessonManagement = () => {
         )}
       </div>
 
-      {/* レッスン編集モーダル */}
       {showLessonModal && selectedLesson && (
         <LessonEditModal
           lesson={selectedLesson}
@@ -856,7 +737,6 @@ const LessonManagement = () => {
         />
       )}
 
-      {/* 動画セグメント管理モーダル */}
       {showVideoSegmentModal && selectedLesson && (
         <VideoSegmentModal
           lesson={selectedLesson}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../components/AdminHeader';
-import SystemOverview from '../components/SystemOverview';
 import LocationManagement from '../components/LocationManagement';
 import InstructorManagement from '../components/InstructorManagement';
 import CourseManagement from '../components/CourseManagement';
@@ -12,7 +11,7 @@ import { logAdminAccountOperation } from '../utils/adminLogger';
 
 const AdminDashboard = () => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('locations');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,8 +48,7 @@ const AdminDashboard = () => {
   }
 
   const navItems = [
-    { id: 'overview', label: '📊 システム概要', component: <SystemOverview /> },
-    { id: 'locations', label: '🏢 拠点・事業所管理', component: <LocationManagement /> },
+    { id: 'locations', label: '🏢 事業所(拠点)管理', component: <LocationManagement /> },
     { id: 'instructors', label: '👨‍🏫 指導員管理', component: <InstructorManagement /> },
     { id: 'courses', label: '📚 コース管理', component: <CourseManagement /> },
     { id: 'lessons', label: '📖 レッスン管理', component: <LessonManagement /> },
