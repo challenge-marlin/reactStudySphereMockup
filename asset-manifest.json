@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/reactStudySphereMockup/static/css/main.5618d4d3.css",
-    "main.js": "/reactStudySphereMockup/static/js/main.2c816019.js",
+    "main.js": "/reactStudySphereMockup/static/js/main.36bf5ec2.js",
     "static/js/758.69000a7e.chunk.js": "/reactStudySphereMockup/static/js/758.69000a7e.chunk.js",
     "static/js/863.6b701acd.chunk.js": "/reactStudySphereMockup/static/js/863.6b701acd.chunk.js",
     "static/js/882.742d0b36.chunk.js": "/reactStudySphereMockup/static/js/882.742d0b36.chunk.js",
@@ -44,7 +44,7 @@
     "static/js/681.d11f8fff.chunk.js": "/reactStudySphereMockup/static/js/681.d11f8fff.chunk.js",
     "index.html": "/reactStudySphereMockup/index.html",
     "main.5618d4d3.css.map": "/reactStudySphereMockup/static/css/main.5618d4d3.css.map",
-    "main.2c816019.js.map": "/reactStudySphereMockup/static/js/main.2c816019.js.map",
+    "main.36bf5ec2.js.map": "/reactStudySphereMockup/static/js/main.36bf5ec2.js.map",
     "758.69000a7e.chunk.js.map": "/reactStudySphereMockup/static/js/758.69000a7e.chunk.js.map",
     "863.6b701acd.chunk.js.map": "/reactStudySphereMockup/static/js/863.6b701acd.chunk.js.map",
     "882.742d0b36.chunk.js.map": "/reactStudySphereMockup/static/js/882.742d0b36.chunk.js.map",
@@ -81,6 +81,6 @@
   },
   "entrypoints": [
     "static/css/main.5618d4d3.css",
-    "static/js/main.2c816019.js"
+    "static/js/main.36bf5ec2.js"
   ]
 }
