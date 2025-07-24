@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/reactStudySphereMockup/static/css/main.afa99e57.css",
-    "main.js": "/reactStudySphereMockup/static/js/main.ef183a87.js",
+    "main.css": "/reactStudySphereMockup/static/css/main.6ced004c.css",
+    "main.js": "/reactStudySphereMockup/static/js/main.b41e1016.js",
     "static/js/758.69000a7e.chunk.js": "/reactStudySphereMockup/static/js/758.69000a7e.chunk.js",
     "static/js/863.6b701acd.chunk.js": "/reactStudySphereMockup/static/js/863.6b701acd.chunk.js",
     "static/js/882.742d0b36.chunk.js": "/reactStudySphereMockup/static/js/882.742d0b36.chunk.js",
@@ -43,8 +43,8 @@
     "static/js/526.c598797d.chunk.js": "/reactStudySphereMockup/static/js/526.c598797d.chunk.js",
     "static/js/681.d11f8fff.chunk.js": "/reactStudySphereMockup/static/js/681.d11f8fff.chunk.js",
     "index.html": "/reactStudySphereMockup/index.html",
-    "main.afa99e57.css.map": "/reactStudySphereMockup/static/css/main.afa99e57.css.map",
-    "main.ef183a87.js.map": "/reactStudySphereMockup/static/js/main.ef183a87.js.map",
+    "main.6ced004c.css.map": "/reactStudySphereMockup/static/css/main.6ced004c.css.map",
+    "main.b41e1016.js.map": "/reactStudySphereMockup/static/js/main.b41e1016.js.map",
     "758.69000a7e.chunk.js.map": "/reactStudySphereMockup/static/js/758.69000a7e.chunk.js.map",
     "863.6b701acd.chunk.js.map": "/reactStudySphereMockup/static/js/863.6b701acd.chunk.js.map",
     "882.742d0b36.chunk.js.map": "/reactStudySphereMockup/static/js/882.742d0b36.chunk.js.map",
@@ -80,7 +80,7 @@
     "681.d11f8fff.chunk.js.map": "/reactStudySphereMockup/static/js/681.d11f8fff.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.afa99e57.css",
-    "static/js/main.ef183a87.js"
+    "static/css/main.6ced004c.css",
+    "static/js/main.b41e1016.js"
   ]
 }
