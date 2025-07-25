@@ -671,4 +671,4 @@ const PathEditModal = ({ path, availableCourses, onUpdate, onClose }) => {
   );
 };
 
-export default CurriculumPathManagement; 
+export default CurriculumPathManagement;                      
